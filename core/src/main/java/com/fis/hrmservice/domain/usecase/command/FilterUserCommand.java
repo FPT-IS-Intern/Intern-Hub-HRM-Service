@@ -5,12 +5,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Getter
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FilterUserCommand {
     String keyword;
-    String sysStatus;
-    String position;
-    String role;
+    List<String> sysStatuses;
+    List<String> roles;
+    List<String> positions;
 }

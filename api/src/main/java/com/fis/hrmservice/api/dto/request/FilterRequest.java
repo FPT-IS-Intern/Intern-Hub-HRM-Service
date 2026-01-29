@@ -4,11 +4,13 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FilterRequest {
     String keyword;
-    String sysStatus;
-    String position;
-    String role;
+    List<String> sysStatuses;
+    List<String> roles;
+    List<String> positions;
 }

@@ -1,5 +1,6 @@
 package com.fis.hrmservice.api.controller;
 
+import com.fis.hrmservice.api.dto.request.FilterRequest;
 import com.fis.hrmservice.api.dto.request.RegisterUserRequest;
 import com.fis.hrmservice.api.dto.response.UserResponse;
 import com.fis.hrmservice.api.mapper.UserApiMapper;
@@ -36,13 +37,10 @@ public class UserController {
 
         log.info("Received registration request for email: {}", request.getEmail());
 
-        // Map API request to domain command using MapStruct
         RegisterUserCommand command = userApiMapper.toCommand(request);
 
-        // Execute use case
         UserModel registeredUser = registerUserUseCase.registerUser(command);
 
-        // Map domain model to response using MapStruct
         UserResponse response = userApiMapper.toResponse(registeredUser);
 
         log.info("Successfully registered user with ID: {}", registeredUser.getUserId());
@@ -72,10 +70,8 @@ public class UserController {
 
     @GetMapping("/filter")
     public ResponseApi<?> filterUsers(
-            @RequestParam(required = false) String positionCode,
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) String departmentCode) {
-        log.info("Filter users with positionCode: {} and status: {}", positionCode, status);
+            @RequestBody FilterRequest request
+            ){
         return ResponseApi.ok(null);
     }
 }

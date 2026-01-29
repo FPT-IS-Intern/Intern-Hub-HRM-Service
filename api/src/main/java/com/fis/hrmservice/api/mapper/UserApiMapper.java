@@ -1,8 +1,10 @@
 package com.fis.hrmservice.api.mapper;
 
+import com.fis.hrmservice.api.dto.request.FilterRequest;
 import com.fis.hrmservice.api.dto.request.RegisterUserRequest;
 import com.fis.hrmservice.api.dto.response.UserResponse;
 import com.fis.hrmservice.domain.model.user.UserModel;
+import com.fis.hrmservice.domain.usecase.command.FilterUserCommand;
 import com.fis.hrmservice.domain.usecase.command.RegisterUserCommand;
 import org.mapstruct.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,4 +22,6 @@ public interface UserApiMapper {
 
     @Mapping(source = "companyEmail", target = "email")
     UserResponse toResponse(UserModel model);
+
+    FilterUserCommand toCommand(FilterRequest request);
 }
