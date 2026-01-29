@@ -1,15 +1,25 @@
 package com.fis.hrmservice.domain.model.ticket;
 
-import com.fis.hrmservice.domain.model.contant.TicketStatus;
+import com.fis.hrmservice.domain.model.constant.TicketStatus;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 
+/**
+ * Domain model for Ticket entity.
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class TicketModel {
     Long ticketId;
-    Long sender;
-    Long tickerTypeId;
-    LocalDate startDate;
-    LocalDate endDate;
+    Long userId;
+    Long ticketTypeId;
+    LocalDate startAt;
+    LocalDate endAt;
     String reason;
-    TicketStatus ticketStatus;
+    TicketStatus status;
 }

@@ -9,7 +9,8 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TicketTypeModel {
-    Long ticketId;
+    Long ticketTypeId;
     String typeName;
     String description;
+    String status;
 }

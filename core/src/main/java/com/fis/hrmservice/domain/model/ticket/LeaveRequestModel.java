@@ -8,8 +8,9 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LeaveRequestModel extends TicketModel{
-    Long ticketId;
+@EqualsAndHashCode(callSuper = true)
+public class LeaveRequestModel extends TicketModel {
     Long leaveTypeId;
-    int totalDays;
+    Integer totalDays;
+    String status;
 }

@@ -3,16 +3,20 @@ package com.fis.hrmservice.domain.model.ticket;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
+/**
+ * Domain model for RemoteRequest entity.
+ * Extends TicketModel as it shares ticket_id with tickets table.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RemoteRequestModel extends TicketModel{
-    Long ticketId;
+@EqualsAndHashCode(callSuper = true)
+public class RemoteRequestModel extends TicketModel {
     Long workLocationId;
-    LocalDate startTime;
-    LocalDate endTime;
+    LocalDateTime startTime;
+    LocalDateTime endTime;
 }

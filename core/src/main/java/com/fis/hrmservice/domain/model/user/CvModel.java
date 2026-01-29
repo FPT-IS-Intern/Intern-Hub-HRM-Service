@@ -12,4 +12,7 @@ public class CvModel {
     Long cvId;
     Long userId;
     String cvUrl;
+    String fileType;
+    String fileName;
+    String cvFileName;
 }

@@ -17,9 +17,10 @@ public class UserModel {
     String fullName;
     String idNumber;
     LocalDate dateOfBirth;
-    String emailFpt;
+    String companyEmail;
     String phoneNumber;
     String address;
     LocalDate internshipStartDate;
     LocalDate internshipEndDate;
+    String status;
 }

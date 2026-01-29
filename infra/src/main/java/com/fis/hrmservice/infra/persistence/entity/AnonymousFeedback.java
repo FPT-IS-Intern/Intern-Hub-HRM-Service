@@ -1,0 +1,52 @@
+package com.fis.hrmservice.infra.persistence.entity;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@Entity
+@Table(name = "anonymous_feedbacks", schema = "schema_hrm")
+public class AnonymousFeedback {
+    @Id
+    @Column(name = "feedback_id", nullable = false)
+    private Long id;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "feedback_type_id", nullable = false)
+    private FeedbackType feedbackType;
+
+    @Size(max = 255)
+    @Column(name = "title")
+    private String title;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by")
+    private User createdBy;
+
+    @Column(name = "created_at")
+    private Long createdAt;
+
+    @Column(name = "updated_at")
+    private Long updatedAt;
+
+    @Column(name = "version")
+    private Integer version;
+
+    @Size(max = 50)
+    @Column(name = "status", length = 50)
+    private String status;
+
+    @Column(name = "content", length = Integer.MAX_VALUE)
+    private String content;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_id")
+    private User sender;
+
+
+}

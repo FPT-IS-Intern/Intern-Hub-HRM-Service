@@ -1,4 +1,4 @@
-package com.fis.hrmservice.domain.model.contant;
+package com.fis.hrmservice.domain.model.constant;
 
 public enum TicketStatus {
     PENDING,

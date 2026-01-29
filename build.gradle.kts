@@ -66,14 +66,20 @@ subprojects {
         compileOnly("org.projectlombok:lombok:1.18.42")
         annotationProcessor("org.projectlombok:lombok:1.18.42")
 
+        // Validation API
+        implementation("jakarta.validation:jakarta.validation-api:3.0.2")
+
         // Lombok + MapStruct binding
         annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
 
         //common lib
-        implementation("com.github.FPT-IS-Intern:Intern-Hub-Common-Library:2.0.0")
+        implementation("com.github.FPT-IS-Intern:Intern-Hub-Common-Library:2.0.2")
 
         //Security Starter Library
         implementation("com.github.FPT-IS-Intern:Intern-Hub-Security-Starter:1.0.0")
+
+        // Source: https://mvnrepository.com/artifact/org.springframework/spring-web
+        implementation("org.springframework:spring-web:7.0.3")
     }
 
     configure<SpotlessExtension> {

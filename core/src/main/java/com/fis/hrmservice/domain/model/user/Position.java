@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Position {
     Long positionId;
-    String positionName;
+    String name;
     String description;
+    String status;
 }

@@ -9,3 +9,6 @@ security:
   excluded-paths:
     - "/actuator/"
     - "/health"
+
+  snowflake:
+    machine-id: 1

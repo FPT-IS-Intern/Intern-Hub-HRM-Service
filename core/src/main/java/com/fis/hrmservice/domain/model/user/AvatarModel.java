@@ -15,4 +15,7 @@ public class AvatarModel {
     Long avatarId;
     Long userId;
     String avatarUrl;
+    String fileType;
+    String fileSize;
+    String avatarFileName;
 }

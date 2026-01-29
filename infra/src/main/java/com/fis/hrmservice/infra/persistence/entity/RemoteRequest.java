@@ -1,0 +1,34 @@
+package com.fis.hrmservice.infra.persistence.entity;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.Instant;
+
+@Getter
+@Setter
+@Entity
+@Table(name = "remote_requests", schema = "schema_hrm")
+public class RemoteRequest {
+    @Id
+    @Column(name = "ticket_id", nullable = false)
+    private Long id;
+
+    @MapsId
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "ticket_id", nullable = false)
+    private Ticket tickets;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "work_location_id")
+    private WorkLocation workLocation;
+
+    @Column(name = "start_time")
+    private Instant startTime;
+
+    @Column(name = "end_time")
+    private Instant endTime;
+
+
+}

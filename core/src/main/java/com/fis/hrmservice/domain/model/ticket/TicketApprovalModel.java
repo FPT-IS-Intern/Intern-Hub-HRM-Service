@@ -1,6 +1,6 @@
 package com.fis.hrmservice.domain.model.ticket;
 
-import com.fis.hrmservice.domain.model.contant.ApprovalTicketAction;
+import com.fis.hrmservice.domain.model.constant.ApprovalTicketAction;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

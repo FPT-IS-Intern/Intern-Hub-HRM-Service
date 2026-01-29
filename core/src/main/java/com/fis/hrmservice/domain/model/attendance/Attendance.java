@@ -1,16 +1,25 @@
 package com.fis.hrmservice.domain.model.attendance;
 
-import com.fis.hrmservice.domain.model.contant.AttendanceStatus;
-import com.fis.hrmservice.domain.model.contant.SourceAttendance;
+import com.fis.hrmservice.domain.model.constant.AttendanceStatus;
+import com.fis.hrmservice.domain.model.constant.SourceAttendance;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Attendance {
     Long attendanceId;
     Long userId;
-    LocalDateTime workDate;
+    LocalDate workDate;
     LocalDateTime checkInTime;
     LocalDateTime checkOutTime;
-    AttendanceStatus status;
+    AttendanceStatus attendanceStatus;
     SourceAttendance source;
+    String status;
 }
