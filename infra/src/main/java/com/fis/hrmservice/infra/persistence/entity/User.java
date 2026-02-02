@@ -17,7 +17,7 @@ public class User {
     @Column(name = "user_id", nullable = false)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "position_id")
     private Position position;
 
@@ -34,7 +34,7 @@ public class User {
     private String idNumber;
 
     @Column(name = "date_of_birth")
-    private Long dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @Size(max = 100)
     @Column(name = "company_email", length = 100)
@@ -52,10 +52,10 @@ public class User {
     private Integer version;
 
     @Column(name = "created_at")
-    private Long createdAt;
+    private long createdAt;
 
     @Column(name = "updated_at")
-    private Long updatedAt;
+    private long updatedAt;
 
     @Size(max = 255)
     @Column(name = "created_by")

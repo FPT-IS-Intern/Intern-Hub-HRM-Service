@@ -16,10 +16,10 @@ import java.time.LocalDate;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TicketApprovalModel extends BaseDomain {
-    Long approvalId;
+    long approvalId;
     TicketModel ticket;
     UserModel approver;
     String action;
     String comment;
-    LocalDate actionAt;
+    long actionAt;
 }

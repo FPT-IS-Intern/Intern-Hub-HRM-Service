@@ -16,11 +16,11 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TicketModel extends BaseDomain {
 
-    Long ticketId;
+    long ticketId;
     UserModel requester;
     TicketTypeModel ticketType;
-    LocalDate startAt;
-    LocalDate endAt;
+    long startAt;
+    long endAt;
     String reason;
     String sysStatus;
 }

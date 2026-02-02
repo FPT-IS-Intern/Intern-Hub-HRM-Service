@@ -28,10 +28,10 @@ public class Ticket {
     private TicketType ticketType;
 
     @Column(name = "start_at")
-    private LocalDate startAt;
+    private long startAt;
 
     @Column(name = "end_at")
-    private LocalDate endAt;
+    private long endAt;
 
     @Column(name = "reason", length = Integer.MAX_VALUE)
     private String reason;
@@ -41,10 +41,10 @@ public class Ticket {
     private String status;
 
     @Column(name = "created_at")
-    private Long createdAt;
+    private long createdAt;
 
     @Column(name = "updated_at")
-    private Long updatedAt;
+    private long updatedAt;
 
 
 }

@@ -1,5 +1,6 @@
 package com.fis.hrmservice.infra.persistence.entity;
 
+import com.intern.hub.starter.security.entity.AuditEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -12,7 +13,7 @@ import java.time.Instant;
 @Setter
 @Entity
 @Table(name = "anonymous_feedbacks", schema = "schema_hrm")
-public class AnonymousFeedback {
+public class AnonymousFeedback extends AuditEntity {
     @Id
     @Column(name = "feedback_id", nullable = false)
     private Long id;
@@ -27,8 +28,14 @@ public class AnonymousFeedback {
     private String title;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "creator")
+    private User creator;
+
     @JoinColumn(name = "created_by")
-    private User createdBy;
+    private Long createdBy;
+
+    @JoinColumn(name = "updated_by")
+    private Long updatedBy;
 
     @Column(name = "created_at")
     private Long createdAt;

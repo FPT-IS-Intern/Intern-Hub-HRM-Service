@@ -18,7 +18,6 @@ allprojects {
     repositories {
         mavenCentral()
         maven { url = uri("https://jitpack.io") }
-        maven { url = uri("https://jitpack.io") }
         mavenLocal()
     }
 }
@@ -80,6 +79,8 @@ subprojects {
 
         // Update Security Starter Library to 1.0.1
         implementation("org.springframework.boot:spring-boot-starter-security:3.2.2")
+
+        implementation("com.github.FPT-IS-Intern:Intern-Hub-Security-Starter:1.0.1")
     }
 
     configure<SpotlessExtension> {

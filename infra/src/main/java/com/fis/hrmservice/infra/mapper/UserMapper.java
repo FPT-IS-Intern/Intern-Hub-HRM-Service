@@ -1,9 +1,15 @@
 package com.fis.hrmservice.infra.mapper;
 
+import com.fis.hrmservice.domain.model.user.PositionModel;
 import com.fis.hrmservice.domain.model.user.UserModel;
+import com.fis.hrmservice.infra.persistence.entity.Position;
 import com.fis.hrmservice.infra.persistence.entity.User;
+import org.mapstruct.Named;
 import org.mapstruct.*;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
@@ -21,19 +27,23 @@ public interface UserMapper {
 
     @Mapping(target = "id", source = "userId")
     @Mapping(target = "mentor", qualifiedByName = "mentorToEntity")
-    @Mapping(target = "version", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "updatedBy", ignore = true)
+    @Mapping(target = "position", source = "position", qualifiedByName = "positionToEntity")
+    @Mapping(target = "dateOfBirth", source = "dateOfBirth")
     User toEntity(UserModel model);
+
+    List<UserModel> toResponseList(List<User> users);
 
     /* ===================== CUSTOM ===================== */
 
-    /**
-     * Tránh loop mentor -> mentor -> mentor
-     * Chỉ map ID
-     */
+    @Named("localDateToEpoch")
+    default long localDateToEpoch(LocalDate date) {
+        return date == null
+                ? 0L
+                : date.atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli();
+    }
+
     @Named("mentorToModel")
     default UserModel mentorToModel(User mentor) {
         if (mentor == null) return null;
@@ -51,5 +61,19 @@ public interface UserMapper {
         return user;
     }
 
-    List<UserModel> toResponseList(List<User> users);
+    @Named("positionToEntity")
+    default Position positionToEntity(PositionModel model) {
+        if (model == null || model.getPositionId() == null) return null;
+        Position p = new Position();
+        p.setId(model.getPositionId());
+        return p;
+    }
+
+    @Named("epochMillisToLocalDate")
+    default LocalDate epochMillisToLocalDate(Long value) {
+        if (value == null) return null;
+        return Instant.ofEpochMilli(value)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+    }
 }

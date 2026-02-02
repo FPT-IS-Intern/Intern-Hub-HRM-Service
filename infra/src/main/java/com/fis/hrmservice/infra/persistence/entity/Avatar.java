@@ -22,10 +22,10 @@ public class Avatar {
     private String avatarUrl;
 
     @Column(name = "created_at")
-    private Long createdAt;
+    private long createdAt;
 
     @Column(name = "updated_at")
-    private Long updatedAt;
+    private long updatedAt;
 
     @Size(max = 255)
     @Column(name = "created_by")

@@ -32,13 +32,13 @@ public class FeedbackAttachment {
     private String fileUrl;
 
     @Column(name = "uploaded_at")
-    private Long uploadedAt;
+    private long uploadedAt;
 
     @Column(name = "created_at")
-    private Long createdAt;
+    private long createdAt;
 
     @Column(name = "updated_at")
-    private Long updatedAt;
+    private long updatedAt;
 
     @Column(name = "version")
     private Integer version;

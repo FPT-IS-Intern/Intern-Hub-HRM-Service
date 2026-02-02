@@ -11,8 +11,8 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PROTECTED)
 public abstract class BaseDomain {
-    Long createdAt;
-    Long updatedAt;
+    long createdAt;
+    long updatedAt;
     Integer version;
     String status;
     String createdBy;

@@ -2,20 +2,21 @@ server:
   port: 8080
 
 security:
+  # Required: Secret for internal service-to-service authentication
   internal-secret: "your-secure-secret-key"
-  internal-path-prefix: "/internal/"
-  excluded-paths:
-    - "/actuator/**"
-    - "/health"
 
-  snowflake:
-    machine-id: 1
+# Optional: JPA Auditing configuration
+audit:
+  data:
+    # Enable/disable JPA auditing (default: true)
+    enabled: true
+    # Default user ID for system operations when no user is authenticated (default: 0)
+    default-system-id: 0
+
+snowflake:
+  machine-id: 1
 
 spring:
-  autoconfigure:
-    exclude:
-      - com.intern.hub.library.common.autoconfig.snowflake.SnowflakeAutoConfiguration
-      - com.intern.hub.library.common.autoconfig.context.ContextAutoConfiguration
 
   datasource:
     url: jdbc:postgresql://localhost:5432/hrm_service

@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class TicketTypeModel extends BaseDomain {
-    private Long ticketTypeId;
+    private long ticketTypeId;
     private String typeName;
     private String description;
 }

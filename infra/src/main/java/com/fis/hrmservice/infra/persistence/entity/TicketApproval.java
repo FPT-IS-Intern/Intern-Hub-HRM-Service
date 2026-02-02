@@ -32,13 +32,13 @@ public class TicketApproval {
     private String comment;
 
     @Column(name = "action_at")
-    private LocalDate actionAt;
+    private long actionAt;
 
     @Column(name = "created_at")
-    private Long createdAt;
+    private long createdAt;
 
     @Column(name = "updated_at")
-    private Long updatedAt;
+    private long updatedAt;
 
     @Column(name = "version")
     private Integer version;

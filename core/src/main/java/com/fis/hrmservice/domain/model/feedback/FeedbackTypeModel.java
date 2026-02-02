@@ -7,7 +7,7 @@ import lombok.Data;
 @Builder
 @Data
 public class FeedbackTypeModel extends BaseDomain {
-    private Long id;
+    private long id;
     private String code;
     private String name;
     private String description;

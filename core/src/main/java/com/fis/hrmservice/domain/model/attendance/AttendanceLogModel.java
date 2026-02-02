@@ -13,11 +13,11 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AttendanceLogModel extends BaseDomain {
 
-    Long attendanceId;
+    long attendanceId;
     UserModel user;
     LocalDate workDate;
-    LocalDateTime checkInTime;
-    LocalDateTime checkOutTime;
+    long checkInTime;
+    long checkOutTime;
     String attendanceStatus;
     String source;
 }

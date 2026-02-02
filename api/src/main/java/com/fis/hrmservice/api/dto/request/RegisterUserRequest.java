@@ -43,9 +43,9 @@ public class RegisterUserRequest {
     LocalDate internshipEndDate;
 
     // File uploads
-    @NotNull(message = "CV không được để trống")
+//    @NotNull(message = "CV không được để trống")
     MultipartFile cv;
 
-    @NotNull(message = "Ảnh đại diện không được để trống")
+//    @NotNull(message = "Ảnh đại diện không được để trống")
     MultipartFile avatar;
 }

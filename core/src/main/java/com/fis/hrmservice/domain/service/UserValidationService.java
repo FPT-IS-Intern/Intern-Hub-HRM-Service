@@ -44,24 +44,28 @@ public class UserValidationService {
     }
 
     public void validateIdNumber(String idNumber, LocalDate dateOfBirth, String address) {
-        if (idNumber == null || idNumber.isBlank()) {
-            throw new ConflictDataException("Số CCCD/CMND không được để trống");
-        }
+//        if (idNumber == null || idNumber.isBlank()) {
+//            throw new ConflictDataException("Số CCCD/CMND không được để trống");
+//        }
+//
+//        if (!ID_NUMBER_PATTERN.matcher(idNumber).matches()) {
+//            throw new ConflictDataException("Sai định dạng CCCD/CMND");
+//        }
+//
+//        // Validate province code (first 3 digits)
+//        Integer provinceCode = ProvinceCode.getProvinceCode(address);
+//        if (provinceCode == null) {
+//            throw new ConflictDataException("address", "Không tìm thấy mã tỉnh/thành phố từ địa chỉ");
+//        }
+//
+//        String firstThreeDigits = idNumber.substring(0, 3);
+//        String expectedProvinceCode = String.format("%03d", provinceCode);
+//        if (!firstThreeDigits.equals(expectedProvinceCode)) {
+//            throw new ConflictDataException("Mã tỉnh/thành phố trên CCCD không khớp với địa chỉ");
+//        }
 
-        if (!ID_NUMBER_PATTERN.matcher(idNumber).matches()) {
-            throw new ConflictDataException("Sai định dạng CCCD/CMND");
-        }
-
-        // Validate province code (first 3 digits)
-        Integer provinceCode = ProvinceCode.getProvinceCode(address);
-        if (provinceCode == null) {
-            throw new ConflictDataException("address", "Không tìm thấy mã tỉnh/thành phố từ địa chỉ");
-        }
-
-        String firstThreeDigits = idNumber.substring(0, 3);
-        String expectedProvinceCode = String.format("%03d", provinceCode);
-        if (!firstThreeDigits.equals(expectedProvinceCode)) {
-            throw new ConflictDataException("Mã tỉnh/thành phố trên CCCD không khớp với địa chỉ");
+        if (idNumber.length() != 12) {
+            throw new ConflictDataException("Số CCCD/CMND không hợp lệ");
         }
 
         // Validate century and gender code (4th digit)

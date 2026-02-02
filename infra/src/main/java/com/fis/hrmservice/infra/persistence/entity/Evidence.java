@@ -26,10 +26,10 @@ public class Evidence {
     private String evidenceUrl;
 
     @Column(name = "uploaded_at")
-    private Long uploadedAt;
+    private long uploadedAt;
 
     @Column(name = "updated_at")
-    private Long updatedAt;
+    private long updatedAt;
 
     @Column(name = "version")
     private Integer version;
@@ -47,7 +47,7 @@ public class Evidence {
     private String status;
 
     @Column(name = "create_at")
-    private Long createAt;
+    private long createAt;
 
 
 }

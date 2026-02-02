@@ -9,8 +9,12 @@ import com.fis.hrmservice.domain.port.output.UserRepositoryPort;
 import com.fis.hrmservice.domain.service.UserValidationService;
 import com.fis.hrmservice.domain.usecase.command.RegisterUserCommand;
 import com.intern.hub.library.common.exception.ConflictDataException;
-import com.intern.hub.library.common.utils.Snowflake;import lombok.RequiredArgsConstructor;import org.springframework.stereotype.Component;
+import com.intern.hub.library.common.utils.Snowflake;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class RegisterUserUseCaseImpl implements RegisterUserUseCase {
@@ -25,11 +29,10 @@ public class RegisterUserUseCaseImpl implements RegisterUserUseCase {
 
         validationService.validateRegistration(command);
         checkForDuplicates(command);
-
         PositionModel position = positionRepository
                 .findByCode(command.getPositionCode())
                 .orElseThrow(() -> new ConflictDataException("Position không tồn tại"));
-
+        log.debug("Position found: {}", position);
         UserModel user = buildUserModel(command, position);
 
         return userRepository.save(user);

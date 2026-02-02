@@ -14,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FeedbackModel extends BaseDomain {
 
-    private Long feedbackId;
+    private long feedbackId;
     private FeedbackTypeModel feedbackType;
     private String title;
     private String content;

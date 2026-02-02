@@ -12,7 +12,7 @@ import lombok.Setter;
 public class LeaveRequest {
     @Id
     @Column(name = "ticket_id", nullable = false)
-    private Long id;
+    private long id;
 
     @MapsId
     @OneToOne(fetch = FetchType.LAZY, optional = false)
@@ -27,10 +27,10 @@ public class LeaveRequest {
     private Integer totalDays;
 
     @Column(name = "created_at")
-    private Long createdAt;
+    private long createdAt;
 
     @Column(name = "updated_at")
-    private Long updatedAt;
+    private long updatedAt;
 
     @Column(name = "version")
     private Integer version;

@@ -3,6 +3,7 @@ package com.fis.hrmservice.api.mapper;
 import com.fis.hrmservice.api.dto.request.FilterRequest;
 import com.fis.hrmservice.api.dto.request.RegisterUserRequest;
 import com.fis.hrmservice.api.dto.response.FilterResponse;
+import com.fis.hrmservice.api.dto.response.ProfileResponse;
 import com.fis.hrmservice.api.dto.response.UserResponse;
 import com.fis.hrmservice.domain.model.user.UserModel;
 import com.fis.hrmservice.domain.usecase.command.FilterUserCommand;
@@ -37,6 +38,14 @@ public interface UserApiMapper {
     @Mapping(source = "fullName", target = "fullName")
     @Mapping(source = "sysStatus", target = "sysStatus")
     FilterResponse toFilterResponse(UserModel model);
+
+
+    @Mapping(target = "position", source = "position.name")
+    @Mapping(target = "superVisorName", source = "mentor.fullName")
+    @Mapping(target = "role", ignore = true)          // UserModel chưa có
+    @Mapping(target = "scoreAward", ignore = true)    // UserModel chưa có
+    @Mapping(target = "budgetPoints", ignore = true)  // UserModel chưa có
+    ProfileResponse toProfileResponse(UserModel model);
 
     List<FilterResponse> toFilterResponseList(List<UserModel> userModelList);
 

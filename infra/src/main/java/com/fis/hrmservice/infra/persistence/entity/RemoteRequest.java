@@ -25,10 +25,10 @@ public class RemoteRequest {
     private WorkLocation workLocation;
 
     @Column(name = "start_time")
-    private Instant startTime;
+    private long startTime;
 
     @Column(name = "end_time")
-    private Instant endTime;
+    private long endTime;
 
 
 }
