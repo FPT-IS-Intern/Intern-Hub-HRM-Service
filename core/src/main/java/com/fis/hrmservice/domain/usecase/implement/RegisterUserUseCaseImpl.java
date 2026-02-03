@@ -1,6 +1,7 @@
 package com.fis.hrmservice.domain.usecase.implement;
 
 import com.fis.hrmservice.domain.model.constant.CoreConstant;
+import com.fis.hrmservice.domain.model.constant.UserStatus;
 import com.fis.hrmservice.domain.model.user.PositionModel;
 import com.fis.hrmservice.domain.model.user.UserModel;
 import com.fis.hrmservice.domain.port.input.RegisterUserUseCase;
@@ -59,7 +60,7 @@ public class RegisterUserUseCaseImpl implements RegisterUserUseCase {
                 .companyEmail(command.getEmail())
                 .phoneNumber(command.getPhoneNumber())
                 .address(command.getAddress())
-                .sysStatus(CoreConstant.STATUS_PENDING);
+                .sysStatus(UserStatus.PENDING);
 
         if (command.isInternRegistration()) {
             builder

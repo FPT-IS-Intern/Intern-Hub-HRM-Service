@@ -98,4 +98,16 @@ public class UserController {
         UserModel userModel = userProfileUseCase.getUserProfile(userId);
         return ResponseApi.ok(userApiMapper.toResponse(userModel));
     }
+    //-------------------- Approval and Rejection Endpoints -------------------//
+    @PutMapping("/approval/{userId}")
+    public ResponseApi<?> approveUser(@PathVariable("userId") Long userId) {
+        log.info("Approve user request for ID: {}", userId);
+        return ResponseApi.ok(null);
+    }
+
+    @PutMapping("/rejection/{userId}")
+    public ResponseApi<?> rejectUser(@PathVariable("userId") Long userId) {
+        log.info("Reject user request for ID: {}", userId);
+        return ResponseApi.ok(null);
+    }
 }

@@ -1,6 +1,7 @@
 package com.fis.hrmservice.domain.model.user;
 
 import com.fis.hrmservice.domain.model.common.BaseDomain;
+import com.fis.hrmservice.domain.model.constant.UserStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -20,7 +21,7 @@ public class UserModel extends BaseDomain {
     LocalDate dateOfBirth;
 
     String address;
-    String sysStatus;
+    UserStatus sysStatus;
 
     LocalDate internshipStartDate;
     LocalDate internshipEndDate;
