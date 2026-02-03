@@ -2,12 +2,14 @@ package com.fis.hrmservice.api.mapper;
 
 import com.fis.hrmservice.api.dto.request.FilterRequest;
 import com.fis.hrmservice.api.dto.request.RegisterUserRequest;
+import com.fis.hrmservice.api.dto.request.UpdateProfileRequest;
 import com.fis.hrmservice.api.dto.response.FilterResponse;
 import com.fis.hrmservice.api.dto.response.ProfileResponse;
 import com.fis.hrmservice.api.dto.response.UserResponse;
 import com.fis.hrmservice.domain.model.user.UserModel;
 import com.fis.hrmservice.domain.usecase.command.FilterUserCommand;
 import com.fis.hrmservice.domain.usecase.command.RegisterUserCommand;
+import com.fis.hrmservice.domain.usecase.command.UpdateUserProfileCommand;
 import org.mapstruct.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,6 +50,8 @@ public interface UserApiMapper {
     ProfileResponse toProfileResponse(UserModel model);
 
     List<FilterResponse> toFilterResponseList(List<UserModel> userModelList);
+
+    UpdateUserProfileCommand toUpdateUserProfileCommand(UpdateProfileRequest request);
 
     // ===== Filter =====
     FilterUserCommand toCommand(FilterRequest request);

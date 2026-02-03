@@ -15,13 +15,13 @@ public class UserApproval implements ApprovalUser {
     private final UserRepositoryPort userRepositoryPort;
 
     @Override
-    public void approveUser(Long userId) {
-        UserModel userModel = userRepositoryPort.findById(userId).get();
-
-        if (userModel == null) {
-            throw new NotFoundException("User not found with id: " + userId);
-        }
+    public UserModel approveUser(Long userId) {
+        UserModel userModel = userRepositoryPort.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
 
         userModel.setSysStatus(UserStatus.APPROVED);
+        userRepositoryPort.save(userModel);
+
+        return userModel;
     }
 }

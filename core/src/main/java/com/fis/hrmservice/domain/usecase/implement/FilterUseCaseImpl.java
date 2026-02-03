@@ -2,7 +2,9 @@ package com.fis.hrmservice.domain.usecase.implement;
 
 import com.fis.hrmservice.domain.model.user.UserModel;
 import com.fis.hrmservice.domain.port.input.FilterUserUseCase;
-import com.fis.hrmservice.domain.port.output.AvatarRepositoryPort;import com.fis.hrmservice.domain.port.output.UserRepositoryPort;import com.fis.hrmservice.domain.usecase.command.FilterUserCommand;
+import com.fis.hrmservice.domain.port.output.AvatarRepositoryPort;
+import com.fis.hrmservice.domain.port.output.UserRepositoryPort;
+import com.fis.hrmservice.domain.usecase.command.FilterUserCommand;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

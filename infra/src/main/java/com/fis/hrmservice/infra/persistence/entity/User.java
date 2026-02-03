@@ -18,7 +18,9 @@ public class User {
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "position_id")
+
+    //tránh sau khi mapping position bằng null;
+    @JoinColumn(name = "position_id", updatable = false)
     private Position position;
 
     @ManyToOne(fetch = FetchType.LAZY)

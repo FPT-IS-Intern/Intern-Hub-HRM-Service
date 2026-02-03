@@ -5,10 +5,8 @@ import com.fis.hrmservice.domain.port.output.UserRepositoryPort;
 import com.fis.hrmservice.domain.usecase.command.FilterUserCommand;
 import com.fis.hrmservice.infra.mapper.UserMapper;
 import com.fis.hrmservice.infra.persistence.entity.User;
-import com.fis.hrmservice.infra.persistence.repository.PositionJpaRepository;
 import com.fis.hrmservice.infra.persistence.repository.UserJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,9 +17,6 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Autowired
     private UserJpaRepository userJpaRepository;
-
-    @Autowired
-    private PositionJpaRepository positionJpaRepository;
 
     @Autowired
     private UserMapper userMapper;

@@ -1,6 +1,5 @@
 package com.fis.hrmservice.domain.usecase.implement;
 
-import com.fis.hrmservice.domain.model.constant.CoreConstant;
 import com.fis.hrmservice.domain.model.constant.UserStatus;
 import com.fis.hrmservice.domain.model.user.PositionModel;
 import com.fis.hrmservice.domain.model.user.UserModel;

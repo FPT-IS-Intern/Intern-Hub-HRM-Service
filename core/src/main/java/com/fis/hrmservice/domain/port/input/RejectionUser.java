@@ -2,6 +2,6 @@ package com.fis.hrmservice.domain.port.input;
 
 import com.fis.hrmservice.domain.model.user.UserModel;
 
-public interface ApprovalUser {
-    UserModel approveUser(Long userId);
+public interface RejectionUser {
+    UserModel rejectUser(Long userId);
 }

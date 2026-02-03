@@ -2,22 +2,22 @@ package com.fis.hrmservice.api.controller;
 
 import com.fis.hrmservice.api.dto.request.FilterRequest;
 import com.fis.hrmservice.api.dto.request.RegisterUserRequest;
+import com.fis.hrmservice.api.dto.request.UpdateProfileRequest;
 import com.fis.hrmservice.api.dto.response.FilterResponse;
 import com.fis.hrmservice.api.mapper.UserApiMapper;
 import com.fis.hrmservice.domain.model.user.UserModel;
-import com.fis.hrmservice.domain.port.input.FilterUserUseCase;
-import com.fis.hrmservice.domain.port.input.RegisterUserUseCase;
-import com.fis.hrmservice.domain.port.input.UserProfileUseCase;
+import com.fis.hrmservice.domain.port.input.*;
 import com.fis.hrmservice.domain.usecase.command.FilterUserCommand;
 import com.fis.hrmservice.domain.usecase.command.RegisterUserCommand;
 import com.intern.hub.library.common.annotation.EnableGlobalExceptionHandler;
 import com.intern.hub.library.common.dto.ResponseApi;
-import com.intern.hub.starter.security.annotation.HasPermission;
-import com.intern.hub.starter.security.dto.Scope;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Path;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,6 +25,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("hrm-serice/api/users")
+@RequiredArgsConstructor
 @EnableGlobalExceptionHandler
 @Slf4j
 @Tag(name = "User Management", description = "APIs for user registration and management")
@@ -34,13 +35,8 @@ public class UserController {
     private final FilterUserUseCase filterUserUseCase;
     private final UserApiMapper userApiMapper;
     private final UserProfileUseCase userProfileUseCase;
-
-    public UserController(RegisterUserUseCase registerUserUseCase, FilterUserUseCase filterUserUseCase, UserApiMapper userApiMapper, UserProfileUseCase userProfileUseCase) {
-        this.registerUserUseCase = registerUserUseCase;
-        this.filterUserUseCase = filterUserUseCase;
-        this.userApiMapper = userApiMapper;
-        this.userProfileUseCase = userProfileUseCase;
-    }
+    private final ApprovalUser approvalUser;
+    private final RejectionUser rejectionUser;
 
     @PostMapping(
             value = "/register",
@@ -84,7 +80,6 @@ public class UserController {
     }
 
     @PostMapping("/filter")
-//    @HasPermission(resource = "user", action = "read", scope = Scope.ALL)
     public ResponseApi<List<FilterResponse>> filterUsers(
             @RequestBody FilterRequest request
             ){
@@ -93,6 +88,7 @@ public class UserController {
         return ResponseApi.ok(userApiMapper.toFilterResponseList(userModelList));
     }
 
+    //cái này dùng cho admin xem profile của 1 user cụ thể nào đó
     @GetMapping("/profile/{userId}")
     public ResponseApi<?> getUserProfile(@PathVariable("userId") Long userId) {
         UserModel userModel = userProfileUseCase.getUserProfile(userId);
@@ -100,14 +96,33 @@ public class UserController {
     }
     //-------------------- Approval and Rejection Endpoints -------------------//
     @PutMapping("/approval/{userId}")
+    @Transactional
     public ResponseApi<?> approveUser(@PathVariable("userId") Long userId) {
         log.info("Approve user request for ID: {}", userId);
-        return ResponseApi.ok(null);
+        UserModel userModel = approvalUser.approveUser(userId);
+        return ResponseApi.ok("Đã approve user " + userModel.getFullName() + " với status: " + userModel.getStatus());
     }
 
     @PutMapping("/rejection/{userId}")
+    @Transactional
     public ResponseApi<?> rejectUser(@PathVariable("userId") Long userId) {
         log.info("Reject user request for ID: {}", userId);
-        return ResponseApi.ok(null);
+        UserModel userReject = rejectionUser.rejectUser(userId);
+        return ResponseApi.ok("Đã reject user " + userReject.getFullName() + " với status: " + userReject.getStatus());
+    }
+
+    @PatchMapping(
+            value = "/me/{userId}/profile",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseApi<?> updateProfile(
+            @RequestPart("userInfo")UpdateProfileRequest request,
+            @RequestPart("cvFile") MultipartFile cvFile,
+            @RequestPart("avatarFile") MultipartFile avatarFile,
+            @PathVariable("userId") long userId
+            ) {
+        request.setCvFile(cvFile);
+        request.setAvatarFile(avatarFile);
+        userProfileUseCase.updateProfileUser(userApiMapper.toUpdateUserProfileCommand(request), userId);
+        return ResponseApi.ok("Update user profile thành công");
     }
 }
