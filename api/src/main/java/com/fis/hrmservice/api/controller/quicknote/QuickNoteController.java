@@ -3,7 +3,7 @@ package com.fis.hrmservice.api.controller.quicknote;
 import com.fis.hrmservice.api.dto.request.CreateQuickNoteRequest;
 import com.fis.hrmservice.api.mapper.QuickNoteApiMapper;
 import com.fis.hrmservice.domain.port.input.quicknote.QuickNoteUserUseCase;
-import com.fis.hrmservice.domain.usecase.command.QuickNoteCommand;
+import com.fis.hrmservice.domain.usecase.command.quicknote.QuickNoteCommand;
 import com.intern.hub.library.common.annotation.EnableGlobalExceptionHandler;
 import com.intern.hub.library.common.dto.ResponseApi;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LeaveTypeModel extends BaseDomain {
-    long leaveTypeId;
+    Long leaveTypeId;
     String typeName;
     String description;
 }

@@ -16,6 +16,6 @@ import java.time.LocalDateTime;
 public class RemoteRequestModel {
     private TicketModel ticket;
     private WorkLocationModel workLocation;
-    private long startTime;
-    private long endTime;
+    private Long startTime;
+    private Long endTime;
 }

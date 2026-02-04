@@ -49,5 +49,6 @@ public class TicketApproval extends AuditEntity {
     @Column(name = "updated_by")
     private Long updatedBy;
 
-
+    @Column(name = "approval_level")
+    private int approvalLevel;
 }

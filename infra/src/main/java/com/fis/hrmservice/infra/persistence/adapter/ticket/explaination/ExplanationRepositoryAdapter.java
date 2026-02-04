@@ -1,0 +1,26 @@
+package com.fis.hrmservice.infra.persistence.adapter.ticket.explaination;
+
+import com.fis.hrmservice.domain.model.ticket.TicketModel;
+import com.fis.hrmservice.domain.port.output.ticket.TicketRepositoryPort;
+import com.fis.hrmservice.infra.mapper.TicketMapper;
+import com.fis.hrmservice.infra.persistence.entity.Ticket;
+import com.fis.hrmservice.infra.persistence.repository.ticket.TicketRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class ExplanationRepositoryAdapter implements TicketRepositoryPort {
+
+    @Autowired
+    private TicketRepository ticketRepository;
+
+    @Autowired
+    private TicketMapper ticketMapper;
+
+    @Override
+    public TicketModel save(TicketModel ticket) {
+        Ticket ticketEntity = ticketMapper.toEntity(ticket);
+        ticketRepository.save(ticketEntity);
+        return ticketMapper.toModel(ticketEntity);
+    }
+}

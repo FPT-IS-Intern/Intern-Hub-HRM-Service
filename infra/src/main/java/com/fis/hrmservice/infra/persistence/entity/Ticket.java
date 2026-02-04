@@ -49,4 +49,6 @@ public class Ticket extends AuditEntity {
     @Column(name = "updated_by")
     private Long updatedBy;
 
+    @Column(name = "status")
+    private String status;
 }

@@ -1,8 +1,8 @@
 package com.fis.hrmservice.domain.service;
 
 import com.fis.hrmservice.domain.model.constant.CoreConstant;
-import com.fis.hrmservice.domain.model.constant.ProvinceCode;
-import com.fis.hrmservice.domain.usecase.command.RegisterUserCommand;
+import com.fis.hrmservice.domain.usecase.command.user.RegisterUserCommand;
+import com.fis.hrmservice.domain.usecase.command.user.UpdateUserProfileCommand;
 import com.intern.hub.library.common.exception.ConflictDataException;
 
 import java.time.LocalDate;
@@ -25,6 +25,13 @@ public class UserValidationService {
         }
     }
 
+    public void validateUpdate(UpdateUserProfileCommand command) {
+        validateEmail(command.getCompanyEmail());
+        validatePhoneNumber(command.getPhoneNumber());
+        validateIdNumber(command.getIdNumber(), command.getDateOfBirth(), command.getAddress());
+        validateFileMetadataUpdate(command);
+    }
+
     public void validateEmail(String email) {
         if (email == null || email.isBlank()) {
             throw new ConflictDataException("Email không được để trống");
@@ -44,6 +51,8 @@ public class UserValidationService {
     }
 
     public void validateIdNumber(String idNumber, LocalDate dateOfBirth, String address) {
+
+        //TODO: cái này từ từ tính sau
 //        if (idNumber == null || idNumber.isBlank()) {
 //            throw new ConflictDataException("Số CCCD/CMND không được để trống");
 //        }
@@ -100,6 +109,14 @@ public class UserValidationService {
 
         // Validate Avatar
         validateAvatarFile(command.getAvatarContentType(), command.getAvatarSize());
+    }
+
+    public void validateFileMetadataUpdate(UpdateUserProfileCommand command) {
+        // Validate CV
+        validateCvFile(command.getCvFile().getContentType(), command.getCvFile().getSize());
+
+        // Validate Avatar
+        validateAvatarFile(command.getAvatarFile().getContentType(), command.getAvatarFile().getSize());
     }
 
     public void validateCvFile(String contentType, long size) {
