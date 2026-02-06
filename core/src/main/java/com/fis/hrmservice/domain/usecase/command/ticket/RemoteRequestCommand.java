@@ -14,6 +14,5 @@ import lombok.NoArgsConstructor;
 public class RemoteRequest {
   LocalTime startTime;
   LocalTime endTime;
-  RemoteType remoteType;
   String location;
 }
