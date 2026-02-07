@@ -6,28 +6,33 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(
-    componentModel = "spring",
-    uses = {
-      TicketTypeMapper.class,
-      UserMapper.class // nếu có User ↔ UserModel
-    })
+        componentModel = "spring",
+        uses = {
+                TicketTypeMapper.class,
+                UserMapper.class
+        }
+)
 public interface TicketMapper {
+
+  /* ========== ENTITY → MODEL ========== */
 
   @Mapping(source = "id", target = "ticketId")
   @Mapping(source = "user", target = "requester")
-  @Mapping(source = "ticketType", target = "ticketType")
-  @Mapping(source = "startAt", target = "startAt")
-  @Mapping(source = "endAt", target = "endAt")
-  @Mapping(source = "reason", target = "reason")
   @Mapping(source = "status", target = "sysStatus")
   TicketModel toModel(Ticket ticket);
 
+
+  /* ========== MODEL → ENTITY ========== */
+
   @Mapping(source = "ticketId", target = "id")
   @Mapping(source = "requester", target = "user")
-  @Mapping(source = "ticketType", target = "ticketType")
-  @Mapping(source = "startAt", target = "startAt")
-  @Mapping(source = "endAt", target = "endAt")
-  @Mapping(source = "reason", target = "reason")
   @Mapping(source = "sysStatus", target = "status")
+
+  // ignore audit fields (AuditEntity tự xử lý)
+  @Mapping(target = "createdAt", ignore = true)
+  @Mapping(target = "updatedAt", ignore = true)
+  @Mapping(target = "createdBy", ignore = true)
+  @Mapping(target = "updatedBy", ignore = true)
+
   Ticket toEntity(TicketModel ticketModel);
 }

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.time.LocalTime;
 
 @Getter
 @Setter
@@ -26,10 +27,10 @@ public class RemoteRequest extends AuditEntity {
     private WorkLocation workLocation;
 
     @Column(name = "start_time")
-    private Instant startTime;
+    private LocalTime startTime;
 
     @Column(name = "end_time")
-    private Instant endTime;
+    private LocalTime endTime;
 
     @Column(name = "created_at")
     private Long createdAt;

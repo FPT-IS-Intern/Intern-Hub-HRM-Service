@@ -3,7 +3,7 @@ server:
 
 security:
   # Required: Secret for internal service-to-service authentication
-  internal-secret: "your-secure-secret-key"
+  internal-secret: ${INTERNAL_SECRET_KEY}
 
 # Optional: JPA Auditing configuration
 audit:

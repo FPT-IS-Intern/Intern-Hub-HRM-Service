@@ -2,7 +2,6 @@ package com.fis.hrmservice.domain.usecase.implement.user;
 
 import com.fis.hrmservice.domain.model.user.AvatarModel;
 import com.fis.hrmservice.domain.model.user.UserModel;
-import com.fis.hrmservice.domain.port.input.user.FilterUserUseCase;
 import com.fis.hrmservice.domain.port.output.user.AvatarRepositoryPort;
 import com.fis.hrmservice.domain.port.output.user.UserRepositoryPort;
 import com.fis.hrmservice.domain.usecase.command.user.FilterUserCommand;

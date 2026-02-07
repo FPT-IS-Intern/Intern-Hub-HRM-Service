@@ -1,5 +1,6 @@
 package com.fis.hrmservice.domain.port.output.user;
 
+import com.fis.hrmservice.domain.model.constant.UserStatus;
 import com.fis.hrmservice.domain.model.user.UserModel;
 import com.fis.hrmservice.domain.usecase.command.user.FilterUserCommand;
 import java.util.List;
@@ -19,4 +20,10 @@ public interface UserRepositoryPort {
   List<UserModel> findAll();
 
   List<UserModel> filterUser(FilterUserCommand command);
+
+  Long updateStatus(Long userId, UserStatus status);
+
+  UserModel internalUserProfile(Long userId);
+
+  Long suspendUser(Long userId, UserStatus status);
 }

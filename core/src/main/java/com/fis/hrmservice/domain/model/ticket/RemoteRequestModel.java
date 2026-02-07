@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalTime;
+
 @Getter
 @Setter
 @Builder
@@ -16,6 +18,6 @@ public class RemoteRequestModel {
   private TicketModel ticket;
   private WorkLocationModel workLocation;
   private RemoteType remoteType;
-  private Long startTime;
-  private Long endTime;
+  private LocalTime startTime;
+  private LocalTime endTime;
 }

@@ -6,7 +6,7 @@ import lombok.experimental.FieldDefaults;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class InternalUserProfile {
+public class InternalUserProfileResponse {
     Long userId;
     String idNumber;
     String companyEmail;

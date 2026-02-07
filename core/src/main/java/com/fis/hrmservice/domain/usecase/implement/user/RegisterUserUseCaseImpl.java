@@ -3,7 +3,6 @@ package com.fis.hrmservice.domain.usecase.implement.user;
 import com.fis.hrmservice.domain.model.constant.UserStatus;
 import com.fis.hrmservice.domain.model.user.PositionModel;
 import com.fis.hrmservice.domain.model.user.UserModel;
-import com.fis.hrmservice.domain.port.input.user.RegisterUserUseCase;
 import com.fis.hrmservice.domain.port.output.user.PositionRepositoryPort;
 import com.fis.hrmservice.domain.port.output.user.UserRepositoryPort;
 import com.fis.hrmservice.domain.service.UserValidationService;

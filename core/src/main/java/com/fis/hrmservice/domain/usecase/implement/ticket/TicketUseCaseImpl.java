@@ -6,111 +6,163 @@ import com.fis.hrmservice.domain.model.constant.TicketStatus;
 import com.fis.hrmservice.domain.model.ticket.LeaveRequestModel;
 import com.fis.hrmservice.domain.model.ticket.RemoteRequestModel;
 import com.fis.hrmservice.domain.model.ticket.TicketModel;
-import com.fis.hrmservice.domain.port.input.ticket.TicketUserCase;
+import com.fis.hrmservice.domain.model.user.UserModel;
 import com.fis.hrmservice.domain.port.output.ticket.TicketRepositoryPort;
 import com.fis.hrmservice.domain.port.output.ticket.TicketTypeRepositoryPort;
 import com.fis.hrmservice.domain.port.output.ticket.leaveticket.LeaveRequestRepositoryPort;
+import com.fis.hrmservice.domain.port.output.ticket.remoteticket.RemoteRequestRepositoryPort;
+import com.fis.hrmservice.domain.port.output.ticket.remoteticket.WorkLocationRepositoryPort;
+import com.fis.hrmservice.domain.port.output.user.UserRepositoryPort;
 import com.fis.hrmservice.domain.usecase.command.ticket.CreateTicketCommand;
 import com.fis.hrmservice.domain.usecase.command.ticket.LeaveRequestCommand;
-import com.fis.hrmservice.domain.usecase.command.ticket.RemoteRequest;
+import com.fis.hrmservice.domain.usecase.command.ticket.RemoteRequestCommand;
 import com.intern.hub.library.common.exception.ConflictDataException;
+import com.intern.hub.library.common.exception.NotFoundException;
 import com.intern.hub.library.common.utils.Snowflake;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@RequiredArgsConstructor
-@Component
-public class TicketUseCaseImpl implements TicketUserCase {
+@Service
+@Transactional
+public class TicketUseCaseImpl {
 
-  @Autowired private TicketRepositoryPort ticketRepositoryPort;
+    @Autowired
+    private TicketRepositoryPort ticketRepositoryPort;
 
-  @Autowired private LeaveRequestRepositoryPort leaveRequestRepositoryPort;
+    @Autowired
+    private LeaveRequestRepositoryPort leaveRequestRepositoryPort;
 
-  @Autowired private TicketTypeRepositoryPort ticketTypeRepositoryPort;
+    @Autowired
+    private TicketTypeRepositoryPort ticketTypeRepositoryPort;
 
-  @Autowired private Snowflake snowflake;
+    @Autowired
+    private RemoteRequestRepositoryPort remoteRequestRepositoryPort;
 
-  @Override
-  public Long createTicket(CreateTicketCommand command) {
-    /*
-       TODO: khi nào api gateway làm xong mới dùng được
-    */
+    @Autowired
+    private WorkLocationRepositoryPort workLocationRepositoryPort;
 
-    //        AuthContext context = AuthContextHolder.get()
-    //                .orElseThrow(() -> new NotFoundException("Not authenticated"));
-    //
-    //        long userId = context.userId();
+    @Autowired
+    private UserRepositoryPort userRepositoryPort;
 
-    // check date
+    @Autowired
+    private Snowflake snowflake;
 
-    DateValidationHelper.validateDate(command.getFromDate(), command.getToDate());
+    /* ================= BASE TICKET ================= */
 
-    // check evidence
-    String contentType = command.getEvidence().getContentType();
-    if (contentType != null) {
-      String lowerContentType = contentType.toLowerCase();
-      boolean isValidFormat =
-          lowerContentType.endsWith("png")
-              || lowerContentType.endsWith("jpg")
-              || lowerContentType.endsWith("jpeg")
-              || lowerContentType.contains("image/png")
-              || lowerContentType.contains("image/jpeg");
+    private TicketModel createBaseTicket(CreateTicketCommand command, Long userId) {
 
-      if (!isValidFormat || command.getEvidence().getSize() > 2097152) {
-        throw new ConflictDataException(
-            "File evidence must be in .png, .jpeg, .jpg format and size must be less than 2MB");
-      }
+        UserModel requester =
+                userRepositoryPort.findById(userId)
+                        .orElseThrow(() -> new NotFoundException("User not found: " + userId));
+
+        DateValidationHelper.validateDate(command.getFromDate(), command.getToDate());
+
+        TicketModel ticket =
+                TicketModel.builder()
+                        .ticketId(snowflake.next())
+                        .requester(requester)
+                        .ticketType(
+                                ticketTypeRepositoryPort
+                                        .findTicketTypeByCode(command.getTicketType())
+                        )
+                        .startAt(command.getFromDate())
+                        .endAt(command.getToDate())
+                        .reason(command.getReason())
+                        .sysStatus(TicketStatus.PENDING)
+                        .build();
+
+        return ticketRepositoryPort.save(ticket);
     }
 
-    TicketModel ticketModel =
-        TicketModel.builder()
-            .ticketId(snowflake.next())
-            .requester(null)
-            .ticketType(ticketTypeRepositoryPort.findTicketTypeByCode(command.getTicketType()))
-            .startAt(command.getFromDate())
-            .endAt(command.getToDate())
-            .reason(command.getReason())
-            .sysStatus(TicketStatus.PENDING)
-            .build();
+    /* ================= LEAVE ================= */
 
-    return ticketRepositoryPort.save(ticketModel).getTicketId();
-  }
+    public LeaveRequestModel createLeaveRequest(
+            CreateTicketCommand ticketCommand,
+            LeaveRequestCommand leaveCommand,
+            Long userId
+    ) {
 
-  @Override
-  public LeaveRequestModel createLeaveRequest(
-      CreateTicketCommand createTicketCommand, LeaveRequestCommand leaveRequestCommand) {
-    Long ticketId = createTicket(createTicketCommand);
+        if (leaveCommand.getTotalDays() <= 0) {
+            throw new ConflictDataException("Total days must be greater than 0");
+        }
 
-    if (leaveRequestCommand.getTotalDays() <= 0) {
-      throw new ConflictDataException("Total days must be greater than 0");
+        TicketModel ticket = createBaseTicket(ticketCommand, userId);
+
+        ticket = ticketRepositoryPort.save(ticket);
+
+        LeaveRequestModel model =
+                LeaveRequestModel.builder()
+                        .ticket(ticket)
+                        .totalDays(leaveCommand.getTotalDays())
+                        .build();
+
+        return leaveRequestRepositoryPort.save(model);
     }
 
-    LeaveRequestModel leaveRequestModel =
-        LeaveRequestModel.builder().ticket(ticketRepositoryPort.findById(ticketId)).build();
-    return leaveRequestRepositoryPort.save(leaveRequestModel);
-  }
+    /* ================= REMOTE ================= */
 
-  @Override
-  public RemoteRequestModel createRemoteRequest(
-      CreateTicketCommand createTicketCommand, RemoteRequest remoteRequest) {
+    public RemoteRequestModel createRemoteRequest(
+            CreateTicketCommand ticketCommand,
+            RemoteRequestCommand remoteCommand,
+            Long userId
+    ) {
 
-    RemoteType remoteType = remoteRequest.getRemoteType();
+        RemoteType remoteType;
 
-    switch (remoteType) {
-      case RemoteType.WFH -> {}
+        try {
+            remoteType = RemoteType.valueOf(ticketCommand.getTicketType().toUpperCase());
+        } catch (Exception e) {
+            throw new ConflictDataException("Invalid remote type");
+        }
 
-      case RemoteType.ONSITE -> {
-        DateValidationHelper.validateHour(remoteRequest.getStartTime(), remoteRequest.getEndTime());
-      }
+        TicketModel ticket = createBaseTicket(ticketCommand, userId);
+
+        return switch (remoteType) {
+
+            case WFH -> remoteRequestRepositoryPort.save(
+                    RemoteRequestModel.builder()
+                            .ticket(ticket)
+                            .remoteType(RemoteType.WFH)
+                            .build()
+            );
+
+            case ONSITE -> {
+
+                DateValidationHelper.validateHour(
+                        remoteCommand.getStartTime(),
+                        remoteCommand.getEndTime()
+                );
+
+                if (!workLocationRepositoryPort.existByLocationName(remoteCommand.getLocation())) {
+                    throw new ConflictDataException("Location not found");
+                }
+
+                yield remoteRequestRepositoryPort.save(
+                        RemoteRequestModel.builder()
+                                .ticket(ticket)
+                                .remoteType(RemoteType.ONSITE)
+                                .workLocation(
+                                        workLocationRepositoryPort
+                                                .findByLocationName(remoteCommand.getLocation())
+                                )
+                                .startTime(remoteCommand.getStartTime())
+                                .endTime(remoteCommand.getEndTime())
+                                .build()
+                );
+            }
+        };
     }
 
-    return null;
-  }
+    /* ================= EXPLANATION ================= */
 
-  @Override
-  public TicketModel createExplanationTicket(
-      CreateTicketCommand createTicketCommand, Long ticketId) {
-    return null;
-  }
+    public TicketModel createExplanationTicket(CreateTicketCommand command, Long userId) {
+
+        TicketModel ticket = createBaseTicket(command, userId);
+
+        ticket.setEndAt(null);
+
+        // KHÔNG save lại ticket lần 2
+        return ticket;
+    }
 }

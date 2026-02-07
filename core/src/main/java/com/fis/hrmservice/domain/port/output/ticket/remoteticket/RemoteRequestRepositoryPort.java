@@ -1,3 +1,8 @@
 package com.fis.hrmservice.domain.port.output.ticket.remoteticket;
 
-public interface RemoteRequestRepositoryPort {}
+import com.fis.hrmservice.domain.model.ticket.RemoteRequestModel;
+
+public interface RemoteRequestRepositoryPort {
+
+    RemoteRequestModel save(RemoteRequestModel remoteRequest);
+}

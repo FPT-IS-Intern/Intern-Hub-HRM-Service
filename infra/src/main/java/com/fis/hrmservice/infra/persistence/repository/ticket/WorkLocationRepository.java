@@ -17,4 +17,6 @@ public interface WorkLocationRepository extends JpaRepository<WorkLocation, Long
   @Query(
       "SELECT CASE WHEN COUNT(w) > 0 THEN true ELSE false END FROM WorkLocation w WHERE w.name = :locationName")
   boolean existsByName(@Param("locationName") String locationName);
+
+  WorkLocation findByName(String name);
 }

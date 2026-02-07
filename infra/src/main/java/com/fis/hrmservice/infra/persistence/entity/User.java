@@ -1,5 +1,6 @@
 package com.fis.hrmservice.infra.persistence.entity;
 
+import com.fis.hrmservice.domain.model.constant.UserStatus;
 import com.intern.hub.starter.security.entity.AuditEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -45,12 +46,6 @@ public class User extends AuditEntity {
     @Column(name = "phone_number", length = 20)
     private String phoneNumber;
 
-    @Column(name = "created_at")
-    private Long createdAt;
-
-    @Column(name = "updated_at")
-    private Long updatedAt;
-
     @Column(name = "internship_start_date")
     private LocalDate internshipStartDate;
 
@@ -61,14 +56,7 @@ public class User extends AuditEntity {
     @Column(name = "address", nullable = false, length = Integer.MAX_VALUE)
     private String address;
 
-    @Column(name = "sys_status", length = Integer.MAX_VALUE)
-    private String sysStatus;
-
-    @Column(name = "created_by")
-    private Long createdBy;
-
-    @Column(name = "updated_by")
-    private Long updatedBy;
-
-
+    @Enumerated(EnumType.STRING)
+    @Column(name = "sys_status", length = 20)
+    private UserStatus sysStatus;
 }

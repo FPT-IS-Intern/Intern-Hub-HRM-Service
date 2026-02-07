@@ -7,6 +7,7 @@ import com.intern.hub.library.common.exception.ConflictDataException;
 import com.intern.hub.library.common.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserRejection {
@@ -14,20 +15,16 @@ public class UserRejection {
   @Autowired
   private UserRepositoryPort userRepositoryPort;
 
+  @Transactional
   public UserModel rejectUser(Long userId) {
 
-    UserModel userReject =
-        userRepositoryPort
-            .findById(userId)
-            .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
+    Long updated = userRepositoryPort.updateStatus(userId, UserStatus.REJECTED);
 
-    if (userReject.getSysStatus().equals(UserStatus.REJECTED)) {
-      throw new ConflictDataException("User " + userReject.getFullName() + " has been rejected");
+    if (updated != 1) {
+      throw new ConflictDataException("Cannot reject user");
     }
 
-    userReject.setSysStatus(UserStatus.REJECTED);
-    userRepositoryPort.save(userReject);
-
-    return userReject;
+    return userRepositoryPort.findById(userId)
+            .orElseThrow(() -> new NotFoundException("User not found"));
   }
 }

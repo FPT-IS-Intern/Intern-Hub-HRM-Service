@@ -3,6 +3,7 @@ package com.fis.hrmservice.domain.usecase.implement.user;
 import static cn.hutool.core.text.CharSequenceUtil.trim;
 
 import com.fis.hrmservice.common.utils.UpdateHelper;
+import com.fis.hrmservice.domain.model.constant.UserStatus;
 import com.fis.hrmservice.domain.model.user.PositionModel;
 import com.fis.hrmservice.domain.model.user.UserModel;
 import com.fis.hrmservice.domain.port.output.user.UserRepositoryPort;
@@ -12,6 +13,7 @@ import com.intern.hub.library.common.exception.ConflictDataException;
 import com.intern.hub.library.common.exception.NotFoundException;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -141,5 +143,21 @@ public class UserProfileUseCaseImpl {
     userModel.setPosition(oldPosition);
 
     return userRepositoryPort.save(userModel);
+  }
+
+  public UserModel internalUserProfile(Long userId) {
+
+    UserModel user = userRepositoryPort.internalUserProfile(userId);
+
+    if (user == null) {
+      throw new NotFoundException("User with id: " + userId + " not found");
+    }
+
+      return switch (user.getSysStatus()) {
+          case PENDING -> throw new ConflictDataException("User with id: " + userId + " is pending");
+          case REJECTED -> throw new ConflictDataException("User with id: " + userId + " is rejected");
+          case SUSPENDED -> throw new ConflictDataException("User with id: " + userId + " is suspended");
+          default -> user;
+      };
   }
 }

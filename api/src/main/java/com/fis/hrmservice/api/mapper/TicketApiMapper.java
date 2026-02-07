@@ -12,7 +12,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
-public interface TicketMapper {
+public interface TicketApiMapper {
 
     CreateTicketRequest toTicketRequest(CreateTicketCommand command);
     CreateTicketCommand toTicketCommand(CreateTicketRequest request);

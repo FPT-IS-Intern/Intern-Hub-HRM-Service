@@ -17,7 +17,6 @@ import java.time.LocalDate;
 @Table(name = "quick_notes")
 public class QuickNote extends AuditEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
