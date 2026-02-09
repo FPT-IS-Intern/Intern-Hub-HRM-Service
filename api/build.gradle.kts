@@ -7,11 +7,11 @@ plugins {
 }
 
 springBoot {
-    mainClass.set("com.fis.internhub.HumanResourceServiceApplication")
+    mainClass.set("com.fis.hrmservice.api.Main")
 }
 
 application {
-    mainClass.set("com.fis.internhub.HumanResourceServiceApplication")
+    mainClass.set("com.fis.hrmservice.api.Main")
 }
 
 dependencies {
@@ -51,10 +51,6 @@ dependencies {
     // Test
     testImplementation(libs.spring.boot.starter.webmvc.test)
     testImplementation(libs.spring.security.test)
-}
-
-jib {
-    to.image = "huynhducphu2502/spring-boot-base-service"
 }
 
 tasks.bootJar {
