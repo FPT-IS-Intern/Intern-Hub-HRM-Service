@@ -1,8 +1,14 @@
 plugins {
+    id("org.springframework.boot")
+    id("io.spring.dependency-management")
     id("application")
-    id("java-library")
+    id("java")
 
     id("com.google.cloud.tools.jib") version "3.5.2"
+}
+
+springBoot {
+    mainClass.set("com.fis.internhub.HumanResourceServiceApplication")
 }
 
 application {
@@ -11,9 +17,9 @@ application {
 
 dependencies {
 
-    api(project(":infra"))
-    api(project(":core"))
-    api(project(":common"))
+    implementation(project(":infra"))
+    implementation(project(":core"))
+    implementation(project(":common"))
 
     implementation(libs.spring.boot.starter.webmvc)
     implementation(libs.spring.boot.starter.data.jpa)
@@ -23,7 +29,6 @@ dependencies {
 
     implementation(libs.openapi.doc)
 
-    // MapStruct
     implementation(libs.mapstruct)
     annotationProcessor(libs.mapstruct.processor)
     annotationProcessor(libs.lombok.mapstruct.binding)
@@ -32,7 +37,6 @@ dependencies {
 
     testImplementation(libs.spring.boot.starter.webmvc.test)
     testImplementation(libs.spring.security.test)
-
 }
 
 jib {

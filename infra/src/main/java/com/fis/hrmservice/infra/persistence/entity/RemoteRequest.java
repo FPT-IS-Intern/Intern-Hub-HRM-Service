@@ -18,7 +18,7 @@ public class RemoteRequest extends AuditEntity {
     private Long id;
 
     @MapsId
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "ticket_id", nullable = false)
     private Ticket tickets;
 
@@ -46,6 +46,5 @@ public class RemoteRequest extends AuditEntity {
 
     @Column(name = "remote_type", length = Integer.MAX_VALUE)
     private String remoteType;
-
 
 }

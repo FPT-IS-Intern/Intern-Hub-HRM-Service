@@ -1,13 +1,14 @@
-
 package com.fis.hrmservice.infra.persistence.adapter.ticket.leave;
 
 import com.fis.hrmservice.domain.model.ticket.LeaveRequestModel;
+import com.fis.hrmservice.infra.persistence.entity.TicketType;
 import com.fis.hrmservice.domain.port.output.ticket.leaveticket.LeaveRequestRepositoryPort;
 import com.fis.hrmservice.infra.mapper.LeaveRequestMapper;
 import com.fis.hrmservice.infra.persistence.entity.LeaveRequest;
 import com.fis.hrmservice.infra.persistence.entity.Ticket;
 import com.fis.hrmservice.infra.persistence.repository.ticket.LeaveTicketRepository;
 import com.fis.hrmservice.infra.persistence.repository.ticket.TicketRepository;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,9 @@ public class LeaveRequestRepositoryAdapter implements LeaveRequestRepositoryPort
 
     @Autowired
     private LeaveRequestMapper leaveRequestMapper;
+
+    @Autowired
+    private EntityManager entityManager; // ensure we can obtain managed references for associations
 
     @Override
     @Transactional
@@ -48,6 +52,12 @@ public class LeaveRequestRepositoryAdapter implements LeaveRequestRepositoryPort
             leave.setId(managed.getId()); // Synchronize ID for @MapsId
         } else {
             // Persist new ticket first to obtain its id (avoids null identifier on LeaveRequest)
+            // Ensure nested associations are managed to avoid transient instance errors (e.g., ticketType)
+            if (ticket.getTicketType() != null && ticket.getTicketType().getId() != null) {
+                TicketType managedType = entityManager.getReference(TicketType.class, ticket.getTicketType().getId());
+                ticket.setTicketType(managedType);
+            }
+
             // Using saveAndFlush to ensure the ID is generated and available in the session
             Ticket savedTicket = ticketRepository.saveAndFlush(ticket);
             leave.setTicket(savedTicket);
