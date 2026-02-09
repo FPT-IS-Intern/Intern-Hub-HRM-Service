@@ -14,38 +14,37 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public class RemoteRequestAdapter implements RemoteRequestRepositoryPort {
 
-    @Autowired
-    private RemoteRequestMapper remoteRequestMapper;
+  @Autowired private RemoteRequestMapper remoteRequestMapper;
 
-    @Autowired
-    private RemoteTicketRepository remoteTicketRepository;
+  @Autowired private RemoteTicketRepository remoteTicketRepository;
 
-    @Autowired
-    private TicketRepository ticketRepository;
+  @Autowired private TicketRepository ticketRepository;
 
-    @Override
-    @Transactional
-    public RemoteRequestModel save(RemoteRequestModel remoteRequest) {
+  @Override
+  @Transactional
+  public RemoteRequestModel save(RemoteRequestModel remoteRequest) {
 
-        RemoteRequest request = remoteRequestMapper.toEntity(remoteRequest);
+    RemoteRequest request = remoteRequestMapper.toEntity(remoteRequest);
 
-        if (request.getTickets() == null) {
-            throw new IllegalStateException("RemoteRequest must reference a Ticket");
-        }
-
-        Ticket ticket = request.getTickets();
-
-        if (ticket.getId() != null) {
-            Ticket managed = ticketRepository.findById(ticket.getId())
-                    .orElseThrow(() -> new IllegalStateException("Ticket not found: " + ticket.getId()));
-            request.setTickets(managed);
-            request.setId(managed.getId());
-        } else {
-            Ticket savedTicket = ticketRepository.saveAndFlush(ticket);
-            request.setTickets(savedTicket);
-            request.setId(savedTicket.getId());
-        }
-
-        return remoteRequestMapper.toModel(remoteTicketRepository.saveAndFlush(request));
+    if (request.getTickets() == null) {
+      throw new IllegalStateException("RemoteRequest must reference a Ticket");
     }
+
+    Ticket ticket = request.getTickets();
+
+    if (ticket.getId() != null) {
+      Ticket managed =
+          ticketRepository
+              .findById(ticket.getId())
+              .orElseThrow(() -> new IllegalStateException("Ticket not found: " + ticket.getId()));
+      request.setTickets(managed);
+      request.setId(managed.getId());
+    } else {
+      Ticket savedTicket = ticketRepository.saveAndFlush(ticket);
+      request.setTickets(savedTicket);
+      request.setId(savedTicket.getId());
+    }
+
+    return remoteRequestMapper.toModel(remoteTicketRepository.saveAndFlush(request));
+  }
 }

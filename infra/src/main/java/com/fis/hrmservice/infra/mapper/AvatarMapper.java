@@ -4,7 +4,9 @@ import com.fis.hrmservice.domain.model.user.AvatarModel;
 import com.fis.hrmservice.infra.persistence.entity.Avatar;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring", uses = {UserMapper.class})
+@Mapper(
+    componentModel = "spring",
+    uses = {UserMapper.class})
 public interface AvatarMapper {
-    AvatarModel toModel(Avatar avatar);
+  AvatarModel toModel(Avatar avatar);
 }

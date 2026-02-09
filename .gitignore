@@ -37,3 +37,5 @@ target/
 
 # ===== Others =====
 file-system.probe
+
+*.env

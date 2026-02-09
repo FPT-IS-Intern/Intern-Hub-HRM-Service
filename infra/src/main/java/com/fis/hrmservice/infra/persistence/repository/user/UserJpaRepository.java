@@ -2,11 +2,9 @@ package com.fis.hrmservice.infra.persistence.repository.user;
 
 import com.fis.hrmservice.domain.model.constant.UserStatus;
 import com.fis.hrmservice.domain.usecase.command.user.FilterUserCommand;
-
+import com.fis.hrmservice.infra.persistence.entity.User;
 import java.util.List;
 import java.util.Optional;
-
-import com.fis.hrmservice.infra.persistence.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -47,7 +45,8 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
 
   @Modifying
   @Transactional
-  @Query("""
+  @Query(
+      """
           UPDATE User u
           SET u.sysStatus = :status
           WHERE u.id = :id
@@ -60,5 +59,5 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
   @Transactional
   @Modifying
   @Query("UPDATE User u SET u.sysStatus = :suspend WHERE u.id = :userId")
-  Long suspendUser(@Param("userId") Long userId,@Param("suspend") UserStatus status);
+  Long suspendUser(@Param("userId") Long userId, @Param("suspend") UserStatus status);
 }

@@ -15,7 +15,10 @@ import java.util.List;
 import org.mapstruct.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+@Mapper(
+    componentModel = "spring",
+    unmappedTargetPolicy = ReportingPolicy.IGNORE,
+    nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface UserApiMapper {
 
   // ===== Register =====
@@ -50,7 +53,6 @@ public interface UserApiMapper {
   @Mapping(target = "scoreAward", ignore = true) // UserModel chưa có
   @Mapping(target = "budgetPoints", ignore = true) // UserModel chưa có
   ProfileResponse toProfileResponse(UserModel model);
-
 
   InternalUserProfileResponse toInternalUserProfile(UserModel model);
 

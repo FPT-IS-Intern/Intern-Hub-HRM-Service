@@ -2,11 +2,12 @@ package com.fis.hrmservice.infra.mapper;
 
 import com.fis.hrmservice.domain.model.user.PositionModel;
 import com.fis.hrmservice.domain.model.user.UserModel;
-
-import java.util.List;
-
 import com.fis.hrmservice.infra.persistence.entity.Position;
 import com.fis.hrmservice.infra.persistence.entity.User;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.List;
 import org.mapstruct.*;
 import org.mapstruct.Named;
 
@@ -17,7 +18,6 @@ public interface UserMapper {
 
   @Mapping(target = "userId", source = "id")
   @Mapping(target = "mentor", qualifiedByName = "mentorToModel")
-  // dates map directly (LocalDate)
   UserModel toModel(User entity);
 
   List<UserModel> toModelList(List<User> entities);
@@ -27,12 +27,17 @@ public interface UserMapper {
   @Mapping(target = "id", source = "userId")
   @Mapping(target = "mentor", qualifiedByName = "mentorToEntity")
   @Mapping(target = "position", source = "position", qualifiedByName = "positionToEntity")
-  // dates map directly (LocalDate)
+  @Mapping(target = "dateOfBirth", source = "dateOfBirth")
   User toEntity(UserModel model);
 
   List<UserModel> toResponseList(List<User> users);
 
   /* ===================== CUSTOM ===================== */
+
+  @Named("localDateToEpoch")
+  default long localDateToEpoch(LocalDate date) {
+    return date == null ? 0L : date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
+  }
 
   @Named("mentorToModel")
   default UserModel mentorToModel(User mentor) {
@@ -54,5 +59,11 @@ public interface UserMapper {
     Position p = new Position();
     p.setId(model.getPositionId());
     return p;
+  }
+
+  @Named("epochMillisToLocalDate")
+  default LocalDate epochMillisToLocalDate(Long value) {
+    if (value == null) return null;
+    return Instant.ofEpochMilli(value).atZone(ZoneId.systemDefault()).toLocalDate();
   }
 }

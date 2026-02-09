@@ -17,14 +17,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class RegisterUserUseCaseImpl {
 
-  @Autowired
-  private UserRepositoryPort userRepository;
-  @Autowired
-  private PositionRepositoryPort positionRepository;
-  @Autowired
-  private Snowflake snowflake;
-  @Autowired
-  private UserValidationService validationService;
+  @Autowired private UserRepositoryPort userRepository;
+  @Autowired private PositionRepositoryPort positionRepository;
+  @Autowired private Snowflake snowflake;
+  @Autowired private UserValidationService validationService;
 
   public UserModel registerUser(RegisterUserCommand command) {
 

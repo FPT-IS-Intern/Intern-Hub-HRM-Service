@@ -26,186 +26,163 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class TicketUseCaseImpl {
 
-    @Autowired
-    private TicketRepositoryPort ticketRepositoryPort;
+  @Autowired private TicketRepositoryPort ticketRepositoryPort;
 
-    @Autowired
-    private LeaveRequestRepositoryPort leaveRequestRepositoryPort;
+  @Autowired private LeaveRequestRepositoryPort leaveRequestRepositoryPort;
 
-    @Autowired
-    private TicketTypeRepositoryPort ticketTypeRepositoryPort;
+  @Autowired private TicketTypeRepositoryPort ticketTypeRepositoryPort;
 
-    @Autowired
-    private RemoteRequestRepositoryPort remoteRequestRepositoryPort;
+  @Autowired private RemoteRequestRepositoryPort remoteRequestRepositoryPort;
 
-    @Autowired
-    private WorkLocationRepositoryPort workLocationRepositoryPort;
+  @Autowired private WorkLocationRepositoryPort workLocationRepositoryPort;
 
-    @Autowired
-    private UserRepositoryPort userRepositoryPort;
+  @Autowired private UserRepositoryPort userRepositoryPort;
 
-    @Autowired
-    private TicketApprovalRepositoryPort ticketApprovalRepositoryPort;
+  @Autowired private TicketApprovalRepositoryPort ticketApprovalRepositoryPort;
 
-    @Autowired
-    private Snowflake snowflake;
+  @Autowired private Snowflake snowflake;
 
-    /* ================= BASE TICKET ================= */
+  /* ================= BASE TICKET ================= */
 
-    private TicketModel createBaseTicket(CreateTicketCommand command, Long userId) {
+  private TicketModel createBaseTicket(CreateTicketCommand command, Long userId) {
 
-        UserModel requester =
-                userRepositoryPort.findById(userId)
-                        .orElseThrow(() -> new NotFoundException("User not found: " + userId));
+    UserModel requester =
+        userRepositoryPort
+            .findById(userId)
+            .orElseThrow(() -> new NotFoundException("User not found: " + userId));
 
-        DateValidationHelper.validateDate(command.getFromDate(), command.getToDate());
+    DateValidationHelper.validateDate(command.getFromDate(), command.getToDate());
 
-        TicketTypeModel ticketTypeModel = ticketTypeRepositoryPort.findTicketTypeByCode(command.getTicketType());
+    TicketTypeModel ticketTypeModel =
+        ticketTypeRepositoryPort.findTicketTypeByCode(command.getTicketType());
 
-        if (ticketTypeModel == null) {
-            throw new NotFoundException("Ticket type not found: " + command.getTicketType());
-        }
-
-        TicketModel ticket =
-                TicketModel.builder()
-                        .ticketId(snowflake.next())
-                        .requester(requester)
-                        .ticketType(ticketTypeModel)
-                        .startAt(command.getFromDate())
-                        .endAt(command.getToDate())
-                        .reason(command.getReason())
-                        .sysStatus(TicketStatus.PENDING)
-                        .build();
-
-        return ticketRepositoryPort.save(ticket);
+    if (ticketTypeModel == null) {
+      throw new NotFoundException("Ticket type not found: " + command.getTicketType());
     }
 
-    /* ================= LEAVE ================= */
+    TicketModel ticket =
+        TicketModel.builder()
+            .ticketId(snowflake.next())
+            .requester(requester)
+            .ticketType(ticketTypeModel)
+            .startAt(command.getFromDate())
+            .endAt(command.getToDate())
+            .reason(command.getReason())
+            .sysStatus(TicketStatus.PENDING)
+            .build();
 
-    public LeaveRequestModel createLeaveRequest(
-            CreateTicketCommand ticketCommand,
-            LeaveRequestCommand leaveCommand,
-            Long userId
-    ) {
+    return ticketRepositoryPort.save(ticket);
+  }
 
-        // 1. Calculate total days
-        // Assuming inclusive: from 2024-01-01 to 2024-01-01 is 1 day
-        int totalDays = (int) (java.time.temporal.ChronoUnit.DAYS.between(
-                ticketCommand.getFromDate(),
-                ticketCommand.getToDate()
-        ) + 1);
+  /* ================= LEAVE ================= */
 
-        if (totalDays <= 0) {
-            throw new ConflictDataException("Total days must be greater than 0");
-        }
+  public LeaveRequestModel createLeaveRequest(
+      CreateTicketCommand ticketCommand, LeaveRequestCommand leaveCommand, Long userId) {
 
-        TicketModel ticket = createBaseTicket(ticketCommand, userId);
+    // 1. Calculate total days
+    // Assuming inclusive: from 2024-01-01 to 2024-01-01 is 1 day
+    int totalDays =
+        (int)
+            (java.time.temporal.ChronoUnit.DAYS.between(
+                    ticketCommand.getFromDate(), ticketCommand.getToDate())
+                + 1);
 
-        LeaveRequestModel model =
-                LeaveRequestModel.builder()
-                        .ticket(ticket)
-                        .totalDays(totalDays)
-                        .build();
-
-        LeaveRequestModel savedModel = leaveRequestRepositoryPort.save(model);
-
-        // 2. Set up approval flow
-        // Level 1: Mentor/Leader (always)
-        if (ticket.getRequester().getMentor() != null) {
-            ticketApprovalRepositoryPort.save(TicketApprovalModel.builder()
-                    .approvalId(snowflake.next())
-                    .ticket(ticket)
-                    .approver(ticket.getRequester().getMentor())
-                    .status("WAITING")
-                    .build());
-        }
-
-        // Level 2: Management/Admin (if > 5 days)
-        if (totalDays > 5) {
-            java.util.List<UserModel> admins = userRepositoryPort.filterUser(
-                    com.fis.hrmservice.domain.usecase.command.user.FilterUserCommand.builder()
-                            .positions(java.util.List.of("ADMIN", "MANAGER")) // Assuming these position names
-                            .build()
-            );
-
-            if (!admins.isEmpty()) {
-                // For simplicity, pick the first one or assign to a generic one
-                ticketApprovalRepositoryPort.save(TicketApprovalModel.builder()
-                        .approvalId(snowflake.next())
-                        .ticket(ticket)
-                        .approver(admins.get(0))
-                        .status("PENDING") // Level 2 starts as PENDING until Level 1 is WAITING? 
-                        // Actually, Level 1 should be WAITING, Level 2 should be PENDING.
-                        .build());
-            }
-        }
-
-        return savedModel;
+    if (totalDays <= 0) {
+      throw new ConflictDataException("Total days must be greater than 0");
     }
 
-    /* ================= REMOTE ================= */
+    TicketModel ticket = createBaseTicket(ticketCommand, userId);
 
-    public RemoteRequestModel createRemoteRequest(
-            CreateTicketCommand ticketCommand,
-            RemoteRequestCommand remoteCommand,
-            Long userId
-    ) {
+    LeaveRequestModel model =
+        LeaveRequestModel.builder().ticket(ticket).totalDays(totalDays).build();
 
-        RemoteType remoteType;
+    LeaveRequestModel savedModel = leaveRequestRepositoryPort.save(model);
 
-        try {
-            remoteType = RemoteType.valueOf(ticketCommand.getTicketType().toUpperCase());
-        } catch (Exception e) {
-            throw new ConflictDataException("Invalid remote type");
+    // 2. Set up approval flow
+    // Level 1: Mentor/Leader (always)
+    if (ticket.getRequester().getMentor() != null) {
+      ticketApprovalRepositoryPort.save(
+          TicketApprovalModel.builder()
+              .approvalId(snowflake.next())
+              .ticket(ticket)
+              .approver(ticket.getRequester().getMentor())
+              .status("WAITING")
+              .build());
+    }
+
+    // Level 2: Management/Admin (if > 5 days)
+    if (totalDays > 5) {
+      java.util.List<UserModel> admins =
+          userRepositoryPort.filterUser(
+              com.fis.hrmservice.domain.usecase.command.user.FilterUserCommand.builder()
+                  .positions(java.util.List.of("ADMIN", "MANAGER")) // Assuming these position names
+                  .build());
+
+      if (!admins.isEmpty()) {
+        // For simplicity, pick the first one or assign to a generic one
+        ticketApprovalRepositoryPort.save(
+            TicketApprovalModel.builder()
+                .approvalId(snowflake.next())
+                .ticket(ticket)
+                .approver(admins.get(0))
+                .status("PENDING") // Level 2 starts as PENDING until Level 1 is WAITING?
+                // Actually, Level 1 should be WAITING, Level 2 should be PENDING.
+                .build());
+      }
+    }
+
+    return savedModel;
+  }
+
+  /* ================= REMOTE ================= */
+
+  public RemoteRequestModel createRemoteRequest(
+      CreateTicketCommand ticketCommand, RemoteRequestCommand remoteCommand, Long userId) {
+
+    RemoteType remoteType;
+
+    try {
+      remoteType = RemoteType.valueOf(ticketCommand.getTicketType().toUpperCase());
+    } catch (Exception e) {
+      throw new ConflictDataException("Invalid remote type");
+    }
+
+    TicketModel ticket = createBaseTicket(ticketCommand, userId);
+
+    return switch (remoteType) {
+      case WFH ->
+          remoteRequestRepositoryPort.save(
+              RemoteRequestModel.builder().ticket(ticket).remoteType(RemoteType.WFH).build());
+
+      case ONSITE -> {
+        DateValidationHelper.validateHour(remoteCommand.getStartTime(), remoteCommand.getEndTime());
+
+        if (!workLocationRepositoryPort.existByLocationName(remoteCommand.getLocation())) {
+          throw new ConflictDataException("Location not found");
         }
 
-        TicketModel ticket = createBaseTicket(ticketCommand, userId);
+        yield remoteRequestRepositoryPort.save(
+            RemoteRequestModel.builder()
+                .ticket(ticket)
+                .remoteType(RemoteType.ONSITE)
+                .workLocation(
+                    workLocationRepositoryPort.findByLocationName(remoteCommand.getLocation()))
+                .startTime(remoteCommand.getStartTime())
+                .endTime(remoteCommand.getEndTime())
+                .build());
+      }
+    };
+  }
 
-        return switch (remoteType) {
+  /* ================= EXPLANATION ================= */
 
-            case WFH -> remoteRequestRepositoryPort.save(
-                    RemoteRequestModel.builder()
-                            .ticket(ticket)
-                            .remoteType(RemoteType.WFH)
-                            .build()
-            );
+  public TicketModel createExplanationTicket(CreateTicketCommand command, Long userId) {
 
-            case ONSITE -> {
+    TicketModel ticket = createBaseTicket(command, userId);
 
-                DateValidationHelper.validateHour(
-                        remoteCommand.getStartTime(),
-                        remoteCommand.getEndTime()
-                );
+    ticket.setEndAt(null);
 
-                if (!workLocationRepositoryPort.existByLocationName(remoteCommand.getLocation())) {
-                    throw new ConflictDataException("Location not found");
-                }
-
-                yield remoteRequestRepositoryPort.save(
-                        RemoteRequestModel.builder()
-                                .ticket(ticket)
-                                .remoteType(RemoteType.ONSITE)
-                                .workLocation(
-                                        workLocationRepositoryPort
-                                                .findByLocationName(remoteCommand.getLocation())
-                                )
-                                .startTime(remoteCommand.getStartTime())
-                                .endTime(remoteCommand.getEndTime())
-                                .build()
-                );
-            }
-        };
-    }
-
-    /* ================= EXPLANATION ================= */
-
-    public TicketModel createExplanationTicket(CreateTicketCommand command, Long userId) {
-
-        TicketModel ticket = createBaseTicket(command, userId);
-
-        ticket.setEndAt(null);
-
-        // KHÔNG save lại ticket lần 2
-        return ticket;
-    }
+    // KHÔNG save lại ticket lần 2
+    return ticket;
+  }
 }

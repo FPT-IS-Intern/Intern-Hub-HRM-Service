@@ -1,38 +1,94 @@
 [versions]
-springBoot = "4.0.2"
-springCloud = "2025.1.0"
+# Spring
+spring-boot = "4.0.2"
+spring-cloud = "2025.1.0"
+dependency-management = "1.1.7"
+
+# Database
+postgres = "42.7.9"
+
+# Documentation
+springDoc = "3.0.1"
+
+# Code Quality
 spotless = "8.1.0"
 googleJavaFormat = "1.33.0"
 sonar = "7.2.2.6593"
+
+# Build
 jib = "3.5.2"
-postgresql = "42.7.9"
-springDoc = "3.0.1"
+
+# Mapping & Utils
 mapstruct = "1.6.3"
+lombok = "1.18.42"
 lombok-mapstruct-binding = "0.2.0"
+hutool = "5.8.43"
+jakarta-validation = "3.0.2"
+
+# Custom Libraries
+common-library = "2.0.3"
+security-starter = "1.0.3"
 
 [libraries]
-spring-boot-starter = { group = "org.springframework.boot", name = "spring-boot-starter", version.ref = "springBoot" }
-spring-boot-starter-webmvc = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc", version.ref = "springBoot" }
-spring-boot-starter-security = { group = "org.springframework.boot", name = "spring-boot-starter-security", version.ref = "springBoot" }
-spring-boot-starter-validation = { group = "org.springframework.boot", name = "spring-boot-starter-validation", version.ref = "springBoot" }
-spring-boot-starter-actuator = { group = "org.springframework.boot", name = "spring-boot-starter-actuator", version.ref = "springBoot" }
-spring-boot-starter-data-jpa = { group = "org.springframework.boot", name = "spring-boot-starter-data-jpa", version.ref = "springBoot" }
-spring-boot-starter-kafka = { group = "org.springframework.boot", name = "spring-boot-starter-kafka", version.ref = "springBoot" }
-spring-boot-starter-test = { group = "org.springframework.boot", name = "spring-boot-starter-test", version.ref = "springBoot" }
-spring-boot-configuration-processor = { group = "org.springframework.boot", name = "spring-boot-configuration-processor", version.ref = "springBoot" }
-spring-boot-starter-webmvc-test = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc-test", version.ref = "springBoot" }
-spring-security-test = { group = "org.springframework.security", name = "spring-security-test", version.ref = "springBoot" }
-spring-boot-starter-log4j2 = { group = "org.springframework.boot", name = "spring-boot-starter-log4j2", version.ref = "springBoot" }
-spring-boot-starter-liquibase = { group = "org.springframework.boot", name = "spring-boot-starter-liquibase", version.ref = "springBoot" }
-postgresql = { group = "org.postgresql", name = "postgresql", version.ref = "postgresql" }
+# Spring Boot Starters
+spring-boot-starter = { group = "org.springframework.boot", name = "spring-boot-starter", version.ref = "spring-boot" }
+spring-boot-starter-web = { group = "org.springframework.boot", name = "spring-boot-starter-web", version.ref = "spring-boot" }
+spring-boot-starter-webmvc = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc", version.ref = "spring-boot" }
+spring-boot-starter-security = { group = "org.springframework.boot", name = "spring-boot-starter-security", version.ref = "spring-boot" }
+spring-boot-starter-validation = { group = "org.springframework.boot", name = "spring-boot-starter-validation", version.ref = "spring-boot" }
+spring-boot-starter-actuator = { group = "org.springframework.boot", name = "spring-boot-starter-actuator", version.ref = "spring-boot" }
+spring-boot-starter-data-jpa = { group = "org.springframework.boot", name = "spring-boot-starter-data-jpa", version.ref = "spring-boot" }
+spring-boot-starter-kafka = { group = "org.springframework.boot", name = "spring-boot-starter-kafka", version.ref = "spring-boot" }
+spring-boot-starter-test = { group = "org.springframework.boot", name = "spring-boot-starter-test", version.ref = "spring-boot" }
+spring-boot-starter-log4j2 = { group = "org.springframework.boot", name = "spring-boot-starter-log4j2", version.ref = "spring-boot" }
+spring-boot-starter-liquibase = { group = "org.springframework.boot", name = "spring-boot-starter-liquibase", version.ref = "spring-boot" }
+spring-boot-configuration-processor = { group = "org.springframework.boot", name = "spring-boot-configuration-processor", version.ref = "spring-boot" }
+spring-boot-starter-webmvc-test = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc-test", version.ref = "spring-boot" }
+
+# Spring Security
+spring-security-test = { group = "org.springframework.security", name = "spring-security-test" }
+
+# Database
+postgresql = { group = "org.postgresql", name = "postgresql", version.ref = "postgres" }
+
+# Documentation
 openapi-doc = { group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-ui", version.ref = "springDoc" }
+
+# MapStruct
 mapstruct = { group = "org.mapstruct", name = "mapstruct", version.ref = "mapstruct" }
 mapstruct-processor = { group = "org.mapstruct", name = "mapstruct-processor", version.ref = "mapstruct" }
+
+# Lombok
+lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }
 lombok-mapstruct-binding = { group = "org.projectlombok", name = "lombok-mapstruct-binding", version.ref = "lombok-mapstruct-binding" }
 
+# Utils
+hutool = { group = "cn.hutool", name = "hutool-all", version.ref = "hutool" }
+jakarta-validation = { group = "jakarta.validation", name = "jakarta.validation-api", version.ref = "jakarta-validation" }
+
+# Custom Libraries
+common-library = { group = "com.github.FPT-IS-Intern", name = "Intern-Hub-Common-Library", version.ref = "common-library" }
+security-starter = { group = "com.github.FPT-IS-Intern", name = "Intern-Hub-Security-Starter", version.ref = "security-starter" }
+
+[bundles]
+# Spring Boot All: Web + Validation
+spring-boot-all = ["spring-boot-starter-webmvc", "spring-boot-starter-validation"]
+
+# Spring Boot Database: JPA + PostgreSQL
+spring-boot-database = ["spring-boot-starter-data-jpa", "postgresql"]
+
+# Custom Libraries: Common + Security (Redis removed)
+custom-libraries = ["common-library", "security-starter"]
+
+# Lombok
+lombok-all = ["lombok", "lombok-mapstruct-binding"]
+
+# MapStruct
+mapstruct-all = ["mapstruct", "mapstruct-processor"]
+
 [plugins]
-springBoot = { id = "org.springframework.boot", version.ref = "springBoot" }
-dependencyManagement = { id = "io.spring.dependency-management", version = "1.1.7" }
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+dependency-management = { id = "io.spring.dependency-management", version.ref = "dependency-management" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 sonar = { id = "org.sonarqube", version.ref = "sonar" }
 jib = { id = "com.google.cloud.tools.jib", version.ref = "jib" }

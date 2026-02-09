@@ -18,10 +18,8 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Quick note Management", description = "APIs for Quick note")
 public class QuickNoteController {
 
-  @Autowired
-  private QuickNoteUseCaseImpl quickNoteUserUseCase;
-  @Autowired
-  private QuickNoteApiMapper quickNoteApiMapper;
+  @Autowired private QuickNoteUseCaseImpl quickNoteUserUseCase;
+  @Autowired private QuickNoteApiMapper quickNoteApiMapper;
 
   @PostMapping("/{userId}")
   public ResponseApi<?> createTicket(

@@ -12,8 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UserApproval {
 
-  @Autowired
-  private UserRepositoryPort userRepositoryPort;
+  @Autowired private UserRepositoryPort userRepositoryPort;
 
   @Transactional
   public UserModel approveUser(Long userId) {
@@ -24,7 +23,8 @@ public class UserApproval {
       throw new ConflictDataException("Cannot approve user");
     }
 
-    return userRepositoryPort.findById(userId)
-            .orElseThrow(() -> new NotFoundException("User not found"));
+    return userRepositoryPort
+        .findById(userId)
+        .orElseThrow(() -> new NotFoundException("User not found"));
   }
 }

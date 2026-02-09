@@ -8,9 +8,9 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface WorkLocationMapper {
 
-    @Mapping(source = "id", target = "workLocationId")
-    WorkLocationModel toModel(WorkLocation entity);
+  @Mapping(source = "id", target = "workLocationId")
+  WorkLocationModel toModel(WorkLocation entity);
 
-    @Mapping(source = "workLocationId", target = "id")
-    WorkLocation toEntity(WorkLocationModel model);
+  @Mapping(source = "workLocationId", target = "id")
+  WorkLocation toEntity(WorkLocationModel model);
 }
