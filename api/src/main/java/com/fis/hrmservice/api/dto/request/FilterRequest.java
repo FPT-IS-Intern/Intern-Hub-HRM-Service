@@ -1,8 +1,7 @@
 package com.fis.hrmservice.api.dto.request;
 
-import java.util.List;
-
 import com.fis.hrmservice.domain.model.constant.UserStatus;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;

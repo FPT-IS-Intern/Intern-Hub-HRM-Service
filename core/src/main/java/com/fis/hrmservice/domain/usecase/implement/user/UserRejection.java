@@ -12,8 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UserRejection {
 
-  @Autowired
-  private UserRepositoryPort userRepositoryPort;
+  @Autowired private UserRepositoryPort userRepositoryPort;
 
   @Transactional
   public UserModel rejectUser(Long userId) {
@@ -24,7 +23,8 @@ public class UserRejection {
       throw new ConflictDataException("Cannot reject user");
     }
 
-    return userRepositoryPort.findById(userId)
-            .orElseThrow(() -> new NotFoundException("User not found"));
+    return userRepositoryPort
+        .findById(userId)
+        .orElseThrow(() -> new NotFoundException("User not found"));
   }
 }

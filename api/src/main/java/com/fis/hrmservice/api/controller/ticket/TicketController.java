@@ -1,7 +1,6 @@
 package com.fis.hrmservice.api.controller.ticket;
 
 import com.fis.hrmservice.api.dto.request.CreateTicketRequest;
-import com.fis.hrmservice.api.dto.request.LeaveTicketRequest;
 import com.fis.hrmservice.api.dto.request.RemoteTicketRequest;
 import com.fis.hrmservice.api.dto.response.CreateTicketResponse;
 import com.fis.hrmservice.api.mapper.TicketApiMapper;
@@ -26,54 +25,47 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "Ticket Management", description = "APIs for Ticket")
 public class TicketController {
 
-    @Autowired
-    private TicketUseCaseImpl ticketUseCaseImpl;
+  @Autowired private TicketUseCaseImpl ticketUseCaseImpl;
 
-    @Autowired
-    private TicketApiMapper ticketApiMapper;
+  @Autowired private TicketApiMapper ticketApiMapper;
 
-    @PostMapping(
-            value = "/leave-ticket/{userId}",
-            consumes = {
-                    MediaType.MULTIPART_FORM_DATA_VALUE,
-                    MediaType.APPLICATION_JSON_VALUE
-            }
-    )
-    public ResponseApi<CreateTicketResponse> createLeaveTicket(
-            @PathVariable Long userId,
-            @RequestPart("ticketInfo") CreateTicketRequest ticketRequest,
-            @RequestPart(value = "evidenceFile", required = false) MultipartFile evidenceFile
-    ) {
+  @PostMapping(
+      value = "/leave-ticket/{userId}",
+      consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+  public ResponseApi<CreateTicketResponse> createLeaveTicket(
+      @PathVariable Long userId,
+      @RequestPart("ticketInfo") CreateTicketRequest ticketRequest,
+      @RequestPart(value = "evidenceFile", required = false) MultipartFile evidenceFile) {
 
-        //chuyển request từ controller sang command ở dưới core
-        CreateTicketCommand requestCommand = mapToTicketCommand(ticketRequest);
-        //set file evidence
-        requestCommand.setEvidence(evidenceFile);
-        
-        LeaveRequestCommand leaveCommand = LeaveRequestCommand.builder().build();
+    // chuyển request từ controller sang command ở dưới core
+    CreateTicketCommand requestCommand = mapToTicketCommand(ticketRequest);
+    // set file evidence
+    requestCommand.setEvidence(evidenceFile);
 
-        LeaveRequestModel leaveModel = ticketUseCaseImpl.createLeaveRequest(requestCommand, leaveCommand, userId);
+    LeaveRequestCommand leaveCommand = LeaveRequestCommand.builder().build();
 
-        return ResponseApi.ok(ticketApiMapper.toTicketResponse(leaveModel));
-    }
+    LeaveRequestModel leaveModel =
+        ticketUseCaseImpl.createLeaveRequest(requestCommand, leaveCommand, userId);
 
-    @PostMapping(value = "remote-ticket/{userid}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseApi<?> createRemoteTicket(
-            @PathVariable Long userid,
-            @RequestPart("ticketInfo") CreateTicketRequest ticketRequest,
-            @RequestPart("evidenceFile") MultipartFile evidenceFile,
-            @RequestPart("remoteTicketInfo") RemoteTicketRequest remoteTicketRequest
-            ) {
-        CreateTicketCommand requestCommand = mapToTicketCommand(ticketRequest);
-        requestCommand.setEvidence(evidenceFile);
-        RemoteRequestCommand remoteCommand = ticketApiMapper.toRemoteRequestCommand(remoteTicketRequest);
-        ticketUseCaseImpl.createRemoteRequest(requestCommand, remoteCommand, userid);
+    return ResponseApi.ok(ticketApiMapper.toTicketResponse(leaveModel));
+  }
 
-        return ResponseApi.ok(null);
-    }
+  @PostMapping(value = "remote-ticket/{userid}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseApi<?> createRemoteTicket(
+      @PathVariable Long userid,
+      @RequestPart("ticketInfo") CreateTicketRequest ticketRequest,
+      @RequestPart("evidenceFile") MultipartFile evidenceFile,
+      @RequestPart("remoteTicketInfo") RemoteTicketRequest remoteTicketRequest) {
+    CreateTicketCommand requestCommand = mapToTicketCommand(ticketRequest);
+    requestCommand.setEvidence(evidenceFile);
+    RemoteRequestCommand remoteCommand =
+        ticketApiMapper.toRemoteRequestCommand(remoteTicketRequest);
+    ticketUseCaseImpl.createRemoteRequest(requestCommand, remoteCommand, userid);
 
-    private CreateTicketCommand mapToTicketCommand(CreateTicketRequest request) {
-        return ticketApiMapper.toTicketCommand(request);
-    }
+    return ResponseApi.ok(null);
+  }
 
+  private CreateTicketCommand mapToTicketCommand(CreateTicketRequest request) {
+    return ticketApiMapper.toTicketCommand(request);
+  }
 }

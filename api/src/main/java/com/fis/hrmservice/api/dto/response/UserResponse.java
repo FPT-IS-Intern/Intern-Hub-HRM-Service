@@ -24,7 +24,7 @@ public class UserResponse {
   String address;
   LocalDate dateOfBirth;
   String positionCode;
-//  String role; sau này enable sau
+  //  String role; sau này enable sau
   String cvUrl;
   String superVisorName;
   LocalDate internshipStartDate;

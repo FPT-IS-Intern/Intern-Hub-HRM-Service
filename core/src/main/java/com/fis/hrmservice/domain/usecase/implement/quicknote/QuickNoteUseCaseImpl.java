@@ -14,12 +14,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class QuickNoteUseCaseImpl {
 
-  @Autowired
-  private QuickNoteRepositoryPort quickNoteRepositoryPort;
-  @Autowired
-  private Snowflake snowflake;
-  @Autowired
-  private UserRepositoryPort userRepositoryPort;
+  @Autowired private QuickNoteRepositoryPort quickNoteRepositoryPort;
+  @Autowired private Snowflake snowflake;
+  @Autowired private UserRepositoryPort userRepositoryPort;
 
   public QuickNoteModel createQuickNote(QuickNoteCommand command, Long userId) {
 

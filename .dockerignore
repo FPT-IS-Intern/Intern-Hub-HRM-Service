@@ -1,0 +1,36 @@
+# Git
+.git
+.gitignore
+.gitattributes
+# IDE
+.idea
+*.iml
+.vscode
+.DS_Store
+# Gradle build outputs
+**/build/
+!gradle/wrapper/gradle-wrapper.jar
+.gradle
+# Documentation
+*.md
+!README.md
+docs/
+# Docker
+docker-compose*.yml
+# Test reports and logs
+**/logs/
+**/test-results/
+**/reports/
+# Environment files
+.env
+.env.*
+# Kubernetes/Helm
+env/
+k8s/
+# Sonar
+.sonar/
+# Temporary files
+*.tmp
+*.log
+temp/
+tmp/

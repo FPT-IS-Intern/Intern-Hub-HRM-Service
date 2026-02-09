@@ -1,10 +1,9 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
 import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
-import org.gradle.kotlin.dsl.configure
 
 plugins {
-    alias(libs.plugins.springBoot) apply false
-    alias(libs.plugins.dependencyManagement) apply false
+    alias(libs.plugins.spring.boot) apply false
+    alias(libs.plugins.dependency.management) apply false
     alias(libs.plugins.spotless) apply false
     alias(libs.plugins.sonar) apply false
     alias(libs.plugins.jib) apply false
@@ -25,14 +24,14 @@ allprojects {
 subprojects {
 
     apply(plugin = "java")
-    apply(plugin = "org.springframework.boot")              // ⭐ QUAN TRỌNG
+    apply(plugin = "org.springframework.boot")
     apply(plugin = "io.spring.dependency-management")
     apply(plugin = "com.diffplug.spotless")
     apply(plugin = "org.sonarqube")
 
     java {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(25)) // 25 chưa LTS – recommend 21
+            languageVersion.set(JavaLanguageVersion.of(25))
         }
     }
 
@@ -40,7 +39,7 @@ subprojects {
         imports {
             mavenBom(
                 "org.springframework.cloud:spring-cloud-dependencies:" +
-                        rootProject.libs.versions.springCloud.get()
+                        rootProject.libs.versions.spring.cloud.get()
             )
         }
     }
@@ -49,47 +48,6 @@ subprojects {
         exclude(group = "org.springframework.boot", module = "spring-boot-starter-logging")
         exclude(group = "ch.qos.logback", module = "logback-classic")
     }
-
-    dependencies {
-
-        // Spring Core
-        implementation(rootProject.libs.spring.boot.starter)
-        implementation(rootProject.libs.spring.boot.starter.log4j2)
-        testImplementation(rootProject.libs.spring.boot.starter.test)
-
-        // Security Test (FIX LỖI)
-        testImplementation("org.springframework.security:spring-security-test")
-
-        // Web
-        implementation("org.springframework:spring-web")
-
-        // JPA
-        implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-
-        // PostgreSQL
-        runtimeOnly("org.postgresql:postgresql")
-
-        // Utils
-        implementation("cn.hutool:hutool-all:5.8.43")
-
-        // MapStruct
-        implementation("org.mapstruct:mapstruct:1.6.3")
-        annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
-
-        // Lombok
-        compileOnly("org.projectlombok:lombok:1.18.42")
-        annotationProcessor("org.projectlombok:lombok:1.18.42")
-        annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
-
-        // Validation
-        implementation("jakarta.validation:jakarta.validation-api:3.0.2")
-
-        // Common lib
-        implementation("com.github.FPT-IS-Intern:Intern-Hub-Common-Library:2.0.0")
-
-        implementation("com.github.FPT-IS-Intern:Intern-Hub-Security-Starter:1.0.3")
-    }
-
 
     configure<SpotlessExtension> {
         java {

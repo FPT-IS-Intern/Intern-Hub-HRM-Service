@@ -14,14 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public class ExplanationRepositoryAdapter implements TicketRepositoryPort {
 
-  @Autowired
-  private TicketRepository ticketRepository;
+  @Autowired private TicketRepository ticketRepository;
 
-  @Autowired
-  private TicketMapper ticketMapper;
+  @Autowired private TicketMapper ticketMapper;
 
-  @Autowired
-  private EntityManager entityManager;
+  @Autowired private EntityManager entityManager;
 
   @Override
   @Transactional
@@ -32,10 +29,7 @@ public class ExplanationRepositoryAdapter implements TicketRepositoryPort {
     // ================= FIX TRANSIENT TicketType =================
     if (ticket.getTicketType() != null) {
       TicketType managedType =
-              entityManager.getReference(
-                      TicketType.class,
-                      ticket.getTicketType().getTicketTypeId()
-              );
+          entityManager.getReference(TicketType.class, ticket.getTicketType().getTicketTypeId());
 
       ticketEntity.setTicketType(managedType);
     }

@@ -14,7 +14,6 @@ import com.fis.hrmservice.domain.usecase.implement.user.*;
 import com.intern.hub.library.common.annotation.EnableGlobalExceptionHandler;
 import com.intern.hub.library.common.dto.ResponseApi;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,26 +28,19 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "User Management", description = "APIs for user registration and management")
 public class UserController {
 
-  @Autowired
-  private RegisterUserUseCaseImpl registerUserUseCase;
+  @Autowired private RegisterUserUseCaseImpl registerUserUseCase;
 
-  @Autowired
-  private FilterUseCaseImpl filterUserUseCase;
+  @Autowired private FilterUseCaseImpl filterUserUseCase;
 
-  @Autowired
-  private UserApiMapper userApiMapper;
+  @Autowired private UserApiMapper userApiMapper;
 
-  @Autowired
-  private UserProfileUseCaseImpl userProfileUseCase;
+  @Autowired private UserProfileUseCaseImpl userProfileUseCase;
 
-  @Autowired
-  private UserApproval approvalUser;
+  @Autowired private UserApproval approvalUser;
 
-  @Autowired
-  private UserRejection rejectionUser;
+  @Autowired private UserRejection rejectionUser;
 
-  @Autowired
-  private UserSuspension userSuspension;
+  @Autowired private UserSuspension userSuspension;
 
   @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseApi<?> registerUser(
@@ -100,13 +92,14 @@ public class UserController {
     return ResponseApi.ok(
         "Đã reject user " + userReject.getFullName() + " với status: " + userReject.getSysStatus());
   }
-//=====================================================================================
+
+  // =====================================================================================
   @PatchMapping(value = "/me/{userId}/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseApi<?> updateProfile(
-          @RequestPart("userInfo") UpdateProfileRequest request,
-          @RequestPart("cvFile") MultipartFile cvFile,
-          @RequestPart("avatarFile") MultipartFile avatarFile,
-          @PathVariable long userId) { //sau này hoàn thành api gateway se sửa sau
+      @RequestPart("userInfo") UpdateProfileRequest request,
+      @RequestPart("cvFile") MultipartFile cvFile,
+      @RequestPart("avatarFile") MultipartFile avatarFile,
+      @PathVariable long userId) { // sau này hoàn thành api gateway se sửa sau
     request.setCvFile(cvFile);
     request.setAvatarFile(avatarFile);
     userProfileUseCase.updateProfileUser(userApiMapper.toUpdateUserProfileCommand(request), userId);
@@ -114,7 +107,7 @@ public class UserController {
   }
 
   @GetMapping("/internal/{userId}")
-//  @Internal
+  //  @Internal
   public ResponseApi<InternalUserProfileResponse> getUserByIdInternal(@PathVariable Long userId) {
     UserModel userModel = userProfileUseCase.internalUserProfile(userId);
     return ResponseApi.ok(userApiMapper.toInternalUserProfile(userModel));

@@ -11,15 +11,13 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class TicketApprovalRepositoryAdapter implements TicketApprovalRepositoryPort {
 
-    @Autowired
-    private TicketApprovalJpaRepository ticketApprovalJpaRepository;
+  @Autowired private TicketApprovalJpaRepository ticketApprovalJpaRepository;
 
-    @Autowired
-    private TicketApprovalMapper ticketApprovalMapper;
+  @Autowired private TicketApprovalMapper ticketApprovalMapper;
 
-    @Override
-    public void save(TicketApprovalModel approvalModel) {
-        TicketApproval entity = ticketApprovalMapper.toEntity(approvalModel);
-        ticketApprovalJpaRepository.save(entity);
-    }
+  @Override
+  public void save(TicketApprovalModel approvalModel) {
+    TicketApproval entity = ticketApprovalMapper.toEntity(approvalModel);
+    ticketApprovalJpaRepository.save(entity);
+  }
 }

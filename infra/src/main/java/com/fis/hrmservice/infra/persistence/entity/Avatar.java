@@ -11,48 +11,46 @@ import lombok.Setter;
 @Entity
 @Table(name = "avatars")
 public class Avatar extends AuditEntity {
-    @Id
-    @Column(name = "avatar_id", nullable = false)
-    private Long id;
+  @Id
+  @Column(name = "avatar_id", nullable = false)
+  private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
+  private User user;
 
-    @Column(name = "avatar_url", length = Integer.MAX_VALUE)
-    private String avatarUrl;
+  @Column(name = "avatar_url", length = Integer.MAX_VALUE)
+  private String avatarUrl;
 
-    @Column(name = "created_at")
-    private Long createdAt;
+  @Column(name = "created_at")
+  private Long createdAt;
 
-    @Column(name = "updated_at")
-    private Long updatedAt;
+  @Column(name = "updated_at")
+  private Long updatedAt;
 
-    @Size(max = 255)
-    @Column(name = "created_by")
-    private Long createdBy;
+  @Size(max = 255)
+  @Column(name = "created_by")
+  private Long createdBy;
 
-    @Size(max = 255)
-    @Column(name = "updated_by")
-    private Long updatedBy;
+  @Size(max = 255)
+  @Column(name = "updated_by")
+  private Long updatedBy;
 
-    @Column(name = "version")
-    private Integer version;
+  @Column(name = "version")
+  private Integer version;
 
-    @Size(max = 50)
-    @Column(name = "status", length = 50)
-    private String status;
+  @Size(max = 50)
+  @Column(name = "status", length = 50)
+  private String status;
 
-    @Size(max = 100)
-    @Column(name = "file_type", length = 100)
-    private String fileType;
+  @Size(max = 100)
+  @Column(name = "file_type", length = 100)
+  private String fileType;
 
-    @Column(name = "file_size")
-    private Long fileSize;
+  @Column(name = "file_size")
+  private Long fileSize;
 
-    @Size(max = 255)
-    @Column(name = "avatar_file_name")
-    private String avatarFileName;
-
-
+  @Size(max = 255)
+  @Column(name = "avatar_file_name")
+  private String avatarFileName;
 }

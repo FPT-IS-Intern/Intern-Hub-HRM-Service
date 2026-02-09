@@ -4,5 +4,5 @@ import com.fis.hrmservice.domain.model.ticket.RemoteRequestModel;
 
 public interface RemoteRequestRepositoryPort {
 
-    RemoteRequestModel save(RemoteRequestModel remoteRequest);
+  RemoteRequestModel save(RemoteRequestModel remoteRequest);
 }
