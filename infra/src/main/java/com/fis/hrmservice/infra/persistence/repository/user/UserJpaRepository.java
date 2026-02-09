@@ -30,16 +30,16 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
         SELECT u FROM User u
         WHERE
             (
-                :#{#command.keyword} IS NULL
+                :#{#command.keyword} IS NULL OR :#{#command.keyword} = ''
                 OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :#{#command.keyword}, '%'))
                 OR LOWER(u.companyEmail) LIKE LOWER(CONCAT('%', :#{#command.keyword}, '%'))
             )
         AND (
-                :#{#command.sysStatuses} IS NULL
+                :#{#command.sysStatuses == null || #command.sysStatuses.isEmpty() ? true : false} = true
                 OR u.sysStatus IN :#{#command.sysStatuses}
             )
         AND (
-                :#{#command.positions} IS NULL
+                :#{#command.positions == null || #command.positions.isEmpty() ? true : false} = true
                 OR u.position.name IN :#{#command.positions}
             )
     """)

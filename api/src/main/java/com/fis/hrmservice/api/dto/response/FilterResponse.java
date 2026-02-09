@@ -7,6 +7,7 @@ import lombok.Data;
 @Builder
 public class FilterResponse {
   Integer no;
+  Long userId;
   String avatarUrl;
   String fullName;
   String sysStatus;

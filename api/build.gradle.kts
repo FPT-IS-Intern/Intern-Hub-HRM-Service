@@ -3,16 +3,15 @@ plugins {
     id("io.spring.dependency-management")
     id("application")
     id("java")
-
     id("com.google.cloud.tools.jib") version "3.5.2"
 }
 
 springBoot {
-    mainClass.set("com.fis.internhub.HumanResourceServiceApplication")
+    mainClass.set("com.fis.hrmservice.api.Main")
 }
 
 application {
-    mainClass.set("com.fis.internhub.HumanResourceServiceApplication")
+    mainClass.set("com.fis.hrmservice.api.Main")
 }
 
 dependencies {

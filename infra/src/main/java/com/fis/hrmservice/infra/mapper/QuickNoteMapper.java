@@ -4,7 +4,7 @@ import com.fis.hrmservice.domain.model.user.QuickNoteModel;
 import com.fis.hrmservice.infra.persistence.entity.QuickNote;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {UserMapper.class})
 public interface QuickNoteMapper {
 
   QuickNote toEntity(QuickNoteModel quickNoteModel);

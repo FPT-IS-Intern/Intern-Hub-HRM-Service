@@ -5,6 +5,7 @@ import com.fis.hrmservice.domain.model.user.UserModel;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -16,5 +17,5 @@ public class TicketApprovalModel extends BaseDomain {
   UserModel approver;
   String action;
   String comment;
-  Long actionAt;
+  LocalDate actionAt; // was Long
 }

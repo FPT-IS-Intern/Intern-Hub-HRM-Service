@@ -7,8 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.time.LocalDate;
+
 
 @Getter
 @Setter
@@ -36,7 +36,7 @@ public class User extends AuditEntity {
     private String idNumber;
 
     @Column(name = "date_of_birth")
-    private LocalDate dateOfBirth;
+    private LocalDate dateOfBirth; // was Long
 
     @Size(max = 100)
     @Column(name = "company_email", length = 100)
@@ -47,16 +47,16 @@ public class User extends AuditEntity {
     private String phoneNumber;
 
     @Column(name = "internship_start_date")
-    private LocalDate internshipStartDate;
+    private LocalDate internshipStartDate; // was Long
 
     @Column(name = "internship_end_date")
-    private LocalDate internshipEndDate;
+    private LocalDate internshipEndDate; // was Long
 
     @NotNull
     @Column(name = "address", nullable = false, length = Integer.MAX_VALUE)
     private String address;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "sys_status", length = 20)
+    @Column(name = "sys_status", length = 50)
     private UserStatus sysStatus;
 }

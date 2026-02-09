@@ -9,10 +9,8 @@ import org.mapstruct.Mapping;
 public interface TicketApprovalMapper {
 
     @Mapping(source = "id", target = "approvalId")
-    @Mapping(source = "actionAt", target = "actionAt", qualifiedByName = "localDateToEpoch")
     TicketApprovalModel toModel(TicketApproval entity);
 
     @Mapping(source = "approvalId", target = "id")
-    @Mapping(source = "actionAt", target = "actionAt", qualifiedByName = "epochMillisToLocalDate")
     TicketApproval toEntity(TicketApprovalModel model);
 }
