@@ -56,4 +56,23 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
         WHERE t.id IN :ticketIds
     """)
   int multipleApproval(@Param("ticketIds") List<Long> ticketIds);
+
+  @Query("""
+          SELECT t
+          FROM Ticket t
+          JOIN t.user u
+          WHERE (:keyword IS NULL 
+                 OR LOWER(u.companyEmail) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                 OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')))
+            AND (:status IS NULL OR t.status = :status)
+            AND t.ticketType.typeName = 'REGISTRATION'
+          """)
+  List<Ticket> filterTickets(@Param("keyword") String keyword,
+                             @Param("status") String status);
+
+  @Query("SELECT t from Ticket t ORDER BY t.startAt DESC")
+  List<Ticket> firstThreeRegistrationTicket();
+
+  @Query("SELECT t from Ticket t WHERE t.id = :ticketId AND t.ticketType = 'REGISTRATION'")
+  Ticket getDetailRegistrationTicket(Long ticketId);
 }

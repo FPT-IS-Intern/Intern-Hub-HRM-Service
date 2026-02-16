@@ -1,7 +1,5 @@
 package com.fis.hrmservice.domain.usecase.implement.user;
 
-import static cn.hutool.core.text.CharSequenceUtil.trim;
-
 import com.fis.hrmservice.common.utils.UpdateHelper;
 import com.fis.hrmservice.domain.model.user.PositionModel;
 import com.fis.hrmservice.domain.model.user.UserModel;
@@ -31,13 +29,13 @@ public class UserProfileUseCaseImpl {
   public UserModel updateProfileUser(UpdateUserProfileCommand command, long userId) {
 
     /*
-       TODO: khi nào api gateway làm xong mới dùng được
-    */
+     * TODO: khi nào api gateway làm xong mới dùng được
+     */
 
-    //        AuthContext context = AuthContextHolder.get()
-    //                .orElseThrow(() -> new NotFoundException("Not authenticated"));
+    // AuthContext context = AuthContextHolder.get()
+    // .orElseThrow(() -> new NotFoundException("Not authenticated"));
     //
-    //        long userId = context.userId();
+    // long userId = context.userId();
 
     UserModel userModel =
         userRepositoryPort
@@ -91,43 +89,43 @@ public class UserProfileUseCaseImpl {
             (oldVal, newVal) -> Objects.equals(trim(oldVal), trim(newVal)));
 
     /*
-       TODO: upload file làm sau
-    */
+     * TODO: upload file làm sau
+     */
 
-    //        if (command.getCvFile() != null && !command.getCvFile().isEmpty()) {
+    // if (command.getCvFile() != null && !command.getCvFile().isEmpty()) {
     //
-    //            FileUploadResult result = fileStoragePort.upload(command.getCvFile());
+    // FileUploadResult result = fileStoragePort.upload(command.getCvFile());
     //
-    //            CvModel cv = CvModel.builder()
-    //                    .user(userModel)
-    //                    .cvUrl(result.url())
-    //                    .fileName(result.fileName())
-    //                    .fileSize(result.fileSize())
-    //                    .fileType(result.contentType())
-    //                    .status("ACTIVE")
-    //                    .build();
+    // CvModel cv = CvModel.builder()
+    // .user(userModel)
+    // .cvUrl(result.url())
+    // .fileName(result.fileName())
+    // .fileSize(result.fileSize())
+    // .fileType(result.contentType())
+    // .status("ACTIVE")
+    // .build();
     //
-    //            cvRepositoryPort.save(cv);
-    //            changed = true;
-    //        }
+    // cvRepositoryPort.save(cv);
+    // changed = true;
+    // }
     //
-    //        if (command.getAvatarFile() != null && !command.getAvatarFile().isEmpty()) {
+    // if (command.getAvatarFile() != null && !command.getAvatarFile().isEmpty()) {
     //
-    //            FileUploadResult result = fileStoragePort.upload(command.getAvatarFile());
+    // FileUploadResult result = fileStoragePort.upload(command.getAvatarFile());
     //
-    //            AvatarModel avatar = AvatarModel.builder()
-    //                    .user(userModel)
-    //                    .avatarUrl(result.url())
-    //                    .fileName(result.fileName())
-    //                    .fileSize(result.fileSize())
-    //                    .fileType(result.contentType())
-    //                    .status("ACTIVE")
-    //                    .build();
+    // AvatarModel avatar = AvatarModel.builder()
+    // .user(userModel)
+    // .avatarUrl(result.url())
+    // .fileName(result.fileName())
+    // .fileSize(result.fileSize())
+    // .fileType(result.contentType())
+    // .status("ACTIVE")
+    // .build();
     //
-    //            avatarRepositoryPort.save(avatar);
-    //            userModel.setAvatarUrl(result.url());
-    //            changed = true;
-    //        }
+    // avatarRepositoryPort.save(avatar);
+    // userModel.setAvatarUrl(result.url());
+    // changed = true;
+    // }
 
     if (!changed) {
       throw new ConflictDataException("No changes detected in the profile update request");
@@ -155,5 +153,9 @@ public class UserProfileUseCaseImpl {
           throw new ConflictDataException("User with id: " + userId + " is suspended");
       default -> user;
     };
+  }
+
+  private static String trim(CharSequence cs) {
+    return cs == null ? null : cs.toString().strip();
   }
 }

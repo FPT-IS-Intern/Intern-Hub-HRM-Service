@@ -1,0 +1,50 @@
+server:
+  port: 8080
+
+security:
+  internal-secret: ${INTERNAL_SECRET_KEY:defaultSecretValue}
+  internal-path-prefix: /hrm-service/internal/
+
+# Optional: JPA Auditing configuration
+audit:
+  data:
+    # Enable/disable JPA auditing (default: true)
+    enabled: true
+    # Default user ID for system operations when no user is authenticated (default: 0)
+    default-system-id: 0
+
+snowflake:
+  machine-id: 1
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}?currentSchema=${SCHEMA_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      max-lifetime: 300000
+      idle-timeout: 120000
+      keepalive-time: 60000
+      validation-timeout: 5000
+      connection-timeout: 30000
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  application:
+    name: hrm
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}

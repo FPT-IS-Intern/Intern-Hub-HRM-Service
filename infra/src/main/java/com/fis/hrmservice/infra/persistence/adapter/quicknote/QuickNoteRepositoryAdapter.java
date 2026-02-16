@@ -5,10 +5,9 @@ import com.fis.hrmservice.domain.port.output.quicknote.QuickNoteRepositoryPort;
 import com.fis.hrmservice.infra.mapper.QuickNoteMapper;
 import com.fis.hrmservice.infra.persistence.entity.QuickNote;
 import com.fis.hrmservice.infra.persistence.repository.quicknote.QuickNoteRepository;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public class QuickNoteRepositoryAdapter implements QuickNoteRepositoryPort {

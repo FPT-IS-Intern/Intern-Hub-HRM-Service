@@ -1,9 +1,5 @@
 plugins {
-    id("org.springframework.boot")
-    id("io.spring.dependency-management")
     id("application")
-    id("java")
-    id("com.google.cloud.tools.jib")
 }
 
 springBoot {
@@ -20,24 +16,22 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":common"))
 
-    // Custom libraries bundle (common, security)
+    // Custom libraries
     implementation(libs.bundles.custom.libraries)
 
-    // Spring Boot all bundle (Web + Validation)
+    // Spring Boot
     implementation(libs.bundles.spring.boot.all)
-
-    // Additional Spring Boot starters
-    implementation(libs.spring.boot.starter)
     implementation(libs.spring.boot.starter.log4j2)
     implementation(libs.spring.boot.starter.data.jpa)
     implementation(libs.spring.boot.starter.security)
-    implementation(libs.spring.boot.starter.actuator)
 
     // Documentation
     implementation(libs.openapi.doc)
 
     // MapStruct
     implementation(libs.mapstruct)
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    testImplementation("io.projectreactor:reactor-test")
     annotationProcessor(libs.mapstruct.processor)
     annotationProcessor(libs.lombok.mapstruct.binding)
 
@@ -47,9 +41,6 @@ dependencies {
 
     // Configuration processor
     annotationProcessor(libs.spring.boot.configuration.processor)
-
-    testImplementation(libs.spring.boot.starter.webmvc.test)
-    testImplementation(libs.spring.security.test)
 }
 
 tasks.bootJar {

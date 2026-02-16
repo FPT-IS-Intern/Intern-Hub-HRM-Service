@@ -4,5 +4,6 @@ public enum TicketType {
   LEAVE,
   REMOTE_WFH,
   REMOTE_ONSITE,
-  EXPLANATION
+  EXPLANATION,
+  REGISTRATION
 }

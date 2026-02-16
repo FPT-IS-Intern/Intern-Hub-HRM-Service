@@ -126,9 +126,9 @@ public class UserValidationService {
     }
 
     if (command.getAvatarFile() != null) {
-      validateAvatarFile(command.getAvatarFile().getContentType(), command.getAvatarFile().getSize());
+      validateAvatarFile(
+          command.getAvatarFile().getContentType(), command.getAvatarFile().getSize());
     }
-
 
     // Validate CV
     validateCvFile(command.getCvFile().getContentType(), command.getCvFile().getSize());
@@ -194,5 +194,4 @@ public class UserValidationService {
       throw new ConflictDataException("Ngày kết thúc phải sau ngày bắt đầu thực tập");
     }
   }
-
 }

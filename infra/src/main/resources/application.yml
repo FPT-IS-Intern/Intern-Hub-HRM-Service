@@ -2,8 +2,8 @@ server:
   port: 8080
 
 security:
-  # Required: Secret for internal service-to-service authentication
-  internal-secret: ${INTERNAL_SECRET_KEY}
+  internal-secret: ${INTERNAL_SECRET_KEY:defaultSecretValue}
+  internal-path-prefix: /hrm-service/internal/
 
 # Optional: JPA Auditing configuration
 audit:
@@ -17,13 +17,6 @@ snowflake:
   machine-id: 1
 
 spring:
-
-  servlet:
-    multipart:
-      enabled: true
-      max-file-size: 10MB
-      max-request-size: 50MB
-
   datasource:
     url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}?currentSchema=${SCHEMA_NAME}
     username: ${DB_USER}
@@ -33,7 +26,7 @@ spring:
     hikari:
       maximum-pool-size: 10
       minimum-idle: 2
-      max-lifetime: 300000      # 5 phút
+      max-lifetime: 300000
       idle-timeout: 120000
       keepalive-time: 60000
       validation-timeout: 5000
@@ -41,10 +34,18 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: none   # dev: update | prod: validate
+      ddl-auto: none
     show-sql: true
     open-in-view: false
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  application:
+    name: hrm
+
+eureka:
+  client:
+    enabled: false
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}

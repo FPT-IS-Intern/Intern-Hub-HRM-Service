@@ -1,7 +1,11 @@
 package com.fis.hrmservice.api.controller.ticket;
 
 import com.fis.hrmservice.api.dto.request.CreateTicketRequest;
+import com.fis.hrmservice.api.dto.request.FilterRegistrationRequest;
 import com.fis.hrmservice.api.dto.request.RemoteTicketRequest;
+import com.fis.hrmservice.api.dto.response.FirstThreeRegistrationResponse;
+import com.fis.hrmservice.api.dto.response.ListRegistrationResponse;
+import com.fis.hrmservice.api.dto.response.RegistrationDetailResponse;
 import com.fis.hrmservice.api.dto.response.TicketResponse;
 import com.fis.hrmservice.api.mapper.TicketApiMapper;
 import com.fis.hrmservice.domain.model.ticket.LeaveRequestModel;
@@ -12,14 +16,17 @@ import com.fis.hrmservice.domain.usecase.implement.ticket.TicketUseCaseImpl;
 import com.intern.hub.library.common.annotation.EnableGlobalExceptionHandler;
 import com.intern.hub.library.common.dto.ResponseApi;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("hrm-serice/ticket")
+@RequestMapping("hrm-service/ticket")
 @EnableGlobalExceptionHandler
 @Slf4j
 @Tag(name = "Ticket Management", description = "APIs for Ticket")
@@ -60,7 +67,9 @@ public class TicketController {
     requestCommand.setEvidence(evidenceFile);
     RemoteRequestCommand remoteCommand =
         ticketApiMapper.toRemoteRequestCommand(remoteTicketRequest);
-    return ResponseApi.ok(ticketApiMapper.toTicketResponse(ticketUseCaseImpl.createRemoteRequest(requestCommand, remoteCommand, userid)));
+    return ResponseApi.ok(
+        ticketApiMapper.toTicketResponse(
+            ticketUseCaseImpl.createRemoteRequest(requestCommand, remoteCommand, userid)));
   }
 
   @PostMapping(value = "/explanation-ticket/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -70,5 +79,27 @@ public class TicketController {
 
   private CreateTicketCommand mapToTicketCommand(CreateTicketRequest request) {
     return ticketApiMapper.toTicketCommand(request);
+  }
+
+  @PutMapping("/user-approval/{ticketId}")
+  public ResponseApi<?> approveRegistrationRequest() {
+    return ResponseApi.ok(null);
+  }
+
+  @PostMapping("/registration-ticket")
+  public ResponseApi<List<ListRegistrationResponse>> listRegistrationTicket(
+          @RequestBody FilterRegistrationRequest request
+  ){
+    return ResponseApi.ok(ticketUseCaseImpl.listAllRegistrationTicket(request.getKeyword(), request.getTicketStatus()).stream().map(ticketApiMapper::toRegistrationResponse).toList());
+  }
+
+  @GetMapping("/first-three-registration-ticket")
+  public ResponseApi<List<FirstThreeRegistrationResponse>> firstThreeRegistrationTicket(){
+    return ResponseApi.ok(ticketUseCaseImpl.firstThreeRegistrationTicket().stream().map(ticketApiMapper::toFirstThreeRegistrationResponse).toList());
+  }
+
+  @GetMapping("/registration-ticket-detail/{ticketId}")
+  public ResponseApi<RegistrationDetailResponse> getDetailRegistrationTicket(@PathVariable Long ticketId){
+    return ResponseApi.ok(ticketApiMapper.toRegistrationDetailResponse(ticketUseCaseImpl.getDetailRegistrationTicket(ticketId)));
   }
 }

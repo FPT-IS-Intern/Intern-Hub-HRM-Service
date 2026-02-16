@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class TicketUseCaseImpl {
@@ -184,5 +186,21 @@ public class TicketUseCaseImpl {
 
     // KHÔNG save lại ticket lần 2
     return ticket;
+  }
+
+
+  public List<TicketModel> listAllRegistrationTicket(String keyword, String ticketStatus){
+    if ((keyword == null || keyword.isEmpty()) && (ticketStatus == null || ticketStatus.isEmpty())) {
+      return ticketRepositoryPort.findAll();
+    }
+    return ticketRepositoryPort.filterRegistrationTicket(keyword, ticketStatus);
+  }
+
+  public List<TicketModel> firstThreeRegistrationTicket(){
+    return ticketRepositoryPort.firstThreeRegistrationTicket();
+  }
+
+  public TicketModel getDetailRegistrationTicket(Long ticketId){
+    return ticketRepositoryPort.getDetailRegistrationTicket(ticketId);
   }
 }
