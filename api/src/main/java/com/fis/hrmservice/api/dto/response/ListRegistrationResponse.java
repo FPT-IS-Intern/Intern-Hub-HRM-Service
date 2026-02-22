@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class ListRegistrationResponse {
     int no;
+    Long ticketId;
     String fullName;
     String companyEmail;
     String departmentName;
