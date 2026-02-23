@@ -6,11 +6,11 @@ on:
       - master
       - main
     paths:
-      - '/api'
-      - '/infra'
-      - '/common'
-      - '/core'
-      - '/libs.versions.toml'
+      - 'api/**'
+      - 'infra/**'
+      - 'common/**'
+      - 'core/**'
+      - 'gradle/libs.versions.toml'
       - 'build.gradle.kts'
       - 'Dockerfile'
       - '.github/workflows/docker.yml'
