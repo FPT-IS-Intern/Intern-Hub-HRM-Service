@@ -73,4 +73,9 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
   public Long suspendUser(Long userId, UserStatus status) {
     return userJpaRepository.suspendUser(userId, status);
   }
+
+  @Override
+  public int totalIntern() {
+    return userJpaRepository.totalIntern();
+  }
 }

@@ -60,4 +60,7 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
   @Modifying
   @Query("UPDATE User u SET u.sysStatus = :suspend WHERE u.id = :userId")
   Long suspendUser(@Param("userId") Long userId, @Param("suspend") UserStatus status);
+
+  @Query("SELECT COUNT(u) FROM User u WHERE u.sysStatus = 'APPROVED'")
+  int totalIntern();
 }

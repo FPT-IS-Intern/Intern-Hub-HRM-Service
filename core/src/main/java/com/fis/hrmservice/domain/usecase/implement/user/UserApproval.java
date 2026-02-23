@@ -44,5 +44,7 @@ public class UserApproval {
     return userModel;
   }
 
-  private void createUserAccount(UserModel user) {}
+  public int totalIntern() {
+    return userRepositoryPort.totalIntern();
+  }
 }

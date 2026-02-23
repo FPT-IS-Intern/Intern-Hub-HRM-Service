@@ -26,4 +26,6 @@ public interface UserRepositoryPort {
   UserModel internalUserProfile(Long userId);
 
   Long suspendUser(Long userId, UserStatus status);
+
+  int totalIntern();
 }

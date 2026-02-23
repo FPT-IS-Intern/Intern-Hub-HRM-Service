@@ -125,4 +125,10 @@ public class UserController {
     UserModel userModel = userSuspension.suspendUser(userId);
     return ResponseApi.ok(userApiMapper.toResponse(userModel));
   }
+
+  @GetMapping("/total-intern")
+  public ResponseApi<Integer> totalInternship() {
+    Integer totalIntern = approvalUser.totalIntern();
+    return ResponseApi.ok(totalIntern);
+  }
 }
