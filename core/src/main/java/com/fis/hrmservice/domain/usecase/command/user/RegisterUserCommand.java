@@ -3,6 +3,7 @@ package com.fis.hrmservice.domain.usecase.command.user;
 import java.time.LocalDate;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @Builder
@@ -20,13 +21,8 @@ public class RegisterUserCommand {
   LocalDate internshipStartDate;
   LocalDate internshipEndDate;
 
-  String cvFileName;
-  String cvContentType;
-  long cvSize;
-
-  String avatarFileName;
-  String avatarContentType;
-  long avatarSize;
+  MultipartFile avatar;
+  MultipartFile cv;
 
   public boolean isInternRegistration() {
     return positionCode != null && positionCode.toUpperCase().contains("INTERN");

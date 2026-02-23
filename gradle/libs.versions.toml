@@ -37,7 +37,6 @@ spring-boot-starter-liquibase = { group = "org.springframework.boot", name = "sp
 spring-boot-configuration-processor = { group = "org.springframework.boot", name = "spring-boot-configuration-processor", version.ref = "spring-boot" }
 
 # Spring Cloud
-spring-cloud-eureka = { group = "org.springframework.cloud", name = "spring-cloud-starter-netflix-eureka-client", version.ref = "spring-cloud" }
 spring-cloud-feign = { group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version.ref = "spring-cloud" }
 
 # Database

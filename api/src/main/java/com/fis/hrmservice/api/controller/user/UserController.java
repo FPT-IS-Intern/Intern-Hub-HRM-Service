@@ -7,6 +7,7 @@ import com.fis.hrmservice.api.dto.response.FilterResponse;
 import com.fis.hrmservice.api.dto.response.UserResponse;
 import com.fis.hrmservice.api.mapper.UserApiMapper;
 import com.fis.hrmservice.domain.model.user.UserModel;
+import com.fis.hrmservice.domain.port.output.CreateAuthIdentityPort;
 import com.fis.hrmservice.domain.usecase.command.user.FilterUserCommand;
 import com.fis.hrmservice.domain.usecase.command.user.RegisterUserCommand;
 import com.fis.hrmservice.domain.usecase.implement.user.*;
@@ -42,24 +43,13 @@ public class UserController {
 
   @Autowired private UserSuspension userSuspension;
 
+  @Autowired private CreateAuthIdentityPort createAuthIdentityPort;
+
   @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseApi<?> registerUser(
       @RequestPart("userInfo") RegisterUserRequest request,
-      @RequestPart(value = "avatarFile") MultipartFile avatarFile,
-      @RequestPart(value = "cvFile") MultipartFile cvFile) {
-
-    log.info("=== Register User Request ===");
-    log.info("UserInfo: email={}, fullName={}", request.getEmail(), request.getFullName());
-    log.info(
-        "Avatar file: present={}, name={}, size={}",
-        avatarFile != null,
-        avatarFile != null ? avatarFile.getOriginalFilename() : "N/A",
-        avatarFile != null ? avatarFile.getSize() : 0);
-    log.info(
-        "CV file: present={}, name={}, size={}",
-        cvFile != null,
-        cvFile != null ? cvFile.getOriginalFilename() : "N/A",
-        cvFile != null ? cvFile.getSize() : 0);
+      @RequestPart(value = "avatarFile", required = false) MultipartFile avatarFile,
+      @RequestPart(value = "cvFile", required = false) MultipartFile cvFile) {
 
     if (avatarFile != null && !avatarFile.isEmpty()) {
       request.setAvatar(avatarFile);
@@ -70,6 +60,15 @@ public class UserController {
 
     RegisterUserCommand command = userApiMapper.toCommand(request);
     UserModel user = registerUserUseCase.registerUser(command);
+    //
+    //    // Gọi Feign Client để tạo auth identity
+    //    try
+    //      createAuthIdentityPort.createAuthIdentity(user.getUserId(), user.getCompanyEmail());
+    //      log.info("Auth identity created successfully for userId: {}", user.getUserId());
+    //    } catch (Exception e) {
+    //      log.error("Call Auth Service failed: {}", e.getMessage(), e);
+    //      throw new RuntimeException("Create auth identity failed: " + e.getMessage());
+    //    }
 
     return ResponseApi.ok(userApiMapper.toResponse(user));
   }
@@ -110,12 +109,16 @@ public class UserController {
   @PatchMapping(value = "/me/{userId}/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseApi<?> updateProfile(
       @RequestPart("userInfo") UpdateProfileRequest request,
-      @RequestPart("cvFile") MultipartFile cvFile,
-      @RequestPart("avatarFile") MultipartFile avatarFile,
+      @RequestPart(value = "cvFile", required = false) MultipartFile cvFile,
+      @RequestPart(value = "avatarFile", required = false) MultipartFile avatarFile,
       @PathVariable long userId) { // sau này hoàn thành api gateway se sửa sau
     log.info("Update profile for user ID: {}", userId);
-    request.setCvFile(cvFile);
-    request.setAvatarFile(avatarFile);
+    if (cvFile != null && !cvFile.isEmpty()) {
+      request.setCvFile(cvFile);
+    }
+    if (avatarFile != null && !avatarFile.isEmpty()) {
+      request.setAvatarFile(avatarFile);
+    }
     userProfileUseCase.updateProfileUser(userApiMapper.toUpdateUserProfileCommand(request), userId);
     return ResponseApi.ok("Update user profile thành công");
   }
@@ -130,5 +133,20 @@ public class UserController {
   public ResponseApi<Integer> totalInternship() {
     Integer totalIntern = approvalUser.totalIntern();
     return ResponseApi.ok(totalIntern);
+  }
+
+  @GetMapping("/internship-changing")
+  public ResponseApi<String> internshipChanging() {
+    Integer internshipChanging = approvalUser.internshipChanging();
+
+    String message;
+
+    if (internshipChanging > 0) {
+      message = "↗ " + internshipChanging + " So với tháng trước";
+    } else {
+      message = "↘ " + internshipChanging + " So vơi tháng trước";
+    }
+
+    return ResponseApi.ok(message);
   }
 }

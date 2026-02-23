@@ -47,4 +47,8 @@ public class UserApproval {
   public int totalIntern() {
     return userRepositoryPort.totalIntern();
   }
+
+  public Integer internshipChanging() {
+    return userRepositoryPort.internshipChanging();
+  }
 }

@@ -18,4 +18,9 @@ public class AvatarRepositoryAdapter implements AvatarRepositoryPort {
   public AvatarModel getAvatarByUserId(Long userId) {
     return avatarMapper.toModel(avatarRepository.findAvatarByUserId(userId));
   }
+
+  @Override
+  public AvatarModel save(AvatarModel avatar) {
+    return avatarMapper.toModel(avatarRepository.save(avatarMapper.toEntity(avatar)));
+  }
 }

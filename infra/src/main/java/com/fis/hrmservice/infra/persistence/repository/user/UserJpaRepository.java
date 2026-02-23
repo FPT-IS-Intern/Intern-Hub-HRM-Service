@@ -63,4 +63,25 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
 
   @Query("SELECT COUNT(u) FROM User u WHERE u.sysStatus = 'APPROVED'")
   int totalIntern();
+
+  @Query(
+      value =
+          """
+    SELECT
+        COUNT(CASE
+            WHEN date_trunc('month', u.internship_start_date) = date_trunc('month', CURRENT_DATE)
+            THEN 1
+        END)
+        -
+        COUNT(CASE
+            WHEN date_trunc('month', u.internship_start_date) = date_trunc('month', CURRENT_DATE - INTERVAL '1 month')
+            THEN 1
+        END)
+    FROM users u
+    JOIN positions p ON u.position_id = p.position_id
+    WHERE u.internship_start_date IS NOT NULL
+      AND LOWER(p.name) LIKE '%intern%'
+    """,
+      nativeQuery = true)
+  int internshipChanging();
 }

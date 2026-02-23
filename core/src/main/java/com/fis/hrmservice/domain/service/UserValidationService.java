@@ -113,10 +113,10 @@ public class UserValidationService {
   public void validateFileMetadata(RegisterUserCommand command) {
 
     // Validate CV
-    validateCvFile(command.getCvContentType(), command.getCvSize());
+    validateCvFile(command.getCv().getContentType(), command.getCv().getSize());
 
     // Validate Avatar
-    validateAvatarFile(command.getAvatarContentType(), command.getAvatarSize());
+    validateAvatarFile(command.getAvatar().getContentType(), command.getAvatar().getSize());
   }
 
   public void validateFileMetadataUpdate(UpdateUserProfileCommand command) {

@@ -78,4 +78,9 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
   public int totalIntern() {
     return userJpaRepository.totalIntern();
   }
+
+  @Override
+  public int internshipChanging() {
+    return userJpaRepository.internshipChanging();
+  }
 }

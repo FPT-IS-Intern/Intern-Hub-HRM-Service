@@ -22,23 +22,26 @@ import org.springframework.web.multipart.MultipartFile;
 public interface UserApiMapper {
 
   // ===== Register =====
-  @Mapping(target = "cvFileName", expression = "java(getFileName(request.getCv()))")
-  @Mapping(target = "cvContentType", expression = "java(getContentType(request.getCv()))")
-  @Mapping(target = "cvSize", expression = "java(getFileSize(request.getCv()))")
-  @Mapping(target = "avatarFileName", expression = "java(getFileName(request.getAvatar()))")
-  @Mapping(target = "avatarContentType", expression = "java(getContentType(request.getAvatar()))")
-  @Mapping(target = "avatarSize", expression = "java(getFileSize(request.getAvatar()))")
+  @Mapping(target = "avatar", source = "avatar")
+  @Mapping(target = "cv", source = "cv")
   RegisterUserCommand toCommand(RegisterUserRequest request);
 
   // ===== Response =====
-  @Mapping(source = "companyEmail", target = "email")
-  @Mapping(source = "dateOfBirth", target = "dateOfBirth")
-  @Mapping(source = "sysStatus", target = "status")
-  @Mapping(source = "avatar.avatarUrl", target = "avatarUrl")
-  @Mapping(source = "cv.cvUrl", target = "cvUrl")
-  @Mapping(source = "position.name", target = "positionCode")
-  @Mapping(source = "mentor.fullName", target = "superVisorName")
+  @Mapping(target = "email", source = "companyEmail")
+  @Mapping(target = "status", source = "sysStatus")
+  @Mapping(target = "avatarUrl", expression = "java(getAvatarUrl(model))")
+  @Mapping(target = "cvUrl", expression = "java(getCvUrl(model))")
+  @Mapping(target = "positionCode", source = "position.name")
+  @Mapping(target = "superVisorName", source = "mentor.fullName")
   UserResponse toResponse(UserModel model);
+
+  default String getAvatarUrl(UserModel model) {
+    return model.getAvatar() != null ? model.getAvatar().getAvatarUrl() : null;
+  }
+
+  default String getCvUrl(UserModel model) {
+    return model.getCv() != null ? model.getCv().getCvUrl() : null;
+  }
 
   @Mapping(source = "companyEmail", target = "email")
   @Mapping(source = "position.name", target = "position")

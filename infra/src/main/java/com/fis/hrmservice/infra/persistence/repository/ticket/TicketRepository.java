@@ -40,13 +40,16 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
   @Query("SELECT COUNT(t) FROM Ticket t WHERE t.ticketType.typeName = 'REGISTRATION'")
   int allRegistrationCount();
 
-  @Query("SELECT COUNT(t) FROM Ticket t WHERE t.status = 'PENDING' AND t.ticketType.typeName = 'REGISTRATION'")
+  @Query(
+      "SELECT COUNT(t) FROM Ticket t WHERE t.status = 'PENDING' AND t.ticketType.typeName = 'REGISTRATION'")
   int allPendingRegistrationCount();
 
-  @Query("SELECT COUNT(t) FROM Ticket t WHERE t.status = 'REJECTED' AND t.ticketType.typeName = 'REGISTRATION'")
+  @Query(
+      "SELECT COUNT(t) FROM Ticket t WHERE t.status = 'REJECTED' AND t.ticketType.typeName = 'REGISTRATION'")
   int allRejectedRegistrationCount();
 
-  @Query("SELECT COUNT(t) FROM Ticket t WHERE t.status = 'APPROVED' AND t.ticketType.typeName = 'REGISTRATION'")
+  @Query(
+      "SELECT COUNT(t) FROM Ticket t WHERE t.status = 'APPROVED' AND t.ticketType.typeName = 'REGISTRATION'")
   int allApprovedRegistrationCount();
 
   @Modifying
@@ -58,29 +61,34 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     """)
   int multipleApproval(@Param("ticketIds") List<Long> ticketIds);
 
-  @Query("""
-          SELECT t
+  @Query(
+      """
+
+              SELECT t
           FROM Ticket t
           JOIN t.user u
-          WHERE (:keyword IS NULL 
-                 OR LOWER(u.companyEmail) LIKE LOWER(CONCAT('%', :keyword, '%'))
-                 OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')))
+          JOIN t.ticketType tt
+          WHERE (
+                  :keyword IS NULL
+                  OR LOWER(u.companyEmail) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                  OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                )
             AND (:status IS NULL OR t.status = :status)
-            AND t.ticketType.typeName = 'REGISTRATION'
+            AND tt.typeName = 'REGISTRATION'
           """)
-  List<Ticket> filterTickets(@Param("keyword") String keyword,
-                             @Param("status") String status);
+  List<Ticket> filterTickets(@Param("keyword") String keyword, @Param("status") String status);
 
   @Query("SELECT t from Ticket t ORDER BY t.startAt DESC limit 3")
   List<Ticket> firstThreeRegistrationTicket();
 
-  @Query("SELECT t FROM Ticket t JOIN FETCH t.ticketType tt JOIN FETCH t.user u WHERE t.id = :ticketId AND tt.typeName = 'REGISTRATION'")
+  @Query(
+      "SELECT t FROM Ticket t JOIN FETCH t.ticketType tt JOIN FETCH t.user u WHERE t.id = :ticketId AND tt.typeName = 'REGISTRATION'")
   Ticket getDetailRegistrationTicket(@Param("ticketId") Long ticketId);
 
   @Modifying
   @Transactional
-  @Query("UPDATE Ticket t set t.status = :ticketStatus where t.id = :ticketId and t.ticketType.typeName = 'REGISTRATION'")
+  @Query(
+      "UPDATE Ticket t set t.status = :ticketStatus where t.id = :ticketId and t.ticketType.typeName = 'REGISTRATION'")
   int updateRegistrationTicketStatus(
-          @Param("ticketStatus") String ticketStatus,
-          @Param("ticketId") Long ticketId);
+      @Param("ticketStatus") String ticketStatus, @Param("ticketId") Long ticketId);
 }

@@ -28,4 +28,6 @@ public interface UserRepositoryPort {
   Long suspendUser(Long userId, UserStatus status);
 
   int totalIntern();
+
+  int internshipChanging();
 }

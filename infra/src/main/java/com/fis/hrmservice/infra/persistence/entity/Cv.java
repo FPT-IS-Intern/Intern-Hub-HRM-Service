@@ -28,20 +28,14 @@ public class Cv extends AuditEntity {
   @Column(name = "updated_at")
   private Long updatedAt;
 
-  @Size(max = 255)
   @Column(name = "created_by")
   private Long createdBy;
 
-  @Size(max = 255)
   @Column(name = "updated_by")
   private Long updatedBy;
 
   @Column(name = "version")
   private Integer version;
-
-  @Size(max = 50)
-  @Column(name = "status", length = 50)
-  private String status;
 
   @Size(max = 100)
   @Column(name = "file_type", length = 100)

@@ -18,11 +18,17 @@ public interface AttendanceApiMapper {
 
   CheckInCommand toCheckInCommand(AttendanceRequest request);
 
-  @Mapping(target = "message", expression = "java(AttendanceUseCaseImpl.generateCheckInMessage(attendance.getCheckInTime()))")
+  @Mapping(
+      target = "message",
+      expression =
+          "java(AttendanceUseCaseImpl.generateCheckInMessage(attendance.getCheckInTime()))")
   AttendanceResponse toCheckInResponseFromLog(AttendanceLogModel attendance);
 
   CheckOutCommand toCheckOutCommand(AttendanceRequest request);
 
-  @Mapping(target = "message", expression = "java(AttendanceUseCaseImpl.generateCheckOutMessage(attendance.getCheckOutTime()))")
+  @Mapping(
+      target = "message",
+      expression =
+          "java(AttendanceUseCaseImpl.generateCheckOutMessage(attendance.getCheckOutTime()))")
   AttendanceResponse toCheckOutResponseFromLog(AttendanceLogModel attendance);
 }

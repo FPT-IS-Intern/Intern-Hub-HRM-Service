@@ -18,12 +18,11 @@ import com.fis.hrmservice.domain.usecase.command.ticket.RemoteRequestCommand;
 import com.intern.hub.library.common.exception.ConflictDataException;
 import com.intern.hub.library.common.exception.NotFoundException;
 import com.intern.hub.library.common.utils.Snowflake;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -190,19 +189,19 @@ public class TicketUseCaseImpl {
     return ticket;
   }
 
-
-  public List<TicketModel> listAllRegistrationTicket(String keyword, String ticketStatus){
-    if ((keyword == null || keyword.isEmpty()) && (ticketStatus == null || ticketStatus.isEmpty())) {
+  public List<TicketModel> listAllRegistrationTicket(String keyword, String ticketStatus) {
+    if ((keyword == null || keyword.isEmpty())
+        && (ticketStatus == null || ticketStatus.isEmpty())) {
       return ticketRepositoryPort.findAll();
     }
     return ticketRepositoryPort.filterRegistrationTicket(keyword, ticketStatus);
   }
 
-  public List<TicketModel> firstThreeRegistrationTicket(){
+  public List<TicketModel> firstThreeRegistrationTicket() {
     return ticketRepositoryPort.firstThreeRegistrationTicket();
   }
 
-  public TicketModel getDetailRegistrationTicket(Long ticketId){
+  public TicketModel getDetailRegistrationTicket(Long ticketId) {
     log.info("=== Getting detail for ticketId: {} ===", ticketId);
 
     TicketModel ticket = ticketRepositoryPort.getDetailRegistrationTicket(ticketId);
@@ -214,7 +213,8 @@ public class TicketUseCaseImpl {
       throw new NotFoundException("Ticket not found: " + ticketId);
     }
 
-    log.info("Ticket found: id={}, requester={}, type={}",
+    log.info(
+        "Ticket found: id={}, requester={}, type={}",
         ticket.getTicketId(),
         ticket.getRequester() != null ? ticket.getRequester().getFullName() : "null",
         ticket.getTicketType() != null ? ticket.getTicketType().getTypeName() : "null");
@@ -230,19 +230,23 @@ public class TicketUseCaseImpl {
     return ticketRepositoryPort.updateRegistrationTicketStatus(ticketId, "REJECTED");
   }
 
+  public TicketModel suspendRegistrationTicketByTicketId(Long ticketId) {
+    return ticketRepositoryPort.updateRegistrationTicketStatus(ticketId, "SUSPENDED");
+  }
+
   public int allRegistrationTicket() {
-      return ticketRepositoryPort.getAllRegistrationTicket();
+    return ticketRepositoryPort.getAllRegistrationTicket();
   }
 
   public int allApprovedRegistrationTicket() {
-      return ticketRepositoryPort.getAllRegistrationTicketApproved();
+    return ticketRepositoryPort.getAllRegistrationTicketApproved();
   }
 
   public int allRejectedRegistrationTicket() {
-      return ticketRepositoryPort.getAllRegistrationTicketRejected();
+    return ticketRepositoryPort.getAllRegistrationTicketRejected();
   }
 
   public int allPendingRegistrationTicket() {
-      return ticketRepositoryPort.getAllRegistrationTicketPending();
+    return ticketRepositoryPort.getAllRegistrationTicketPending();
   }
 }

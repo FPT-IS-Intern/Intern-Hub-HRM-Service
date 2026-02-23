@@ -18,6 +18,7 @@ public interface UserMapper {
 
   @Mapping(target = "userId", source = "id")
   @Mapping(target = "mentor", qualifiedByName = "mentorToModel")
+  @Mapping(target = "position", qualifiedByName = "positionToModel")
   UserModel toModel(User entity);
 
   List<UserModel> toModelList(List<User> entities);
@@ -59,6 +60,16 @@ public interface UserMapper {
     Position p = new Position();
     p.setId(model.getPositionId());
     return p;
+  }
+
+  @Named("positionToModel")
+  default PositionModel positionToModel(Position entity) {
+    if (entity == null) return null;
+    return PositionModel.builder()
+        .positionId(entity.getId())
+        .name(entity.getName())
+        .description(entity.getDescription())
+        .build();
   }
 
   @Named("epochMillisToLocalDate")
