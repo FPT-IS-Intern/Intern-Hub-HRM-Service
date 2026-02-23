@@ -20,4 +20,5 @@ public class RegistrationDetailResponse {
     String phoneNumber;
     String companyEmail;
     String address;
+    String sysStatus;
 }

@@ -74,8 +74,8 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
   @Query("SELECT t from Ticket t ORDER BY t.startAt DESC limit 3")
   List<Ticket> firstThreeRegistrationTicket();
 
-  @Query("SELECT t from Ticket t WHERE t.id = :ticketId AND t.ticketType.typeName = 'REGISTRATION'")
-  Ticket getDetailRegistrationTicket(Long ticketId);
+  @Query("SELECT t FROM Ticket t JOIN FETCH t.ticketType tt JOIN FETCH t.user u WHERE t.id = :ticketId AND tt.typeName = 'REGISTRATION'")
+  Ticket getDetailRegistrationTicket(@Param("ticketId") Long ticketId);
 
   @Modifying
   @Transactional

@@ -18,12 +18,14 @@ import com.fis.hrmservice.domain.usecase.command.ticket.RemoteRequestCommand;
 import com.intern.hub.library.common.exception.ConflictDataException;
 import com.intern.hub.library.common.exception.NotFoundException;
 import com.intern.hub.library.common.utils.Snowflake;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @Transactional
 public class TicketUseCaseImpl {
@@ -201,12 +203,21 @@ public class TicketUseCaseImpl {
   }
 
   public TicketModel getDetailRegistrationTicket(Long ticketId){
+    log.info("=== Getting detail for ticketId: {} ===", ticketId);
 
     TicketModel ticket = ticketRepositoryPort.getDetailRegistrationTicket(ticketId);
 
+    log.info("Query result: ticket={}", ticket);
+
     if (ticket == null) {
+      log.warn("Ticket not found with id: {} and type REGISTRATION", ticketId);
       throw new NotFoundException("Ticket not found: " + ticketId);
     }
+
+    log.info("Ticket found: id={}, requester={}, type={}",
+        ticket.getTicketId(),
+        ticket.getRequester() != null ? ticket.getRequester().getFullName() : "null",
+        ticket.getTicketType() != null ? ticket.getTicketType().getTypeName() : "null");
 
     return ticket;
   }
