@@ -124,6 +124,11 @@ public class TicketController {
     return ResponseApi.ok(ticketUseCaseImpl.rejectRegistrationTicketByTicketId(ticketId));
   }
 
+  @PutMapping("/suspend/{ticketId}")
+  public ResponseApi<?> suspendRegistrationRequest(@PathVariable Long ticketId) {
+    return ResponseApi.ok(ticketUseCaseImpl.suspendRegistrationTicketByTicketId(ticketId));
+  }
+
   @GetMapping("/approval")
   public ResponseApi<Integer> allRegistrationTicket() {
     return ResponseApi.ok(ticketUseCaseImpl.allRegistrationTicket());

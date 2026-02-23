@@ -230,6 +230,10 @@ public class TicketUseCaseImpl {
     return ticketRepositoryPort.updateRegistrationTicketStatus(ticketId, "REJECTED");
   }
 
+  public TicketModel suspendRegistrationTicketByTicketId(Long ticketId) {
+    return ticketRepositoryPort.updateRegistrationTicketStatus(ticketId, "SUSPENDED");
+  }
+
   public int allRegistrationTicket() {
     return ticketRepositoryPort.getAllRegistrationTicket();
   }

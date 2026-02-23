@@ -97,6 +97,8 @@ public class TicketRepositoryAdapter implements TicketRepositoryPort {
       user.setSysStatus(UserStatus.APPROVED);
     } else if (ticketStatus.equals("REJECTED")) {
       user.setSysStatus(UserStatus.REJECTED);
+    } else if (ticketStatus.equals("SUSPENDED")) {
+      user.setSysStatus(UserStatus.SUSPENDED);
     }
     userRepository.save(user);
     return ticket;
