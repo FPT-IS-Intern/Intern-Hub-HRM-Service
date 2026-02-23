@@ -4,4 +4,6 @@ import com.fis.hrmservice.domain.model.user.AvatarModel;
 
 public interface AvatarRepositoryPort {
   AvatarModel getAvatarByUserId(Long userId);
+
+  AvatarModel save(AvatarModel avatar);
 }

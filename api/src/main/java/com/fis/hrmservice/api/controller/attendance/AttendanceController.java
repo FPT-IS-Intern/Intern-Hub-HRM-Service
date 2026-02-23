@@ -34,7 +34,7 @@ public class AttendanceController {
 
   /** Get current attendance status for a user */
   @GetMapping("/status")
-//  test tạm ko dùng cái này  -> @RequestParam Long userId
+  //  test tạm ko dùng cái này  -> @RequestParam Long userId
   public ResponseApi<AttendanceStatusResponse> getAttendanceStatus(@RequestParam Long userId) {
     log.info("GET /attendance/status - userId: {}", userId);
 

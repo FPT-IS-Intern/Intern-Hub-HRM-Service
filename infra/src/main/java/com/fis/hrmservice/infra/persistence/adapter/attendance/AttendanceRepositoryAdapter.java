@@ -12,8 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 /**
- * Mock implementation of AttendanceRepositoryPort using in-memory storage.
- * TODO: Replace with real
+ * Mock implementation of AttendanceRepositoryPort using in-memory storage. TODO: Replace with real
  * JPA repository implementation when database is ready.
  */
 @Slf4j
@@ -72,14 +71,18 @@ public class AttendanceRepositoryAdapter implements AttendanceRepositoryPort {
     }
     return AttendanceLogModel.builder()
         .attendanceId(entity.getId() != null ? entity.getId() : 0L)
-        .user(entity.getUser() != null ? com.fis.hrmservice.domain.model.user.UserModel.builder()
-            .userId(entity.getUser().getId())
-            .fullName(entity.getUser().getFullName())
-            .companyEmail(entity.getUser().getCompanyEmail())
-            .build() : null)
+        .user(
+            entity.getUser() != null
+                ? com.fis.hrmservice.domain.model.user.UserModel.builder()
+                    .userId(entity.getUser().getId())
+                    .fullName(entity.getUser().getFullName())
+                    .companyEmail(entity.getUser().getCompanyEmail())
+                    .build()
+                : null)
         .workDate(entity.getWorkDate())
         .checkInTime(entity.getCheckInTime() != null ? entity.getCheckInTime().toEpochMilli() : 0L)
-        .checkOutTime(entity.getCheckOutTime() != null ? entity.getCheckOutTime().toEpochMilli() : 0L)
+        .checkOutTime(
+            entity.getCheckOutTime() != null ? entity.getCheckOutTime().toEpochMilli() : 0L)
         .attendanceStatus(entity.getAttendanceStatus())
         .source(entity.getSource())
         .build();

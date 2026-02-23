@@ -1,32 +1,32 @@
 package com.fis.hrmservice.infra.mapper;
 
-import com.fis.hrmservice.domain.model.user.AvatarModel;
+import com.fis.hrmservice.domain.model.user.CvModel;
 import com.fis.hrmservice.domain.model.user.UserModel;
-import com.fis.hrmservice.infra.persistence.entity.Avatar;
+import com.fis.hrmservice.infra.persistence.entity.Cv;
 import com.fis.hrmservice.infra.persistence.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring")
-public interface AvatarMapper {
+public interface CvMapper {
 
-  @Mapping(target = "avatarId", source = "id")
-  @Mapping(target = "fileName", source = "avatarFileName")
+  // ===== Entity -> Model =====
+  @Mapping(target = "cvId", source = "id")
+  @Mapping(target = "fileName", source = "cvFileName")
   @Mapping(target = "user", source = "user", qualifiedByName = "userToSimpleModel")
-  AvatarModel toModel(Avatar avatar);
+  CvModel toModel(Cv cv);
 
-  @Mapping(target = "id", source = "avatarId")
-  @Mapping(target = "avatarFileName", source = "fileName")
-  @Mapping(target = "fileType", source = "fileType")
-  @Mapping(target = "fileSize", source = "fileSize")
+  // ===== Model -> Entity =====
+  @Mapping(target = "id", source = "cvId")
+  @Mapping(target = "cvFileName", source = "fileName")
   @Mapping(target = "user", source = "user", qualifiedByName = "userModelToEntity")
   @Mapping(target = "createdAt", source = "createdAt")
   @Mapping(target = "updatedAt", source = "updatedAt")
   @Mapping(target = "createdBy", source = "createdBy")
   @Mapping(target = "updatedBy", source = "updatedBy")
   @Mapping(target = "version", source = "version")
-  Avatar toEntity(AvatarModel avatarModel);
+  Cv toEntity(CvModel cvModel);
 
   @Named("userToSimpleModel")
   default UserModel userToSimpleModel(User user) {

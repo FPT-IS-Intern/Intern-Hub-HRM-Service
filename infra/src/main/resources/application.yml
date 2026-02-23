@@ -44,8 +44,17 @@ spring:
   application:
     name: hrm
 
-eureka:
+feign:
   client:
-    enabled: false
-    service-url:
-      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
+    config:
+      auth:
+        url: ${HRM_SERVICE_URL:http://localhost:8081}
+
+cloudflare:
+  r2:
+    access-key-id: ${ACCESS_KEY_ID}
+    secret-key-id: ${SECRET_KEY_ID}
+    account-id: ${ACCOUNT_ID}
+    end-point: ${END_POINT}
+    bucket-name: ${BUCKET_NAME}
+    public-base-url: ${PUBLIC_BASE_URL}

@@ -28,11 +28,9 @@ public class Avatar extends AuditEntity {
   @Column(name = "updated_at")
   private Long updatedAt;
 
-  @Size(max = 255)
   @Column(name = "created_by")
   private Long createdBy;
 
-  @Size(max = 255)
   @Column(name = "updated_by")
   private Long updatedBy;
 

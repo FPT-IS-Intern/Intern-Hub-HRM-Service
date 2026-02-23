@@ -6,11 +6,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+//import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication(scanBasePackages = "com.fis.hrmservice")
 @EnableJpaRepositories(basePackages = "com.fis.hrmservice.infra.persistence.repository")
 @EntityScan(basePackages = "com.fis.hrmservice.infra.persistence.entity")
 @EnableGlobalExceptionHandler
+//@EnableFeignClients
 @EnableSecurity
 public class Main {
 

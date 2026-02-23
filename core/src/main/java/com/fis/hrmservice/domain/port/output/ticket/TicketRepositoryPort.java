@@ -1,7 +1,6 @@
 package com.fis.hrmservice.domain.port.output.ticket;
 
 import com.fis.hrmservice.domain.model.ticket.TicketModel;
-
 import java.util.List;
 
 public interface TicketRepositoryPort {
@@ -20,7 +19,10 @@ public interface TicketRepositoryPort {
   TicketModel updateRegistrationTicketStatus(Long ticketId, String ticketStatus);
 
   int getAllRegistrationTicket();
+
   int getAllRegistrationTicketApproved();
+
   int getAllRegistrationTicketRejected();
+
   int getAllRegistrationTicketPending();
 }

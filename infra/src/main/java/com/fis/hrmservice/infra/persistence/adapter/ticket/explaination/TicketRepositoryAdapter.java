@@ -12,11 +12,10 @@ import com.fis.hrmservice.infra.persistence.repository.ticket.TicketRepository;
 import com.intern.hub.library.common.exception.ConflictDataException;
 import com.intern.hub.library.common.exception.NotFoundException;
 import jakarta.persistence.EntityManager;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Repository
 public class TicketRepositoryAdapter implements TicketRepositoryPort {
@@ -27,8 +26,7 @@ public class TicketRepositoryAdapter implements TicketRepositoryPort {
 
   @Autowired private EntityManager entityManager;
 
-  @Autowired
-  private UserRepositoryAdapter userRepository;
+  @Autowired private UserRepositoryAdapter userRepository;
 
   @Override
   @Transactional
@@ -58,7 +56,9 @@ public class TicketRepositoryAdapter implements TicketRepositoryPort {
   @Override
   public List<TicketModel> filterRegistrationTicket(String keyword, String ticketStatus) {
     System.out.println("CALLING FILTER TICKETS");
-      return ticketRepository.filterTickets(keyword, ticketStatus).stream().map(ticketMapper::toModel).toList();
+    return ticketRepository.filterTickets(keyword, ticketStatus).stream()
+        .map(ticketMapper::toModel)
+        .toList();
   }
 
   @Override
@@ -68,7 +68,9 @@ public class TicketRepositoryAdapter implements TicketRepositoryPort {
 
   @Override
   public List<TicketModel> firstThreeRegistrationTicket() {
-    return ticketRepository.firstThreeRegistrationTicket().stream().map(ticketMapper::toModel).toList();
+    return ticketRepository.firstThreeRegistrationTicket().stream()
+        .map(ticketMapper::toModel)
+        .toList();
   }
 
   @Override
@@ -93,8 +95,7 @@ public class TicketRepositoryAdapter implements TicketRepositoryPort {
 
     if (ticketStatus.equals("APPROVED")) {
       user.setSysStatus(UserStatus.APPROVED);
-    }
-    else if (ticketStatus.equals("REJECTED")){
+    } else if (ticketStatus.equals("REJECTED")) {
       user.setSysStatus(UserStatus.REJECTED);
     }
     userRepository.save(user);
@@ -120,5 +121,4 @@ public class TicketRepositoryAdapter implements TicketRepositoryPort {
   public int getAllRegistrationTicketPending() {
     return ticketRepository.allPendingRegistrationCount();
   }
-
 }

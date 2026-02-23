@@ -2,6 +2,7 @@ plugins {
     id("java-library")
 }
 
+
 dependencies {
     // Project dependencies
     api(project(":core"))
@@ -19,7 +20,6 @@ dependencies {
     implementation(libs.spring.boot.starter.liquibase)
 
     // Spring Cloud
-    implementation(libs.spring.cloud.eureka)
     implementation(libs.spring.cloud.feign)
 
     // MapStruct
@@ -30,4 +30,9 @@ dependencies {
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
     annotationProcessor(libs.lombok.mapstruct.binding)
+
+    // Source: https://mvnrepository.com/artifact/software.amazon.awssdk/s3
+    implementation("software.amazon.awssdk:s3:2.41.34")
+
+
 }

@@ -52,48 +52,46 @@ public interface TicketApiMapper {
 
   RemoteRequestCommand toRemoteRequestCommand(RemoteTicketRequest leaveRequest);
 
-
   @Mappings({
-          // User info
-          @Mapping(target = "fullName", source = "requester.fullName"),
-          @Mapping(target = "companyEmail", source = "requester.companyEmail"),
+    // User info
+    @Mapping(target = "fullName", source = "requester.fullName"),
+    @Mapping(target = "companyEmail", source = "requester.companyEmail"),
 
-          // Department (tạm assume từ position)
-          @Mapping(target = "departmentName", ignore = true  /*source = "requester.position.department.departmentName" */),
+    // Department (tạm assume từ position)
+    @Mapping(
+        target = "departmentName",
+        ignore = true /*source = "requester.position.department.departmentName" */),
 
-          // Ticket info
-          @Mapping(target = "ticketTypeName", expression = "java(ticketModel.getTicketType().getTypeName().name())"),
-          @Mapping(target = "ticketStatus", expression = "java(ticketModel.getSysStatus().name())"),
+    // Ticket info
+    @Mapping(
+        target = "ticketTypeName",
+        expression = "java(ticketModel.getTicketType().getTypeName().name())"),
+    @Mapping(target = "ticketStatus", expression = "java(ticketModel.getSysStatus().name())"),
 
-          // no thường set ở service layer
-          @Mapping(target = "no", ignore = true)
+    // no thường set ở service layer
+    @Mapping(target = "no", ignore = true)
   })
   ListRegistrationResponse toRegistrationResponse(TicketModel ticketModel);
 
   @Mappings({
-          @Mapping(target = "senderFullName", source = "requester.fullName"),
-          @Mapping(target = "registrationDate", source = "startAt"),
-          @Mapping(
-                  target = "ticketStatus",
-                  expression = "java(ticketModel.getSysStatus().name())"
-          )
+    @Mapping(target = "senderFullName", source = "requester.fullName"),
+    @Mapping(target = "registrationDate", source = "startAt"),
+    @Mapping(target = "ticketStatus", expression = "java(ticketModel.getSysStatus().name())")
   })
   FirstThreeRegistrationResponse toFirstThreeRegistrationResponse(TicketModel ticketModel);
 
   @Mappings({
-          @Mapping(target = "avatarUrl", source = "requester.avatar.avatarUrl"),
-          @Mapping(target = "positionName", source = "requester.position.name"),
-          @Mapping(target = "cvUrl", source = "requester.cv.cvUrl"),
-
-          @Mapping(target = "internshipStartDate", source = "requester.internshipStartDate"),
-          @Mapping(target = "internshipEndDate", source = "requester.internshipEndDate"),
-
-          @Mapping(target = "fullName", source = "requester.fullName"),
-          @Mapping(target = "idNumber", source = "requester.idNumber"),
-          @Mapping(target = "dateOfBirth", source = "requester.dateOfBirth"),
-          @Mapping(target = "phoneNumber", source = "requester.phoneNumber"),
-          @Mapping(target = "companyEmail", source = "requester.companyEmail"),
-          @Mapping(target = "address", source = "requester.address")
+    @Mapping(target = "avatarUrl", source = "requester.avatar.avatarUrl"),
+    @Mapping(target = "positionName", source = "requester.position.name"),
+    @Mapping(target = "cvUrl", source = "requester.cv.cvUrl"),
+    @Mapping(target = "internshipStartDate", source = "requester.internshipStartDate"),
+    @Mapping(target = "internshipEndDate", source = "requester.internshipEndDate"),
+    @Mapping(target = "fullName", source = "requester.fullName"),
+    @Mapping(target = "idNumber", source = "requester.idNumber"),
+    @Mapping(target = "dateOfBirth", source = "requester.dateOfBirth"),
+    @Mapping(target = "phoneNumber", source = "requester.phoneNumber"),
+    @Mapping(target = "companyEmail", source = "requester.companyEmail"),
+    @Mapping(target = "address", source = "requester.address")
   })
   RegistrationDetailResponse toRegistrationDetailResponse(TicketModel ticketModel);
 }

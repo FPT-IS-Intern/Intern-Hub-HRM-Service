@@ -47,11 +47,9 @@ public class AttendanceLog extends AuditEntity {
   @Column(name = "version")
   private Integer version;
 
-  @Size(max = 255)
   @Column(name = "created_by")
   private Long createdBy;
 
-  @Size(max = 255)
   @Column(name = "updated_by")
   private Long updatedBy;
 
