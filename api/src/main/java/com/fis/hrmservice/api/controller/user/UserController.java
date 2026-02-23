@@ -131,4 +131,10 @@ public class UserController {
     Integer totalIntern = approvalUser.totalIntern();
     return ResponseApi.ok(totalIntern);
   }
+
+  @GetMapping("/internship-changing")
+  public ResponseApi<Integer> internshipChanging() {
+    Integer internshipChanging = approvalUser.internshipChanging();
+    return ResponseApi.ok(internshipChanging);
+  }
 }
