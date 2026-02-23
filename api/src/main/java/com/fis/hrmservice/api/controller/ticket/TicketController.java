@@ -25,9 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("hrm-service/ticket")
-@EnableGlobalExceptionHandler
 @Slf4j
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4207"})
 @Tag(name = "Ticket Management", description = "APIs for Ticket")
 public class TicketController {
 
