@@ -15,7 +15,7 @@ public class Cv extends AuditEntity {
   @Column(name = "cv_id", nullable = false)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @OneToOne
   @JoinColumn(name = "user_id")
   private User user;
 

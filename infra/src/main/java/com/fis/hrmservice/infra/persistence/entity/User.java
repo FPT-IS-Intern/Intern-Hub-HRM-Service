@@ -58,4 +58,10 @@ public class User extends AuditEntity {
   @Enumerated(EnumType.STRING)
   @Column(name = "sys_status", length = 20)
   private UserStatus sysStatus;
+
+  @OneToOne(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  private Avatar avatar;
+
+  @OneToOne(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  private Cv cv;
 }

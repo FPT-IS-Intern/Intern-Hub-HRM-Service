@@ -61,28 +61,36 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     """)
   int multipleApproval(@Param("ticketIds") List<Long> ticketIds);
 
-  @Query(
-      """
-
+  @Query("""
               SELECT t
-          FROM Ticket t
-          JOIN t.user u
-          JOIN t.ticketType tt
-          WHERE (
-                  :keyword IS NULL
-                  OR LOWER(u.companyEmail) LIKE LOWER(CONCAT('%', :keyword, '%'))
-                  OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%'))
-                )
-            AND (:status IS NULL OR t.status = :status)
-            AND tt.typeName = 'REGISTRATION'
+              FROM Ticket t
+              JOIN t.user u
+              JOIN t.ticketType tt
+              WHERE (
+                      :keyword IS NULL
+                      OR LOWER(TRIM(u.companyEmail)) LIKE LOWER(CONCAT('%', TRIM(:keyword), '%'))
+                      OR LOWER(TRIM(u.fullName)) LIKE LOWER(CONCAT('%', TRIM(:keyword), '%'))
+                    )
+                AND (:status IS NULL OR t.status = :status)
+                AND tt.typeName = 'REGISTRATION'
           """)
-  List<Ticket> filterTickets(@Param("keyword") String keyword, @Param("status") String status);
+  List<Ticket> filterTickets(
+          @Param("keyword") String keyword,
+          @Param("status") String status);
 
   @Query("SELECT t from Ticket t ORDER BY t.startAt DESC limit 3")
   List<Ticket> firstThreeRegistrationTicket();
 
-  @Query(
-      "SELECT t FROM Ticket t JOIN FETCH t.ticketType tt JOIN FETCH t.user u WHERE t.id = :ticketId AND tt.typeName = 'REGISTRATION'")
+  @Query("""
+              SELECT t
+              FROM Ticket t
+              JOIN FETCH t.ticketType tt
+              JOIN FETCH t.user u
+              LEFT JOIN FETCH u.avatar
+              LEFT JOIN FETCH u.cv
+              WHERE t.id = :ticketId
+                AND tt.typeName = 'REGISTRATION'
+          """)
   Ticket getDetailRegistrationTicket(@Param("ticketId") Long ticketId);
 
   @Modifying

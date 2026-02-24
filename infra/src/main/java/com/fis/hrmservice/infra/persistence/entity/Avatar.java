@@ -15,7 +15,7 @@ public class Avatar extends AuditEntity {
   @Column(name = "avatar_id", nullable = false)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @OneToOne
   @JoinColumn(name = "user_id")
   private User user;
 
