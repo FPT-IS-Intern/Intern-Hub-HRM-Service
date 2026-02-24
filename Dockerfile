@@ -32,7 +32,7 @@ RUN jdeps --ignore-missing-deps -q \
     api/build/libs/hrm-service.jar > deps.txt
 
 RUN jlink \
-    --add-modules $(cat deps.txt),java.base,java.logging,java.naming,java.desktop,java.management,java.security.jgss,java.instrument,java.sql,jdk.crypto.ec,jdk.unsupported \
+    --add-modules $(cat deps.txt),java.base,java.logging,java.naming,java.desktop,java.management,java.security.jgss,java.instrument,java.sql,java.compiler,jdk.crypto.ec,jdk.unsupported \
     --compress zip-9 \
     --strip-debug \
     --no-header-files \
