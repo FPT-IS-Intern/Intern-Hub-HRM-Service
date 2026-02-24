@@ -1,4 +1,3 @@
-val springCloudVersion by extra("2025.1.0")
 plugins {
     id("org.springframework.boot")
     id("io.spring.dependency-management")
@@ -8,7 +7,6 @@ plugins {
 repositories {
     maven { url = uri("https://jitpack.io") }
     mavenCentral()
-    maven { url = uri("https://jitpack.io") }
 }
 
 springBoot {
@@ -39,11 +37,10 @@ dependencies {
 
     // MapStruct
     implementation(libs.mapstruct)
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("org.springframework.cloud:spring-cloud-starter-loadbalancer")
-    testImplementation("io.projectreactor:reactor-test")
-    implementation("com.github.FPT-IS-Intern:Intern-Hub-Security-Starter:1.0.4")
-    implementation("com.github.FPT-IS-Intern:Intern-Hub-Common-Library:2.0.3")
+    implementation(libs.spring.boot.starter.webflux)
+    implementation(libs.spring.cloud.loadbalancer)
+    implementation(libs.spring.cloud.feign)
+    testImplementation(libs.reactor.test)
     annotationProcessor(libs.mapstruct.processor)
     annotationProcessor(libs.lombok.mapstruct.binding)
 
@@ -52,16 +49,8 @@ dependencies {
     annotationProcessor(libs.lombok)
 
 
-    implementation("org.springframework.cloud:spring-cloud-starter-loadbalancer")
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
-
     // Configuration processor
     annotationProcessor(libs.spring.boot.configuration.processor)
-}
-dependencyManagement {
-    imports {
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion")
-    }
 }
 
 tasks.bootJar {

@@ -1,7 +1,7 @@
 [versions]
 # Spring
 spring-boot = "4.0.2"
-spring-cloud = "5.0.1"
+spring-cloud-bom = "2025.1.0"
 dependency-management = "1.1.7"
 
 # Database
@@ -22,12 +22,16 @@ jakarta-validation = "3.0.2"
 
 # Custom Libraries
 common-library = "2.0.3"
-security-starter = "1.0.3"
+security-starter = "1.0.4"
+
+# AWS
+aws-sdk = "2.41.34"
 
 [libraries]
 # Spring Boot Starters
 spring-boot-starter = { group = "org.springframework.boot", name = "spring-boot-starter", version.ref = "spring-boot" }
 spring-boot-starter-webmvc = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc", version.ref = "spring-boot" }
+spring-boot-starter-webflux = { group = "org.springframework.boot", name = "spring-boot-starter-webflux", version.ref = "spring-boot" }
 spring-boot-starter-security = { group = "org.springframework.boot", name = "spring-boot-starter-security", version.ref = "spring-boot" }
 spring-boot-starter-validation = { group = "org.springframework.boot", name = "spring-boot-starter-validation", version.ref = "spring-boot" }
 spring-boot-starter-data-jpa = { group = "org.springframework.boot", name = "spring-boot-starter-data-jpa", version.ref = "spring-boot" }
@@ -37,7 +41,9 @@ spring-boot-starter-liquibase = { group = "org.springframework.boot", name = "sp
 spring-boot-configuration-processor = { group = "org.springframework.boot", name = "spring-boot-configuration-processor", version.ref = "spring-boot" }
 
 # Spring Cloud
-spring-cloud-feign = { group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version.ref = "spring-cloud" }
+spring-cloud-dependencies = { group = "org.springframework.cloud", name = "spring-cloud-dependencies", version.ref = "spring-cloud-bom" }
+spring-cloud-feign = { group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign" }
+spring-cloud-loadbalancer = { group = "org.springframework.cloud", name = "spring-cloud-starter-loadbalancer" }
 
 # Database
 postgresql = { group = "org.postgresql", name = "postgresql", version.ref = "postgres" }
@@ -59,6 +65,12 @@ jakarta-validation = { group = "jakarta.validation", name = "jakarta.validation-
 # Custom Libraries
 common-library = { group = "com.github.FPT-IS-Intern", name = "Intern-Hub-Common-Library", version.ref = "common-library" }
 security-starter = { group = "com.github.FPT-IS-Intern", name = "Intern-Hub-Security-Starter", version.ref = "security-starter" }
+
+# Testing
+reactor-test = { group = "io.projectreactor", name = "reactor-test" }
+
+# AWS
+aws-s3 = { group = "software.amazon.awssdk", name = "s3", version.ref = "aws-sdk" }
 
 [bundles]
 # Spring Boot All: Web + Validation

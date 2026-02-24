@@ -1,4 +1,5 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
+import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
 
 plugins {
     alias(libs.plugins.spring.boot) apply false
@@ -41,6 +42,12 @@ subprojects {
             importOrder()
             removeUnusedImports()
             endWithNewline()
+        }
+    }
+
+    configure<DependencyManagementExtension> {
+        imports {
+            mavenBom(rootProject.libs.spring.cloud.dependencies.get().toString())
         }
     }
 
