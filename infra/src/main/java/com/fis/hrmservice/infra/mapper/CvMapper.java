@@ -31,9 +31,7 @@ public interface CvMapper {
   @Named("userToSimpleModel")
   default UserModel userToSimpleModel(User user) {
     if (user == null) return null;
-    return UserModel.builder()
-        .userId(user.getId())
-        .build();
+    return UserModel.builder().userId(user.getId()).build();
   }
 
   @Named("userModelToEntity")

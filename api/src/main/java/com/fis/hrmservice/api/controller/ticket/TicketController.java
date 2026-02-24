@@ -13,7 +13,6 @@ import com.fis.hrmservice.domain.usecase.command.ticket.CreateTicketCommand;
 import com.fis.hrmservice.domain.usecase.command.ticket.LeaveRequestCommand;
 import com.fis.hrmservice.domain.usecase.command.ticket.RemoteRequestCommand;
 import com.fis.hrmservice.domain.usecase.implement.ticket.TicketUseCaseImpl;
-import com.intern.hub.library.common.annotation.EnableGlobalExceptionHandler;
 import com.intern.hub.library.common.dto.ResponseApi;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;

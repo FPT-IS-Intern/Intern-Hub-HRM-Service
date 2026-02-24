@@ -61,7 +61,8 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     """)
   int multipleApproval(@Param("ticketIds") List<Long> ticketIds);
 
-  @Query("""
+  @Query(
+      """
               SELECT t
               FROM Ticket t
               JOIN t.user u
@@ -74,14 +75,13 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
                 AND (:status IS NULL OR t.status = :status)
                 AND tt.typeName = 'REGISTRATION'
           """)
-  List<Ticket> filterTickets(
-          @Param("keyword") String keyword,
-          @Param("status") String status);
+  List<Ticket> filterTickets(@Param("keyword") String keyword, @Param("status") String status);
 
   @Query("SELECT t from Ticket t ORDER BY t.startAt DESC limit 3")
   List<Ticket> firstThreeRegistrationTicket();
 
-  @Query("""
+  @Query(
+      """
               SELECT t
               FROM Ticket t
               JOIN FETCH t.ticketType tt

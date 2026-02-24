@@ -61,14 +61,14 @@ public class UserController {
     RegisterUserCommand command = userApiMapper.toCommand(request);
     UserModel user = registerUserUseCase.registerUser(command);
 
-        // Gọi Feign Client để tạo auth identity
-        try {
-          createAuthIdentityPort.createAuthIdentity(user.getUserId(), user.getCompanyEmail());
-          log.info("Auth identity created successfully for userId: {}", user.getUserId());
-        } catch (Exception e) {
-          log.error("Call Auth Service failed: {}", e.getMessage(), e);
-          throw new RuntimeException("Create auth identity failed: " + e.getMessage());
-        }
+    // Gọi Feign Client để tạo auth identity
+    try {
+      createAuthIdentityPort.createAuthIdentity(user.getUserId(), user.getCompanyEmail());
+      log.info("Auth identity created successfully for userId: {}", user.getUserId());
+    } catch (Exception e) {
+      log.error("Call Auth Service failed: {}", e.getMessage(), e);
+      throw new RuntimeException("Create auth identity failed: " + e.getMessage());
+    }
 
     return ResponseApi.ok(userApiMapper.toResponse(user));
   }
