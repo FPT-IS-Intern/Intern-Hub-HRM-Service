@@ -57,7 +57,7 @@ feign:
 cloudflare:
   r2:
     access-key-id: ${ACCESS_KEY_ID}
-    secret-key-id: dab77eec28a218c479ba35fc903b4b6346aad1b356cd3736651c92cf8142d488
-    end-point: https://f452486d5bdeefd2b7464d3bd3870fd8.r2.cloudflarestorage.com
-    bucket-name: intern-hub
-    public-base-url: https://pub-7bdfb6524c844f47bcec04620ec6c03a.r2.dev
+    secret-key-id: ${SECRET_KEY_ID}
+    end-point: ${END_POINT}
+    bucket-name: ${BUCKET_NAME}
+    public-base-url: ${PUBLIC_BASE_URL}
