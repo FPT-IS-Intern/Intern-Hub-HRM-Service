@@ -8,4 +8,5 @@ import lombok.Data;
 public class CheckInCommand {
   private Long userId;
   private long checkInTime;
+  private String clientIp;
 }

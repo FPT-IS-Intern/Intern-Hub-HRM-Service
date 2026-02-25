@@ -5,12 +5,13 @@ import com.fis.hrmservice.api.dto.response.AttendanceResponse;
 import com.fis.hrmservice.api.dto.response.AttendanceStatusResponse;
 import com.fis.hrmservice.api.dto.response.WiFiInfoResponse;
 import com.fis.hrmservice.api.mapper.AttendanceApiMapper;
+import com.fis.hrmservice.api.util.WebUtils;
 import com.fis.hrmservice.domain.model.attendance.AttendanceLogModel;
 import com.fis.hrmservice.domain.model.attendance.AttendanceStatusModel;
+import com.fis.hrmservice.domain.port.output.network.NetworkCheckPort;
+import com.fis.hrmservice.domain.usecase.attendance.AttendanceUseCase;
 import com.fis.hrmservice.domain.usecase.command.attendance.CheckInCommand;
 import com.fis.hrmservice.domain.usecase.command.attendance.CheckOutCommand;
-import com.fis.hrmservice.domain.usecase.implement.attendance.AttendanceUseCaseImpl;
-import com.fis.hrmservice.infra.service.NetworkCheckService;
 import com.intern.hub.library.common.annotation.EnableGlobalExceptionHandler;
 import com.intern.hub.library.common.dto.ResponseApi;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,18 +28,17 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Attendance Management", description = "APIs for attendance check-in and check-out")
 public class AttendanceController {
 
-  @Autowired private AttendanceUseCaseImpl attendanceUseCase;
-  @Autowired private AttendanceApiMapper attendanceApiMapper;
-  @Autowired private NetworkCheckService networkCheckService;
+  @Autowired
+  private AttendanceUseCase attendanceUseCase;
+  @Autowired
+  private AttendanceApiMapper attendanceApiMapper;
+  @Autowired
+  private NetworkCheckPort networkCheckPort;
 
   /** Get current attendance status for a user */
   @GetMapping("/status")
-  //  test tạm ko dùng cái này  -> @RequestParam Long userId
-  public ResponseApi<AttendanceStatusResponse> getAttendanceStatus(
-      HttpServletRequest request, @RequestParam Long userId) {
+  public ResponseApi<AttendanceStatusResponse> getAttendanceStatus(@RequestParam Long userId) {
     log.info("GET /attendance/status - userId: {}", userId);
-
-    log.info("Client IP: {}", getClientIpAddress(request));
 
     LocalDate today = LocalDate.now();
     AttendanceStatusModel status = attendanceUseCase.getAttendanceStatus(userId, today);
@@ -49,10 +49,12 @@ public class AttendanceController {
 
   /** Process check-in */
   @PostMapping("/check-in")
-  public ResponseApi<AttendanceResponse> checkIn(@RequestBody AttendanceRequest request) {
+  public ResponseApi<AttendanceResponse> checkIn(
+      @RequestBody AttendanceRequest request, HttpServletRequest servletRequest) {
     log.info("POST /attendance/check-in - userId: {}", request.getUserId());
 
-    CheckInCommand command = attendanceApiMapper.toCheckInCommand(request);
+    String clientIp = WebUtils.getClientIpAddress(servletRequest);
+    CheckInCommand command = attendanceApiMapper.toCheckInCommand(request, clientIp);
     AttendanceLogModel attendance = attendanceUseCase.checkIn(command);
     AttendanceResponse response = attendanceApiMapper.toCheckInResponseFromLog(attendance);
 
@@ -72,44 +74,22 @@ public class AttendanceController {
   }
 
   /**
-   * Check if user is on company network based on IP address Validates against company IP ranges
-   * from bo-portal
+   * Check if user is on company network based on IP address Validates against
+   * company IP ranges
    */
   @GetMapping("/network-check")
   public ResponseApi<WiFiInfoResponse> checkNetwork(HttpServletRequest request) {
     log.info("GET /attendance/network-check - checking client IP");
 
-    String clientIp = getClientIpAddress(request);
-    boolean isCompanyNetwork = networkCheckService.isCompanyIpAddress(clientIp);
+    String clientIp = WebUtils.getClientIpAddress(request);
+    boolean isCompanyNetwork = networkCheckPort.isCompanyIpAddress(clientIp);
 
-    WiFiInfoResponse response =
-        WiFiInfoResponse.builder()
-            .wifiName(isCompanyNetwork ? "FPT-Network" : "External-Network")
-            .isCompanyWifi(isCompanyNetwork)
-            .build();
+    WiFiInfoResponse response = WiFiInfoResponse.builder()
+        .wifiName(isCompanyNetwork ? "FPT-Network" : "External-Network")
+        .isCompanyWifi(isCompanyNetwork)
+        .build();
 
     log.info("Network check result - IP: {}, isCompanyNetwork: {}", clientIp, isCompanyNetwork);
     return ResponseApi.ok(response);
-  }
-
-  // ==================== Helper Methods ====================
-
-  /**
-   * Extract client IP address from request headers. Checks multiple headers in order of priority to
-   * handle various proxy configurations.
-   */
-  private String getClientIpAddress(HttpServletRequest request) {
-    String ip = request.getHeader("X-Forwarded-For");
-
-    if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-      ip = request.getRemoteAddr();
-    }
-
-    // Handle multiple IPs in X-Forwarded-For
-    if (ip != null && ip.contains(",")) {
-      ip = ip.split(",")[0].trim();
-    }
-
-    return ip;
   }
 }
