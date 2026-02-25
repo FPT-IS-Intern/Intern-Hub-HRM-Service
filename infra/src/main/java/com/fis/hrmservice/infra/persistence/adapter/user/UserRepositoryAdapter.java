@@ -24,6 +24,16 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
   @Transactional
   public UserModel save(UserModel user) {
     User entity = userMapper.toEntity(user);
+
+    // Fix bidirectional relationship: avatarToEntity/cvToEntity ignore the user field,
+    // so we must set it manually to prevent cascade from nullifying the FK.
+    if (entity.getAvatar() != null) {
+      entity.getAvatar().setUser(entity);
+    }
+    if (entity.getCv() != null) {
+      entity.getCv().setUser(entity);
+    }
+
     User savedEntity = userJpaRepository.save(entity);
     return userMapper.toModel(savedEntity);
   }
