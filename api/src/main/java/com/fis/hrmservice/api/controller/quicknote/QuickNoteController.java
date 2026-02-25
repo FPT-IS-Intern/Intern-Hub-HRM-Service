@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("hrm-serice/api/quickly-note")
+@RequestMapping("hrm/api/quickly-note")
 @EnableGlobalExceptionHandler
 @Slf4j
 @Tag(name = "Quick note Management", description = "APIs for Quick note")

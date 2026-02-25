@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/hrm-service/internal/users")
+@RequestMapping("/hrm/internal/users")
 public class UserInternalController {
 
   @Autowired private UserProfileUseCaseImpl userProfileUseCase;

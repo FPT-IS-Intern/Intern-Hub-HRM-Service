@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("hrm-service/users")
+@RequestMapping("hrm/users")
 @EnableGlobalExceptionHandler
 @Slf4j
 @Tag(name = "User Management", description = "APIs for user registration and management")

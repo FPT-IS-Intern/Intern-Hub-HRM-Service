@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("hrm-service/attendance")
+@RequestMapping("hrm/attendance")
 @EnableGlobalExceptionHandler
 @Slf4j
 @Tag(name = "Attendance Management", description = "APIs for attendance check-in and check-out")

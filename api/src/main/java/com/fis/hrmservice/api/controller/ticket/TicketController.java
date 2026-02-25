@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("hrm-service/ticket")
+@RequestMapping("hrm/ticket")
 @Slf4j
 @Tag(name = "Ticket Management", description = "APIs for Ticket")
 public class TicketController {
