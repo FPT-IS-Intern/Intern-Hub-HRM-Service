@@ -50,11 +50,12 @@ public class AttendanceController {
   /** Process check-in */
   @PostMapping("/check-in")
   public ResponseApi<AttendanceResponse> checkIn(
-      @RequestBody AttendanceRequest request, HttpServletRequest servletRequest) {
-    log.info("POST /attendance/check-in - userId: {}", request.getUserId());
+      @RequestParam Long userId, HttpServletRequest servletRequest) {
+    log.info("POST /attendance/check-in - userId: {}", userId);
 
     String clientIp = WebUtils.getClientIpAddress(servletRequest);
-    CheckInCommand command = attendanceApiMapper.toCheckInCommand(request, clientIp);
+    long now = System.currentTimeMillis();
+    CheckInCommand command = attendanceApiMapper.toCheckInCommand(userId, now, clientIp);
     AttendanceLogModel attendance = attendanceUseCase.checkIn(command);
     AttendanceResponse response = attendanceApiMapper.toCheckInResponseFromLog(attendance);
 
@@ -63,10 +64,11 @@ public class AttendanceController {
 
   /** Process check-out */
   @PostMapping("/check-out")
-  public ResponseApi<AttendanceResponse> checkOut(@RequestBody AttendanceRequest request) {
-    log.info("POST /attendance/check-out - userId: {}", request.getUserId());
+  public ResponseApi<AttendanceResponse> checkOut(@RequestParam Long userId) {
+    log.info("POST /attendance/check-out - userId: {}", userId);
 
-    CheckOutCommand command = attendanceApiMapper.toCheckOutCommand(request);
+    long now = System.currentTimeMillis();
+    CheckOutCommand command = attendanceApiMapper.toCheckOutCommand(userId, now);
     AttendanceLogModel attendance = attendanceUseCase.checkOut(command);
     AttendanceResponse response = attendanceApiMapper.toCheckOutResponseFromLog(attendance);
 
