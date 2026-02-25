@@ -24,8 +24,8 @@ spring:
     driver-class-name: org.postgresql.Driver
 
     hikari:
-      maximum-pool-size: 10
-      minimum-idle: 2
+      maximum-pool-size: 2
+      minimum-idle: 1
       max-lifetime: 300000
       idle-timeout: 120000
       keepalive-time: 60000
@@ -42,7 +42,7 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
   application:
-    name: hrm
+    name: hrm-service
 
 services:
   gateway:
@@ -54,10 +54,10 @@ feign:
       auth:
         url: ${AUTH_SERVICE_URL:http://localhost:8888}
 
-cloudflare:
-  r2:
-    access-key-id: ${ACCESS_KEY_ID}
-    secret-key-id: ${SECRET_KEY_ID}
-    end-point: ${END_POINT}
-    bucket-name: ${BUCKET_NAME}
-    public-base-url: ${PUBLIC_BASE_URL}
+aws:
+  s3:
+    access-key-id: ${S3_ACCESS_KEY_ID}
+    secret-key-id: ${S3_SECRET_KEY_ID}
+    end-point: ${S3_END_POINT}
+    bucket-name: ${S3_BUCKET_NAME}
+    public-base-url: ${S3_BASE_URL}
