@@ -34,8 +34,10 @@ public class AttendanceController {
   /** Get current attendance status for a user */
   @GetMapping("/status")
   //  test tạm ko dùng cái này  -> @RequestParam Long userId
-  public ResponseApi<AttendanceStatusResponse> getAttendanceStatus(@RequestParam Long userId) {
+  public ResponseApi<AttendanceStatusResponse> getAttendanceStatus(HttpServletRequest request, @RequestParam Long userId) {
     log.info("GET /attendance/status - userId: {}", userId);
+
+    log.info("Client IP: {}", getClientIpAddress(request));
 
     LocalDate today = LocalDate.now();
     AttendanceStatusModel status = attendanceUseCase.getAttendanceStatus(userId, today);
