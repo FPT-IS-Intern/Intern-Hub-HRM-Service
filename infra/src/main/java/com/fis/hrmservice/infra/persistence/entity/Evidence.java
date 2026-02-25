@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @Entity
@@ -27,7 +29,7 @@ public class Evidence extends AuditEntity {
   private String evidenceUrl;
 
   @Column(name = "uploaded_at")
-  private Long uploadedAt;
+  private LocalDate uploadedAt;
 
   @Column(name = "updated_at")
   private Long updatedAt;

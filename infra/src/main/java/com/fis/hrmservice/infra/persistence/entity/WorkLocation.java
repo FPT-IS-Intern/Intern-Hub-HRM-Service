@@ -31,16 +31,4 @@ public class WorkLocation extends AuditEntity {
 
   @Column(name = "is_active")
   private Boolean isActive;
-
-  @Column(name = "created_at")
-  private Long createdAt;
-
-  @Column(name = "updated_at")
-  private Long updatedAt;
-
-  @Column(name = "updated_by")
-  private Long updatedBy;
-
-  @Column(name = "created_by")
-  private Long createdBy;
 }

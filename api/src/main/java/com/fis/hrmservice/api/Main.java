@@ -15,6 +15,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 public class Main {
 
   static void main(String[] args) {
+    System.out.println("ACCESS_KEY_ID = " + System.getenv("ACCESS_KEY_ID"));
+
     SpringApplication.run(Main.class, args);
   }
 }

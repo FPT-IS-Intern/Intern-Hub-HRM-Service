@@ -1,4 +1,4 @@
-package com.fis.hrmservice.api.controller.user;
+package com.fis.hrmservice.api.controller.internal;
 
 import com.fis.hrmservice.api.dto.response.UserResponse;
 import com.fis.hrmservice.api.mapper.UserApiMapper;
