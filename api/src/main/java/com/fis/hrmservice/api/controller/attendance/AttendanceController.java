@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("hrm-service/attendance")
 @EnableGlobalExceptionHandler
 @Slf4j
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4207"})
 @Tag(name = "Attendance Management", description = "APIs for attendance check-in and check-out")
 public class AttendanceController {
 
