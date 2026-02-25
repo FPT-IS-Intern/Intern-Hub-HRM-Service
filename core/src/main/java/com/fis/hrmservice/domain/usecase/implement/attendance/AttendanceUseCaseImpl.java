@@ -96,7 +96,7 @@ public class AttendanceUseCaseImpl implements AttendanceUseCase {
     // Validate IP address
     if (!networkCheckPort.isCompanyIpAddress(command.getClientIp())) {
       log.warn("Check-in rejected: IP {} is not a company network", command.getClientIp());
-      throw new BadRequestException("Bạn cần kết nối Wi-Fi công ty để điểm danh (IP: " + command.getClientIp() + ")");
+      throw new BadRequestException("Bạn cần kết nối Wi-Fi công ty để điểm danh");
     }
 
     long checkInTimestamp = command.getCheckInTime();
