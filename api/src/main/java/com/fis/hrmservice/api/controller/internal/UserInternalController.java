@@ -1,7 +1,9 @@
 package com.fis.hrmservice.api.controller.internal;
 
+import com.fis.hrmservice.api.dto.response.InternalUserResponse;
 import com.fis.hrmservice.api.dto.response.UserResponse;
 import com.fis.hrmservice.api.mapper.UserApiMapper;
+import com.fis.hrmservice.api.util.UserContext;
 import com.fis.hrmservice.domain.model.user.UserModel;
 import com.fis.hrmservice.domain.usecase.implement.user.UserProfileUseCaseImpl;
 import com.intern.hub.library.common.dto.ResponseApi;
@@ -28,5 +30,13 @@ public class UserInternalController {
   public ResponseApi<UserResponse> getUserByIdInternal(@PathVariable Long userId) {
     UserModel userModel = userProfileUseCase.internalUserProfile(userId);
     return ResponseApi.ok(userApiMapper.toResponse(userModel));
+  }
+
+  @GetMapping("/me")
+  public ResponseApi<InternalUserResponse> getMeInternal() {
+    Long userId = UserContext.userId()
+            .orElseThrow(() -> new IllegalStateException("User not authenticated"));
+    UserModel userModel = userProfileUseCase.internalUserProfile(userId);
+    return ResponseApi.ok(userApiMapper.toInternalUserResponse(userModel));
   }
 }

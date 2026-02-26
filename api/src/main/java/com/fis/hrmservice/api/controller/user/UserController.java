@@ -4,8 +4,10 @@ import com.fis.hrmservice.api.dto.request.FilterRequest;
 import com.fis.hrmservice.api.dto.request.RegisterUserRequest;
 import com.fis.hrmservice.api.dto.request.UpdateProfileRequest;
 import com.fis.hrmservice.api.dto.response.FilterResponse;
+import com.fis.hrmservice.api.dto.response.InternalUserResponse;
 import com.fis.hrmservice.api.dto.response.UserResponse;
 import com.fis.hrmservice.api.mapper.UserApiMapper;
+import com.fis.hrmservice.api.util.UserContext;
 import com.fis.hrmservice.domain.model.user.UserModel;
 import com.fis.hrmservice.domain.port.output.CreateAuthIdentityPort;
 import com.fis.hrmservice.domain.usecase.command.user.FilterUserCommand;
@@ -152,5 +154,13 @@ public class UserController {
         }
 
         return ResponseApi.ok(message);
+    }
+
+    @GetMapping("/me")
+    public ResponseApi<InternalUserResponse> getMeInternal() {
+        Long userId = UserContext.userId()
+                .orElseThrow(() -> new IllegalStateException("User not authenticated"));
+        UserModel userModel = userProfileUseCase.internalUserProfile(userId);
+        return ResponseApi.ok(userApiMapper.toInternalUserResponse(userModel));
     }
 }
