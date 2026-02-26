@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserInternalController {
 
-    UserProfileUseCaseImpl userProfileUseCase;
-    UserApiMapper userApiMapper;
+  UserProfileUseCaseImpl userProfileUseCase;
+  UserApiMapper userApiMapper;
 
-    @GetMapping("/{userId}")
-    @Internal
-    public ResponseApi<UserResponse> getUserByIdInternal(@PathVariable Long userId) {
-        UserModel userModel = userProfileUseCase.internalUserProfile(userId);
-        return ResponseApi.ok(userApiMapper.toResponse(userModel));
-    }
+  @GetMapping("/{userId}")
+  @Internal
+  public ResponseApi<UserResponse> getUserByIdInternal(@PathVariable Long userId) {
+    UserModel userModel = userProfileUseCase.internalUserProfile(userId);
+    return ResponseApi.ok(userApiMapper.toResponse(userModel));
+  }
 }

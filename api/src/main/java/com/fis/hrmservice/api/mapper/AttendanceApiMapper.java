@@ -1,6 +1,5 @@
 package com.fis.hrmservice.api.mapper;
 
-import com.fis.hrmservice.api.dto.request.AttendanceRequest;
 import com.fis.hrmservice.api.dto.response.AttendanceResponse;
 import com.fis.hrmservice.api.dto.response.AttendanceStatusResponse;
 import com.fis.hrmservice.domain.model.attendance.AttendanceLogModel;
@@ -18,11 +17,17 @@ public interface AttendanceApiMapper {
 
   CheckInCommand toCheckInCommand(Long userId, long checkInTime, String clientIp);
 
-  @Mapping(target = "message", expression = "java(AttendanceUseCaseImpl.generateCheckInMessage(attendance.getCheckInTime()))")
+  @Mapping(
+      target = "message",
+      expression =
+          "java(AttendanceUseCaseImpl.generateCheckInMessage(attendance.getCheckInTime()))")
   AttendanceResponse toCheckInResponseFromLog(AttendanceLogModel attendance);
 
   CheckOutCommand toCheckOutCommand(Long userId, long checkOutTime);
 
-  @Mapping(target = "message", expression = "java(AttendanceUseCaseImpl.generateCheckOutMessage(attendance.getCheckOutTime()))")
+  @Mapping(
+      target = "message",
+      expression =
+          "java(AttendanceUseCaseImpl.generateCheckOutMessage(attendance.getCheckOutTime()))")
   AttendanceResponse toCheckOutResponseFromLog(AttendanceLogModel attendance);
 }

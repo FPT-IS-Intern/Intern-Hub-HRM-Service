@@ -1,6 +1,5 @@
 package com.fis.hrmservice.api.controller.attendance;
 
-import com.fis.hrmservice.api.dto.request.AttendanceRequest;
 import com.fis.hrmservice.api.dto.response.AttendanceResponse;
 import com.fis.hrmservice.api.dto.response.AttendanceStatusResponse;
 import com.fis.hrmservice.api.dto.response.WiFiInfoResponse;
@@ -76,10 +75,7 @@ public class AttendanceController {
     return ResponseApi.ok(response);
   }
 
-  /**
-   * Check if user is on company network based on IP address Validates against
-   * company IP ranges
-   */
+  /** Check if user is on company network based on IP address Validates against company IP ranges */
   @GetMapping("/network-check")
   public ResponseApi<WiFiInfoResponse> checkNetwork(HttpServletRequest request) {
     log.info("GET /attendance/network-check - checking client IP");
@@ -87,10 +83,11 @@ public class AttendanceController {
     String clientIp = WebUtils.getClientIpAddress(request);
     boolean isCompanyNetwork = networkCheckPort.isCompanyIpAddress(clientIp);
 
-    WiFiInfoResponse response = WiFiInfoResponse.builder()
-        .wifiName(isCompanyNetwork ? "FPT-Network" : "External-Network")
-        .isCompanyWifi(isCompanyNetwork)
-        .build();
+    WiFiInfoResponse response =
+        WiFiInfoResponse.builder()
+            .wifiName(isCompanyNetwork ? "FPT-Network" : "External-Network")
+            .isCompanyWifi(isCompanyNetwork)
+            .build();
 
     log.info("Network check result - IP: {}, isCompanyNetwork: {}", clientIp, isCompanyNetwork);
     return ResponseApi.ok(response);

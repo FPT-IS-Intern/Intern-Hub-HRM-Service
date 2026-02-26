@@ -7,20 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * Service for network-related operations including company network validation.
- * This service handles
+ * Service for network-related operations including company network validation. This service handles
  * infrastructure concerns related to network checking.
  */
 @Slf4j
 @Service
 public class NetworkCheckService implements NetworkCheckPort {
 
-  @Autowired
-  private BoPortalFeignClient boPortalFeignClient;
+  @Autowired private BoPortalFeignClient boPortalFeignClient;
 
   /**
-   * Check if the given IP address belongs to the company network. Validates
-   * against allowed IP
+   * Check if the given IP address belongs to the company network. Validates against allowed IP
    * ranges from bo-portal service.
    *
    * @param ip the IP address to check
