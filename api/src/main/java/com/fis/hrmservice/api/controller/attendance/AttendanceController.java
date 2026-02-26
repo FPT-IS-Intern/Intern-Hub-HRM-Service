@@ -17,8 +17,10 @@ import com.intern.hub.library.common.dto.ResponseApi;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,14 +28,13 @@ import org.springframework.web.bind.annotation.*;
 @EnableGlobalExceptionHandler
 @Slf4j
 @Tag(name = "Attendance Management", description = "APIs for attendance check-in and check-out")
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
 public class AttendanceController {
 
-  @Autowired
-  private AttendanceUseCase attendanceUseCase;
-  @Autowired
-  private AttendanceApiMapper attendanceApiMapper;
-  @Autowired
-  private NetworkCheckPort networkCheckPort;
+  AttendanceUseCase attendanceUseCase;
+  AttendanceApiMapper attendanceApiMapper;
+  NetworkCheckPort networkCheckPort;
 
   /** Get current attendance status for a user */
   @GetMapping("/status")

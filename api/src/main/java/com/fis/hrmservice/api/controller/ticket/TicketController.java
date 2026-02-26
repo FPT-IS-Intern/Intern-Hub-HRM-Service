@@ -16,8 +16,10 @@ import com.fis.hrmservice.domain.usecase.implement.ticket.TicketUseCaseImpl;
 import com.intern.hub.library.common.dto.ResponseApi;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,11 +28,13 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("hrm/ticket")
 @Slf4j
 @Tag(name = "Ticket Management", description = "APIs for Ticket")
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
 public class TicketController {
 
-  @Autowired private TicketUseCaseImpl ticketUseCaseImpl;
+  TicketUseCaseImpl ticketUseCaseImpl;
 
-  @Autowired private TicketApiMapper ticketApiMapper;
+  TicketApiMapper ticketApiMapper;
 
   @PostMapping(
       value = "/leave-ticket/{userId}",

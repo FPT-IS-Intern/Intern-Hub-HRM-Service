@@ -9,8 +9,10 @@ import com.intern.hub.library.common.annotation.EnableGlobalExceptionHandler;
 import com.intern.hub.library.common.dto.ResponseApi;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,10 +20,12 @@ import org.springframework.web.bind.annotation.*;
 @EnableGlobalExceptionHandler
 @Slf4j
 @Tag(name = "Quick note Management", description = "APIs for Quick note")
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
 public class QuickNoteController {
 
-  @Autowired private QuickNoteUseCaseImpl quickNoteUserUseCase;
-  @Autowired private QuickNoteApiMapper quickNoteApiMapper;
+  QuickNoteUseCaseImpl quickNoteUserUseCase;
+  QuickNoteApiMapper quickNoteApiMapper;
 
   @PostMapping("/{userId}")
   public ResponseApi<?> createTicket(
