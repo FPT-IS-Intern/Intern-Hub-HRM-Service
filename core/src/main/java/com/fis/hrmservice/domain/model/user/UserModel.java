@@ -3,7 +3,10 @@ package com.fis.hrmservice.domain.model.user;
 import com.fis.hrmservice.domain.model.common.BaseDomain;
 import com.fis.hrmservice.domain.model.constant.UserStatus;
 import java.time.LocalDate;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 
 @EqualsAndHashCode(callSuper = true)

@@ -2,7 +2,8 @@ package com.fis.hrmservice.infra.mapper;
 
 import com.fis.hrmservice.domain.model.ticket.TicketTypeModel;
 import com.fis.hrmservice.infra.persistence.entity.TicketType;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface TicketTypeMapper {

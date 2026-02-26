@@ -1,6 +1,5 @@
 package com.fis.hrmservice.api.controller.attendance;
 
-import com.fis.hrmservice.api.dto.request.AttendanceRequest;
 import com.fis.hrmservice.api.dto.response.AttendanceResponse;
 import com.fis.hrmservice.api.dto.response.AttendanceStatusResponse;
 import com.fis.hrmservice.api.dto.response.WiFiInfoResponse;
@@ -17,8 +16,10 @@ import com.intern.hub.library.common.dto.ResponseApi;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,14 +27,13 @@ import org.springframework.web.bind.annotation.*;
 @EnableGlobalExceptionHandler
 @Slf4j
 @Tag(name = "Attendance Management", description = "APIs for attendance check-in and check-out")
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
 public class AttendanceController {
 
-  @Autowired
-  private AttendanceUseCase attendanceUseCase;
-  @Autowired
-  private AttendanceApiMapper attendanceApiMapper;
-  @Autowired
-  private NetworkCheckPort networkCheckPort;
+  AttendanceUseCase attendanceUseCase;
+  AttendanceApiMapper attendanceApiMapper;
+  NetworkCheckPort networkCheckPort;
 
   /** Get current attendance status for a user */
   @GetMapping("/status")
@@ -75,10 +75,7 @@ public class AttendanceController {
     return ResponseApi.ok(response);
   }
 
-  /**
-   * Check if user is on company network based on IP address Validates against
-   * company IP ranges
-   */
+  /** Check if user is on company network based on IP address Validates against company IP ranges */
   @GetMapping("/network-check")
   public ResponseApi<WiFiInfoResponse> checkNetwork(HttpServletRequest request) {
     log.info("GET /attendance/network-check - checking client IP");
@@ -86,10 +83,11 @@ public class AttendanceController {
     String clientIp = WebUtils.getClientIpAddress(request);
     boolean isCompanyNetwork = networkCheckPort.isCompanyIpAddress(clientIp);
 
-    WiFiInfoResponse response = WiFiInfoResponse.builder()
-        .wifiName(isCompanyNetwork ? "FPT-Network" : "External-Network")
-        .isCompanyWifi(isCompanyNetwork)
-        .build();
+    WiFiInfoResponse response =
+        WiFiInfoResponse.builder()
+            .wifiName(isCompanyNetwork ? "FPT-Network" : "External-Network")
+            .isCompanyWifi(isCompanyNetwork)
+            .build();
 
     log.info("Network check result - IP: {}, isCompanyNetwork: {}", clientIp, isCompanyNetwork);
     return ResponseApi.ok(response);

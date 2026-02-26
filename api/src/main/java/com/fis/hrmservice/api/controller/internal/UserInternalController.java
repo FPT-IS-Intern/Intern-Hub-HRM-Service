@@ -6,7 +6,9 @@ import com.fis.hrmservice.domain.model.user.UserModel;
 import com.fis.hrmservice.domain.usecase.implement.user.UserProfileUseCaseImpl;
 import com.intern.hub.library.common.dto.ResponseApi;
 import com.intern.hub.starter.security.annotation.Internal;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,10 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/hrm/internal/users")
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
 public class UserInternalController {
 
-  @Autowired private UserProfileUseCaseImpl userProfileUseCase;
-  @Autowired private UserApiMapper userApiMapper;
+  UserProfileUseCaseImpl userProfileUseCase;
+  UserApiMapper userApiMapper;
 
   @GetMapping("/{userId}")
   @Internal

@@ -3,7 +3,9 @@ package com.fis.hrmservice.infra.mapper;
 import com.fis.hrmservice.domain.model.constant.RemoteType;
 import com.fis.hrmservice.domain.model.ticket.RemoteRequestModel;
 import com.fis.hrmservice.infra.persistence.entity.RemoteRequest;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring")
 public interface RemoteRequestMapper {

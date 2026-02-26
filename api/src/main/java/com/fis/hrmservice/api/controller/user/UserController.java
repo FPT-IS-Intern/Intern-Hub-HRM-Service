@@ -15,8 +15,10 @@ import com.intern.hub.library.common.annotation.EnableGlobalExceptionHandler;
 import com.intern.hub.library.common.dto.ResponseApi;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,23 +28,25 @@ import org.springframework.web.multipart.MultipartFile;
 @EnableGlobalExceptionHandler
 @Slf4j
 @Tag(name = "User Management", description = "APIs for user registration and management")
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
 public class UserController {
 
-  @Autowired private RegisterUserUseCaseImpl registerUserUseCase;
+  RegisterUserUseCaseImpl registerUserUseCase;
 
-  @Autowired private FilterUseCaseImpl filterUserUseCase;
+  FilterUseCaseImpl filterUserUseCase;
 
-  @Autowired private UserApiMapper userApiMapper;
+  UserApiMapper userApiMapper;
 
-  @Autowired private UserProfileUseCaseImpl userProfileUseCase;
+  UserProfileUseCaseImpl userProfileUseCase;
 
-  @Autowired private UserApproval approvalUser;
+  UserApproval approvalUser;
 
-  @Autowired private UserRejection rejectionUser;
+  UserRejection rejectionUser;
 
-  @Autowired private UserSuspension userSuspension;
+  UserSuspension userSuspension;
 
-  @Autowired private CreateAuthIdentityPort createAuthIdentityPort;
+  CreateAuthIdentityPort createAuthIdentityPort;
 
   @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseApi<?> registerUser(

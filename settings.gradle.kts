@@ -9,6 +9,11 @@ pluginManagement {
 }
 
 dependencyResolutionManagement {
+    versionCatalogs {
+        create("libs") {
+            from(files("libs.versions.toml"))
+        }
+    }
     repositories {
         mavenCentral()
         maven { url = uri("https://jitpack.io") }

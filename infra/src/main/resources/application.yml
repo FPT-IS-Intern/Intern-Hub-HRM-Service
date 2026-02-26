@@ -3,7 +3,7 @@ server:
 
 security:
   internal-secret: ${INTERNAL_SECRET_KEY:defaultSecretValue}
-  internal-path-prefix: /hrm-service/internal/
+  internal-path-prefix: /hrm/internal/
 
 # Optional: JPA Auditing configuration
 audit:

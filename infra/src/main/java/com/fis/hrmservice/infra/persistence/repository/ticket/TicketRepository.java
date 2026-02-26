@@ -14,24 +14,24 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
   @Query(
       """
-                SELECT t FROM Ticket t
-                WHERE
-                    (
-                        :nameOrEmail IS NULL
-                        OR LOWER(t.user.fullName) LIKE LOWER(CONCAT('%', :nameOrEmail, '%'))
-                        OR LOWER(t.user.companyEmail) LIKE LOWER(CONCAT('%', :nameOrEmail, '%'))
-                    )
-                AND
-                    (
-                        :ticketType IS NULL
-                        OR t.ticketType.typeName = :ticketType
-                    )
-                AND
-                    (
-                        :ticketStatus IS NULL
-                        OR t.status = :ticketStatus
-                    )
-            """)
+                        SELECT t FROM Ticket t
+                        WHERE
+                            (
+                                :nameOrEmail IS NULL
+                                OR LOWER(t.user.fullName) LIKE LOWER(CONCAT('%', :nameOrEmail, '%'))
+                                OR LOWER(t.user.companyEmail) LIKE LOWER(CONCAT('%', :nameOrEmail, '%'))
+                            )
+                        AND
+                            (
+                                :ticketType IS NULL
+                                OR t.ticketType.typeName = :ticketType
+                            )
+                        AND
+                            (
+                                :ticketStatus IS NULL
+                                OR t.status = :ticketStatus
+                            )
+                    """)
   List<Ticket> filterTicket(
       @Param("nameOrEmail") String nameOrEmail,
       @Param("ticketType") String ticketType,
@@ -55,26 +55,26 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
   @Modifying
   @Query(
       """
-        UPDATE Ticket t
-        SET t.status = 'APPROVED'
-        WHERE t.id IN :ticketIds
-    """)
+                        UPDATE Ticket t
+                        SET t.status = 'APPROVED'
+                        WHERE t.id IN :ticketIds
+                    """)
   int multipleApproval(@Param("ticketIds") List<Long> ticketIds);
 
   @Query(
       """
-              SELECT t
-              FROM Ticket t
-              JOIN t.user u
-              JOIN t.ticketType tt
-              WHERE (
-                      :keyword IS NULL
-                      OR LOWER(TRIM(u.companyEmail)) LIKE LOWER(CONCAT('%', TRIM(:keyword), '%'))
-                      OR LOWER(TRIM(u.fullName)) LIKE LOWER(CONCAT('%', TRIM(:keyword), '%'))
-                    )
-                AND (:status IS NULL OR t.status = :status)
-                AND tt.typeName = 'REGISTRATION'
-          """)
+                        SELECT t
+                        FROM Ticket t
+                        JOIN t.user u
+                        JOIN t.ticketType tt
+                        WHERE (
+                                :keyword IS NULL
+                                OR LOWER(TRIM(u.companyEmail)) LIKE LOWER(CONCAT('%', TRIM(:keyword), '%'))
+                                OR LOWER(TRIM(u.fullName)) LIKE LOWER(CONCAT('%', TRIM(:keyword), '%'))
+                              )
+                          AND (:status IS NULL OR t.status = :status)
+                          AND tt.typeName = 'REGISTRATION'
+                    """)
   List<Ticket> filterTickets(@Param("keyword") String keyword, @Param("status") String status);
 
   @Query("SELECT t from Ticket t ORDER BY t.startAt DESC limit 3")
@@ -82,15 +82,15 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
   @Query(
       """
-              SELECT t
-              FROM Ticket t
-              JOIN FETCH t.ticketType tt
-              JOIN FETCH t.user u
-              LEFT JOIN FETCH u.avatar
-              LEFT JOIN FETCH u.cv
-              WHERE t.id = :ticketId
-                AND tt.typeName = 'REGISTRATION'
-          """)
+                        SELECT t
+                        FROM Ticket t
+                        JOIN FETCH t.ticketType tt
+                        JOIN FETCH t.user u
+                        LEFT JOIN FETCH u.avatar
+                        LEFT JOIN FETCH u.cv
+                        WHERE t.id = :ticketId
+                          AND tt.typeName = 'REGISTRATION'
+                    """)
   Ticket getDetailRegistrationTicket(@Param("ticketId") Long ticketId);
 
   @Modifying

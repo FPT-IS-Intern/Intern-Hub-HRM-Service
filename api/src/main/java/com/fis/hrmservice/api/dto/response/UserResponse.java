@@ -1,11 +1,7 @@
 package com.fis.hrmservice.api.dto.response;
 
 import java.time.LocalDate;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 /** Response DTO for user data. Mapping from UserModel is handled by MapStruct in UserApiMapper. */

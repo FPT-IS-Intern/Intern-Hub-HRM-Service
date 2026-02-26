@@ -12,7 +12,10 @@ import com.fis.hrmservice.domain.usecase.command.user.FilterUserCommand;
 import com.fis.hrmservice.domain.usecase.command.user.RegisterUserCommand;
 import com.fis.hrmservice.domain.usecase.command.user.UpdateUserProfileCommand;
 import java.util.List;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.ReportingPolicy;
 import org.springframework.web.multipart.MultipartFile;
 
 @Mapper(
@@ -54,7 +57,8 @@ public interface UserApiMapper {
   @Mapping(target = "superVisorName", source = "mentor.fullName")
   @Mapping(target = "role", ignore = true) // UserModel chưa có
   @Mapping(target = "scoreAward", ignore = true) // UserModel chưa có
-  @Mapping(target = "budgetPoints", ignore = true) // UserModel chưa có
+  @Mapping(target = "budgetPoints", ignore = true)
+  // UserModel chưa có
   ProfileResponse toProfileResponse(UserModel model);
 
   InternalUserProfileResponse toInternalUserProfile(UserModel model);

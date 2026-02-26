@@ -25,32 +25,32 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
 
   @Query(
       """
-        SELECT u FROM User u
-        WHERE
-            (
-                :#{#command.keyword} IS NULL OR :#{#command.keyword} = ''
-                OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :#{#command.keyword}, '%'))
-                OR LOWER(u.companyEmail) LIKE LOWER(CONCAT('%', :#{#command.keyword}, '%'))
-            )
-        AND (
-                :#{#command.sysStatuses == null || #command.sysStatuses.isEmpty() ? true : false} = true
-                OR u.sysStatus IN :#{#command.sysStatuses}
-            )
-        AND (
-                :#{#command.positions == null || #command.positions.isEmpty() ? true : false} = true
-                OR u.position.name IN :#{#command.positions}
-            )
-    """)
+                        SELECT u FROM User u
+                        WHERE
+                            (
+                                :#{#command.keyword} IS NULL OR :#{#command.keyword} = ''
+                                OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :#{#command.keyword}, '%'))
+                                OR LOWER(u.companyEmail) LIKE LOWER(CONCAT('%', :#{#command.keyword}, '%'))
+                            )
+                        AND (
+                                :#{#command.sysStatuses == null || #command.sysStatuses.isEmpty() ? true : false} = true
+                                OR u.sysStatus IN :#{#command.sysStatuses}
+                            )
+                        AND (
+                                :#{#command.positions == null || #command.positions.isEmpty() ? true : false} = true
+                                OR u.position.name IN :#{#command.positions}
+                            )
+                    """)
   List<User> filterUser(@Param("command") FilterUserCommand command);
 
   @Modifying
   @Transactional
   @Query(
       """
-          UPDATE User u
-          SET u.sysStatus = :status
-          WHERE u.id = :id
-          """)
+                    UPDATE User u
+                    SET u.sysStatus = :status
+                    WHERE u.id = :id
+                    """)
   Long updateStatus(Long id, UserStatus status);
 
   @Query("SELECT u FROM User u WHERE u.id = :userId AND u.sysStatus = 'APPROVED'")
@@ -67,21 +67,21 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
   @Query(
       value =
           """
-    SELECT
-        COUNT(CASE
-            WHEN date_trunc('month', u.internship_start_date) = date_trunc('month', CURRENT_DATE)
-            THEN 1
-        END)
-        -
-        COUNT(CASE
-            WHEN date_trunc('month', u.internship_start_date) = date_trunc('month', CURRENT_DATE - INTERVAL '1 month')
-            THEN 1
-        END)
-    FROM users u
-    JOIN positions p ON u.position_id = p.position_id
-    WHERE u.internship_start_date IS NOT NULL
-      AND LOWER(p.name) LIKE '%intern%'
-    """,
+                            SELECT
+                                COUNT(CASE
+                                    WHEN date_trunc('month', u.internship_start_date) = date_trunc('month', CURRENT_DATE)
+                                    THEN 1
+                                END)
+                                -
+                                COUNT(CASE
+                                    WHEN date_trunc('month', u.internship_start_date) = date_trunc('month', CURRENT_DATE - INTERVAL '1 month')
+                                    THEN 1
+                                END)
+                            FROM users u
+                            JOIN positions p ON u.position_id = p.position_id
+                            WHERE u.internship_start_date IS NOT NULL
+                              AND LOWER(p.name) LIKE '%intern%'
+                            """,
       nativeQuery = true)
   int internshipChanging();
 }
