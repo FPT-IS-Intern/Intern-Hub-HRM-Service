@@ -49,6 +49,6 @@ COPY --from=build /app/api/build/libs/hrm-service.jar ./app.jar
 
 EXPOSE 8080
 
-ENV JAVA_TOOL_OPTIONS="-XX:+UseZGC -Xms128m -Xmx256m"
+ENV JAVA_TOOL_OPTIONS="-XX:+UseZGC -Xms128m -Xmx256m -Duser.timezone=Asia/Ho_Chi_Minh"
 
 ENTRYPOINT ["/opt/java/openjdk/bin/java", "-jar", "app.jar"]
