@@ -21,7 +21,6 @@ dependencies {
     // Project dependencies
     implementation(project(":infra"))
     implementation(project(":core"))
-    implementation(project(":common"))
 
     // Custom libraries
     implementation(libs.bundles.custom.libraries)

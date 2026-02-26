@@ -6,7 +6,6 @@ plugins {
 dependencies {
     // Project dependencies
     api(project(":core"))
-    api(project(":common"))
 
     // Custom libraries
     implementation(libs.bundles.custom.libraries)
