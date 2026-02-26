@@ -14,19 +14,33 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserResponse {
+
     Long userId;
-    String avatarUrl;
-    String idNumber;
-    String fullName;
+
+    /**
+     * Thông tin chung
+     */
     String email;
+    String fullName;
+    String idNumber;
     String phoneNumber;
     String address;
     LocalDate dateOfBirth;
+    String avatarUrl;
+
+    /**
+     * Công việc
+     */
     String positionCode;
-    //  String role; sau này enable sau
+    String role;
     String cvUrl;
     String superVisorName;
     LocalDate internshipStartDate;
     LocalDate internshipEndDate;
+
+    /**
+     *
+     * Trạng thái người dùng
+     */
     String status;
 }
