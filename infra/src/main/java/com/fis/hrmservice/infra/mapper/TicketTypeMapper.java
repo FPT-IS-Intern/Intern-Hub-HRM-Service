@@ -8,9 +8,9 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface TicketTypeMapper {
 
-    @Mapping(source = "id", target = "ticketTypeId")
-    TicketTypeModel toModel(TicketType entity);
+  @Mapping(source = "id", target = "ticketTypeId")
+  TicketTypeModel toModel(TicketType entity);
 
-    @Mapping(source = "ticketTypeId", target = "id")
-    TicketType toEntity(TicketTypeModel model);
+  @Mapping(source = "ticketTypeId", target = "id")
+  TicketType toEntity(TicketTypeModel model);
 }

@@ -4,32 +4,29 @@ import com.fis.hrmservice.domain.model.user.WorkLocationModel;
 import com.fis.hrmservice.domain.port.output.ticket.remoteticket.WorkLocationRepositoryPort;
 import com.fis.hrmservice.infra.mapper.WorkLocationMapper;
 import com.fis.hrmservice.infra.persistence.repository.ticket.WorkLocationRepository;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public class WorkLocationRepositoryAdapter implements WorkLocationRepositoryPort {
 
-    @Autowired
-    private WorkLocationMapper workLocationMapper;
+  @Autowired private WorkLocationMapper workLocationMapper;
 
-    @Autowired
-    private WorkLocationRepository workLocationRepository;
+  @Autowired private WorkLocationRepository workLocationRepository;
 
-    @Override
-    public boolean existByLocationName(String locationName) {
-        return workLocationRepository.existsByName(locationName);
-    }
+  @Override
+  public boolean existByLocationName(String locationName) {
+    return workLocationRepository.existsByName(locationName);
+  }
 
-    @Override
-    public List<String> findAllLocationNames() {
-        return workLocationRepository.getAllWorkLocationName();
-    }
+  @Override
+  public List<String> findAllLocationNames() {
+    return workLocationRepository.getAllWorkLocationName();
+  }
 
-    @Override
-    public WorkLocationModel findByLocationName(String locationName) {
-        return workLocationMapper.toModel(workLocationRepository.findByName((locationName)));
-    }
+  @Override
+  public WorkLocationModel findByLocationName(String locationName) {
+    return workLocationMapper.toModel(workLocationRepository.findByName((locationName)));
+  }
 }

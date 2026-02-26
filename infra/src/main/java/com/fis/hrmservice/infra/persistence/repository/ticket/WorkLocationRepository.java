@@ -1,22 +1,21 @@
 package com.fis.hrmservice.infra.persistence.repository.ticket;
 
 import com.fis.hrmservice.infra.persistence.entity.WorkLocation;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
 public interface WorkLocationRepository extends JpaRepository<WorkLocation, Long> {
 
-    @Query("SELECT w.name FROM WorkLocation w")
-    List<String> getAllWorkLocationName();
+  @Query("SELECT w.name FROM WorkLocation w")
+  List<String> getAllWorkLocationName();
 
-    @Query(
-            "SELECT CASE WHEN COUNT(w) > 0 THEN true ELSE false END FROM WorkLocation w WHERE w.name = :locationName")
-    boolean existsByName(@Param("locationName") String locationName);
+  @Query(
+      "SELECT CASE WHEN COUNT(w) > 0 THEN true ELSE false END FROM WorkLocation w WHERE w.name = :locationName")
+  boolean existsByName(@Param("locationName") String locationName);
 
-    WorkLocation findByName(String name);
+  WorkLocation findByName(String name);
 }
