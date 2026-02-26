@@ -1,4 +1,4 @@
-rootProject.name = "Intern-Hub-Human-Resource-Service"
+rootProject.name = "intern-hub-hrm-service"
 
 pluginManagement {
     repositories {

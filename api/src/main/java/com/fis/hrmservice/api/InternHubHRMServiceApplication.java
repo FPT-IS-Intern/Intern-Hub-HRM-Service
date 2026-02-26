@@ -12,9 +12,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EntityScan(basePackages = "com.fis.hrmservice.infra.persistence.entity")
 @EnableGlobalExceptionHandler
 @EnableSecurity
-public class Main {
+public class InternHubHRMServiceApplication {
 
-  static void main(String[] args) {
-    SpringApplication.run(Main.class, args);
-  }
+    static void main(String[] args) {
+        SpringApplication.run(InternHubHRMServiceApplication.class, args);
+    }
 }
