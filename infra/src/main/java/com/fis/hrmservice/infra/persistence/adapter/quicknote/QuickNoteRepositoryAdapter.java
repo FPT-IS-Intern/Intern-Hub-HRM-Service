@@ -5,31 +5,32 @@ import com.fis.hrmservice.domain.port.output.quicknote.QuickNoteRepositoryPort;
 import com.fis.hrmservice.infra.mapper.QuickNoteMapper;
 import com.fis.hrmservice.infra.persistence.entity.QuickNote;
 import com.fis.hrmservice.infra.persistence.repository.quicknote.QuickNoteRepository;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
 public class QuickNoteRepositoryAdapter implements QuickNoteRepositoryPort {
 
-  private final QuickNoteRepository quickNoteRepository;
+    private final QuickNoteRepository quickNoteRepository;
 
-  private final QuickNoteMapper quickNoteMapper;
+    private final QuickNoteMapper quickNoteMapper;
 
-  @Override
-  public QuickNoteModel save(QuickNoteModel quickNoteModel) {
+    @Override
+    public QuickNoteModel save(QuickNoteModel quickNoteModel) {
 
-    QuickNote quickNote = quickNoteMapper.toEntity(quickNoteModel);
+        QuickNote quickNote = quickNoteMapper.toEntity(quickNoteModel);
 
-    quickNoteRepository.save(quickNote);
+        quickNoteRepository.save(quickNote);
 
-    return quickNoteMapper.toModel(quickNote);
-  }
+        return quickNoteMapper.toModel(quickNote);
+    }
 
-  @Override
-  public List<QuickNoteModel> findAllByUserId(Long userId) {
-    List<QuickNote> quickNotes = quickNoteRepository.findAllByInternId(userId);
-    return quickNoteMapper.toModelList(quickNotes);
-  }
+    @Override
+    public List<QuickNoteModel> findAllByUserId(Long userId) {
+        List<QuickNote> quickNotes = quickNoteRepository.findAllByInternId(userId);
+        return quickNoteMapper.toModelList(quickNotes);
+    }
 }

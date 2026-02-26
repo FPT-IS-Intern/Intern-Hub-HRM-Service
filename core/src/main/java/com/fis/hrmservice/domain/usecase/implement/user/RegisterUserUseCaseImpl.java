@@ -15,171 +15,172 @@ import com.fis.hrmservice.domain.service.UserValidationService;
 import com.fis.hrmservice.domain.usecase.command.user.RegisterUserCommand;
 import com.intern.hub.library.common.exception.ConflictDataException;
 import com.intern.hub.library.common.utils.Snowflake;
-import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class RegisterUserUseCaseImpl {
 
-  private final UserRepositoryPort userRepositoryPort;
-  private final PositionRepositoryPort positionRepositoryPort;
-  private final Snowflake snowflake;
-  private final UserValidationService validationService;
-  private final TicketRepositoryPort ticketRepositoryPort;
-  private final TicketTypeRepositoryPort ticketTypeRepositoryPort;
-  private final FileStoragePort fileStoragePort;
-  private final AvatarRepositoryPort avatarRepositoryPort;
+    private final UserRepositoryPort userRepositoryPort;
+    private final PositionRepositoryPort positionRepositoryPort;
+    private final Snowflake snowflake;
+    private final UserValidationService validationService;
+    private final TicketRepositoryPort ticketRepositoryPort;
+    private final TicketTypeRepositoryPort ticketTypeRepositoryPort;
+    private final FileStoragePort fileStoragePort;
+    private final AvatarRepositoryPort avatarRepositoryPort;
 
-  private final CvRepositoryPort cvRepositoryPort;
+    private final CvRepositoryPort cvRepositoryPort;
 
-  public UserModel registerUser(RegisterUserCommand command) {
+    public UserModel registerUser(RegisterUserCommand command) {
 
-    // 1️⃣ Validate business rule
-    validationService.validateRegistration(command);
-    checkForDuplicates(command);
-    validateFiles(command);
+        // 1️⃣ Validate business rule
+        validationService.validateRegistration(command);
+        checkForDuplicates(command);
+        validateFiles(command);
 
-    // 2️⃣ Get position
-    PositionModel position =
-        positionRepositoryPort
-            .findByCode(command.getPositionCode())
-            .orElseThrow(() -> new ConflictDataException("Position không tồn tại"));
+        // 2️⃣ Get position
+        PositionModel position =
+                positionRepositoryPort
+                        .findByCode(command.getPositionCode())
+                        .orElseThrow(() -> new ConflictDataException("Position không tồn tại"));
 
-    // 3️⃣ Build user
-    UserModel user = buildUserModel(command, position);
+        // 3️⃣ Build user
+        UserModel user = buildUserModel(command, position);
 
-    // 4️⃣ Save user
-    UserModel savedUser = userRepositoryPort.save(user);
-    if (savedUser == null) {
-      throw new ConflictDataException("Cannot save user");
+        // 4️⃣ Save user
+        UserModel savedUser = userRepositoryPort.save(user);
+        if (savedUser == null) {
+            throw new ConflictDataException("Cannot save user");
+        }
+
+        try {
+
+            // 5️⃣ Upload Avatar
+            String avatarUrl =
+                    fileStoragePort.upload(
+                            command.getAvatar().getBytes(),
+                            command.getAvatar().getOriginalFilename(),
+                            command.getAvatar().getContentType(),
+                            "avatars/" + savedUser.getUserId());
+
+            AvatarModel avatar =
+                    avatarRepositoryPort.save(
+                            AvatarModel.builder()
+                                    .avatarId(snowflake.next())
+                                    .user(savedUser)
+                                    .avatarUrl(avatarUrl)
+                                    .fileName(command.getAvatar().getOriginalFilename())
+                                    .fileSize(command.getAvatar().getSize())
+                                    .fileType(command.getAvatar().getContentType())
+                                    .build());
+
+            if (avatar == null) {
+                throw new ConflictDataException("Cannot save avatar");
+            }
+
+            // 6️⃣ Upload CV
+            String cvUrl =
+                    fileStoragePort.upload(
+                            command.getCv().getBytes(),
+                            command.getCv().getOriginalFilename(),
+                            command.getCv().getContentType(),
+                            "cvs/" + savedUser.getUserId());
+
+            CvModel cv =
+                    cvRepositoryPort.save(
+                            CvModel.builder()
+                                    .cvId(snowflake.next())
+                                    .user(savedUser)
+                                    .cvUrl(cvUrl)
+                                    .fileName(command.getCv().getOriginalFilename())
+                                    .fileSize(command.getCv().getSize())
+                                    .fileType(command.getCv().getContentType())
+                                    .build());
+
+            if (cv == null) {
+                throw new ConflictDataException("Cannot save CV");
+            }
+
+        } catch (Exception e) {
+            log.error("Register process failed. Transaction rollback triggered.", e);
+            throw new ConflictDataException("Register failed");
+        }
+
+        // 7️⃣ Create registration ticket
+        ticketRepositoryPort.save(
+                TicketModel.builder()
+                        .ticketId(snowflake.next())
+                        .requester(savedUser)
+                        .ticketType(
+                                ticketTypeRepositoryPort.findTicketTypeByCode(
+                                        String.valueOf(TicketType.REGISTRATION)))
+                        .startAt(LocalDate.now())
+                        .endAt(null)
+                        .reason("Đăng ký tài khoản")
+                        .sysStatus(TicketStatus.PENDING)
+                        .build());
+
+        return savedUser;
     }
 
-    try {
+    private void validateFiles(RegisterUserCommand command) {
 
-      // 5️⃣ Upload Avatar
-      String avatarUrl =
-          fileStoragePort.upload(
-              command.getAvatar().getBytes(),
-              command.getAvatar().getOriginalFilename(),
-              command.getAvatar().getContentType(),
-              "avatars/" + savedUser.getUserId());
+        if (command.getAvatar() == null || command.getAvatar().isEmpty()) {
+            throw new ConflictDataException("Avatar is required");
+        }
 
-      AvatarModel avatar =
-          avatarRepositoryPort.save(
-              AvatarModel.builder()
-                  .avatarId(snowflake.next())
-                  .user(savedUser)
-                  .avatarUrl(avatarUrl)
-                  .fileName(command.getAvatar().getOriginalFilename())
-                  .fileSize(command.getAvatar().getSize())
-                  .fileType(command.getAvatar().getContentType())
-                  .build());
+        if (command.getCv() == null || command.getCv().isEmpty()) {
+            throw new ConflictDataException("CV is required");
+        }
 
-      if (avatar == null) {
-        throw new ConflictDataException("Cannot save avatar");
-      }
+        String avatarType = command.getAvatar().getContentType();
+        if (avatarType == null || !avatarType.matches("image/(png|jpeg|webp)")) {
+            throw new ConflictDataException("Unsupported avatar type");
+        }
 
-      // 6️⃣ Upload CV
-      String cvUrl =
-          fileStoragePort.upload(
-              command.getCv().getBytes(),
-              command.getCv().getOriginalFilename(),
-              command.getCv().getContentType(),
-              "cvs/" + savedUser.getUserId());
-
-      CvModel cv =
-          cvRepositoryPort.save(
-              CvModel.builder()
-                  .cvId(snowflake.next())
-                  .user(savedUser)
-                  .cvUrl(cvUrl)
-                  .fileName(command.getCv().getOriginalFilename())
-                  .fileSize(command.getCv().getSize())
-                  .fileType(command.getCv().getContentType())
-                  .build());
-
-      if (cv == null) {
-        throw new ConflictDataException("Cannot save CV");
-      }
-
-    } catch (Exception e) {
-      log.error("Register process failed. Transaction rollback triggered.", e);
-      throw new ConflictDataException("Register failed");
+        String cvType = command.getCv().getContentType();
+        if (cvType == null || !cvType.equals("application/pdf")) {
+            throw new ConflictDataException("CV must be PDF");
+        }
     }
 
-    // 7️⃣ Create registration ticket
-    ticketRepositoryPort.save(
-        TicketModel.builder()
-            .ticketId(snowflake.next())
-            .requester(savedUser)
-            .ticketType(
-                ticketTypeRepositoryPort.findTicketTypeByCode(
-                    String.valueOf(TicketType.REGISTRATION)))
-            .startAt(LocalDate.now())
-            .endAt(null)
-            .reason("Đăng ký tài khoản")
-            .sysStatus(TicketStatus.PENDING)
-            .build());
+    private void checkForDuplicates(RegisterUserCommand command) {
 
-    return savedUser;
-  }
+        if (userRepositoryPort.existsByEmail(command.getEmail())) {
+            throw new ConflictDataException("Email đã tồn tại");
+        }
 
-  private void validateFiles(RegisterUserCommand command) {
-
-    if (command.getAvatar() == null || command.getAvatar().isEmpty()) {
-      throw new ConflictDataException("Avatar is required");
+        if (userRepositoryPort.existsByIdNumber(command.getIdNumber())) {
+            throw new ConflictDataException("Id user đã bị trùng");
+        }
     }
 
-    if (command.getCv() == null || command.getCv().isEmpty()) {
-      throw new ConflictDataException("CV is required");
+    private UserModel buildUserModel(RegisterUserCommand command, PositionModel position) {
+
+        UserModel.UserModelBuilder builder =
+                UserModel.builder()
+                        .userId(snowflake.next())
+                        .position(position)
+                        .fullName(command.getFullName())
+                        .idNumber(command.getIdNumber())
+                        .dateOfBirth(command.getBirthDate())
+                        .companyEmail(command.getEmail())
+                        .phoneNumber(command.getPhoneNumber())
+                        .address(command.getAddress())
+                        .sysStatus(UserStatus.PENDING);
+
+        if (command.isInternRegistration()) {
+            builder
+                    .internshipStartDate(command.getInternshipStartDate())
+                    .internshipEndDate(command.getInternshipEndDate());
+        }
+
+        return builder.build();
     }
-
-    String avatarType = command.getAvatar().getContentType();
-    if (avatarType == null || !avatarType.matches("image/(png|jpeg|webp)")) {
-      throw new ConflictDataException("Unsupported avatar type");
-    }
-
-    String cvType = command.getCv().getContentType();
-    if (cvType == null || !cvType.equals("application/pdf")) {
-      throw new ConflictDataException("CV must be PDF");
-    }
-  }
-
-  private void checkForDuplicates(RegisterUserCommand command) {
-
-    if (userRepositoryPort.existsByEmail(command.getEmail())) {
-      throw new ConflictDataException("Email đã tồn tại");
-    }
-
-    if (userRepositoryPort.existsByIdNumber(command.getIdNumber())) {
-      throw new ConflictDataException("Id user đã bị trùng");
-    }
-  }
-
-  private UserModel buildUserModel(RegisterUserCommand command, PositionModel position) {
-
-    UserModel.UserModelBuilder builder =
-        UserModel.builder()
-            .userId(snowflake.next())
-            .position(position)
-            .fullName(command.getFullName())
-            .idNumber(command.getIdNumber())
-            .dateOfBirth(command.getBirthDate())
-            .companyEmail(command.getEmail())
-            .phoneNumber(command.getPhoneNumber())
-            .address(command.getAddress())
-            .sysStatus(UserStatus.PENDING);
-
-    if (command.isInternRegistration()) {
-      builder
-          .internshipStartDate(command.getInternshipStartDate())
-          .internshipEndDate(command.getInternshipEndDate());
-    }
-
-    return builder.build();
-  }
 }
