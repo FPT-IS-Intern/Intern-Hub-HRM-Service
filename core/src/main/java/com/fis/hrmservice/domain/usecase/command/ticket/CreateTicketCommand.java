@@ -19,4 +19,3 @@ public class CreateTicketCommand {
   String reason;
   MultipartFile evidence;
 }
-

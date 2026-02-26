@@ -12,4 +12,3 @@ public class CheckInCommand {
   private long checkInTime;
   private String clientIp;
 }
-

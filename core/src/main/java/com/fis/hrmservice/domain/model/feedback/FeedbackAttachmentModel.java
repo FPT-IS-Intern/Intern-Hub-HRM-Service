@@ -19,4 +19,3 @@ public class FeedbackAttachmentModel extends BaseDomain {
   String fileType;
   long fileSize;
 }
-

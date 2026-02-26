@@ -25,4 +25,3 @@ public class AttendanceLogModel extends BaseDomain {
   boolean isCheckInValid;
   boolean isCheckOutValid;
 }
-

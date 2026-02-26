@@ -18,4 +18,3 @@ public class AttendanceStatusModel {
   private String checkInMessage;
   private String checkOutMessage;
 }
-

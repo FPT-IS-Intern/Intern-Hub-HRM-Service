@@ -22,4 +22,3 @@ public class UpdateUserProfileCommand {
   MultipartFile cvFile;
   MultipartFile avatarFile;
 }
-

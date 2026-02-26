@@ -16,4 +16,3 @@ public class CvModel extends BaseDomain {
   long fileSize;
   String fileName;
 }
-

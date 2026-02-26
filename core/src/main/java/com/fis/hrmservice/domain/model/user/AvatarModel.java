@@ -18,4 +18,3 @@ public class AvatarModel extends BaseDomain {
   long fileSize;
   String fileName;
 }
-

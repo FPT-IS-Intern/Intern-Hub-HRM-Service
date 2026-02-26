@@ -11,4 +11,3 @@ public class CheckOutCommand {
   private Long userId;
   private long checkOutTime;
 }
-

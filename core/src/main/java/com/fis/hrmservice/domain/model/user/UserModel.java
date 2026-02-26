@@ -5,9 +5,9 @@ import com.fis.hrmservice.domain.model.constant.UserStatus;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 
 @EqualsAndHashCode(callSuper = true)
@@ -36,4 +36,3 @@ public class UserModel extends BaseDomain {
   AvatarModel avatar;
   CvModel cv;
 }
-

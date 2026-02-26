@@ -19,4 +19,3 @@ public class AnonymousFeedBackModel extends BaseDomain {
   String content;
   UserModel sender;
 }
-

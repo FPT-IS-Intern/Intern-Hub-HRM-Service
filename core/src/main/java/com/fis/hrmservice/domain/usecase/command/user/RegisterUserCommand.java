@@ -32,4 +32,3 @@ public class RegisterUserCommand {
     return positionCode != null && positionCode.toUpperCase().contains("INTERN");
   }
 }
-
