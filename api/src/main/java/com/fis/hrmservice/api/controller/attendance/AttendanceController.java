@@ -15,6 +15,7 @@ import com.intern.hub.library.common.annotation.EnableGlobalExceptionHandler;
 import com.intern.hub.library.common.dto.ResponseApi;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import com.fis.hrmservice.domain.model.constant.CoreConstant;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +41,7 @@ public class AttendanceController {
   public ResponseApi<AttendanceStatusResponse> getAttendanceStatus(@RequestParam Long userId) {
     log.info("GET /attendance/status - userId: {}", userId);
 
-    LocalDate today = LocalDate.now();
+    LocalDate today = LocalDate.now(CoreConstant.VIETNAM_ZONE);
     AttendanceStatusModel status = attendanceUseCase.getAttendanceStatus(userId, today);
     AttendanceStatusResponse response = attendanceApiMapper.toStatusResponse(status);
 
@@ -75,7 +76,10 @@ public class AttendanceController {
     return ResponseApi.ok(response);
   }
 
-  /** Check if user is on company network based on IP address Validates against company IP ranges */
+  /**
+   * Check if user is on company network based on IP address Validates against
+   * company IP ranges
+   */
   @GetMapping("/network-check")
   public ResponseApi<WiFiInfoResponse> checkNetwork(HttpServletRequest request) {
     log.info("GET /attendance/network-check - checking client IP");
@@ -83,11 +87,10 @@ public class AttendanceController {
     String clientIp = WebUtils.getClientIpAddress(request);
     boolean isCompanyNetwork = networkCheckPort.isCompanyIpAddress(clientIp);
 
-    WiFiInfoResponse response =
-        WiFiInfoResponse.builder()
-            .wifiName(isCompanyNetwork ? "FPT-Network" : "External-Network")
-            .isCompanyWifi(isCompanyNetwork)
-            .build();
+    WiFiInfoResponse response = WiFiInfoResponse.builder()
+        .wifiName(isCompanyNetwork ? "FPT-Network" : "External-Network")
+        .isCompanyWifi(isCompanyNetwork)
+        .build();
 
     log.info("Network check result - IP: {}, isCompanyNetwork: {}", clientIp, isCompanyNetwork);
     return ResponseApi.ok(response);

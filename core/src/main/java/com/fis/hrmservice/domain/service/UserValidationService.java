@@ -5,7 +5,6 @@ import com.fis.hrmservice.domain.usecase.command.user.RegisterUserCommand;
 import com.fis.hrmservice.domain.usecase.command.user.UpdateUserProfileCommand;
 import com.intern.hub.library.common.exception.ConflictDataException;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.regex.Pattern;
 
 public class UserValidationService {
@@ -53,27 +52,29 @@ public class UserValidationService {
   public void validateIdNumber(String idNumber, LocalDate dateOfBirth, String address) {
 
     // TODO: cái này từ từ tính sau
-    //        if (idNumber == null || idNumber.isBlank()) {
-    //            throw new ConflictDataException("Số CCCD/CMND không được để trống");
-    //        }
+    // if (idNumber == null || idNumber.isBlank()) {
+    // throw new ConflictDataException("Số CCCD/CMND không được để trống");
+    // }
     //
-    //        if (!ID_NUMBER_PATTERN.matcher(idNumber).matches()) {
-    //            throw new ConflictDataException("Sai định dạng CCCD/CMND");
-    //        }
+    // if (!ID_NUMBER_PATTERN.matcher(idNumber).matches()) {
+    // throw new ConflictDataException("Sai định dạng CCCD/CMND");
+    // }
     //
-    //        // Validate province code (first 3 digits)
-    //        Integer provinceCode = ProvinceCode.getProvinceCode(address);
-    //        if (provinceCode == null) {
-    //            throw new ConflictDataException("address", "Không tìm thấy mã tỉnh/thành phố từ
+    // // Validate province code (first 3 digits)
+    // Integer provinceCode = ProvinceCode.getProvinceCode(address);
+    // if (provinceCode == null) {
+    // throw new ConflictDataException("address", "Không tìm thấy mã tỉnh/thành phố
+    // từ
     // địa chỉ");
-    //        }
+    // }
     //
-    //        String firstThreeDigits = idNumber.substring(0, 3);
-    //        String expectedProvinceCode = String.format("%03d", provinceCode);
-    //        if (!firstThreeDigits.equals(expectedProvinceCode)) {
-    //            throw new ConflictDataException("Mã tỉnh/thành phố trên CCCD không khớp với địa
+    // String firstThreeDigits = idNumber.substring(0, 3);
+    // String expectedProvinceCode = String.format("%03d", provinceCode);
+    // if (!firstThreeDigits.equals(expectedProvinceCode)) {
+    // throw new ConflictDataException("Mã tỉnh/thành phố trên CCCD không khớp với
+    // địa
     // chỉ");
-    //        }
+    // }
 
     if (idNumber == null || idNumber.isBlank()) {
       throw new ConflictDataException("Số CCCD/CMND không được để trống");
@@ -97,13 +98,12 @@ public class UserValidationService {
     int century = (birthYear - 1) / 100 + 1;
 
     // Century code validation based on Vietnamese ID card rules
-    boolean validCentury =
-        switch (century) {
-          case 20 -> sexCode == 0 || sexCode == 1; // 1900-1999: 0 (male), 1 (female)
-          case 21 -> sexCode == 2 || sexCode == 3; // 2000-2099: 2 (male), 3 (female)
-          case 22 -> sexCode == 4 || sexCode == 5; // 2100-2199: 4 (male), 5 (female)
-          default -> false;
-        };
+    boolean validCentury = switch (century) {
+      case 20 -> sexCode == 0 || sexCode == 1; // 1900-1999: 0 (male), 1 (female)
+      case 21 -> sexCode == 2 || sexCode == 3; // 2000-2099: 2 (male), 3 (female)
+      case 22 -> sexCode == 4 || sexCode == 5; // 2100-2199: 4 (male), 5 (female)
+      default -> false;
+    };
 
     if (!validCentury) {
       throw new ConflictDataException("Mã thế kỷ trên CCCD không khớp với năm sinh");
@@ -142,9 +142,8 @@ public class UserValidationService {
       throw new ConflictDataException("File CV không được để trống");
     }
 
-    boolean validType =
-        CoreConstant.MIME_TYPE_PDF.equals(contentType)
-            || CoreConstant.MIME_TYPE_DOCX.equals(contentType);
+    boolean validType = CoreConstant.MIME_TYPE_PDF.equals(contentType)
+        || CoreConstant.MIME_TYPE_DOCX.equals(contentType);
 
     if (!validType) {
       throw new ConflictDataException("File CV phải có định dạng PDF hoặc DOCX");
@@ -161,9 +160,8 @@ public class UserValidationService {
       throw new ConflictDataException("File ảnh đại diện không được để trống");
     }
 
-    boolean validType =
-        CoreConstant.MIME_TYPE_PNG.equals(contentType)
-            || CoreConstant.MIME_TYPE_JPG.equals(contentType);
+    boolean validType = CoreConstant.MIME_TYPE_PNG.equals(contentType)
+        || CoreConstant.MIME_TYPE_JPG.equals(contentType);
 
     if (!validType) {
       throw new ConflictDataException("Ảnh đại diện phải có định dạng PNG hoặc JPG");
@@ -184,7 +182,7 @@ public class UserValidationService {
       throw new ConflictDataException("Ngày kết thúc thực tập không được để trống");
     }
 
-    LocalDate today = LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+    LocalDate today = LocalDate.now(CoreConstant.VIETNAM_ZONE);
 
     if (startDate.isBefore(today)) {
       throw new ConflictDataException("Ngày bắt đầu thực tập không được trước ngày hiện tại");
