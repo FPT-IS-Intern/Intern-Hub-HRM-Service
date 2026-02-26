@@ -113,9 +113,15 @@ public class UserValidationService {
   public void validateFileMetadata(RegisterUserCommand command) {
 
     // Validate CV
+    if (command.getCv() == null || command.getCv().isEmpty()) {
+      throw new ConflictDataException("File CV không được để trống");
+    }
     validateCvFile(command.getCv().getContentType(), command.getCv().getSize());
 
     // Validate Avatar
+    if (command.getAvatar() == null || command.getAvatar().isEmpty()) {
+      throw new ConflictDataException("File ảnh đại diện không được để trống");
+    }
     validateAvatarFile(command.getAvatar().getContentType(), command.getAvatar().getSize());
   }
 
@@ -129,12 +135,6 @@ public class UserValidationService {
       validateAvatarFile(
           command.getAvatarFile().getContentType(), command.getAvatarFile().getSize());
     }
-
-    // Validate CV
-    validateCvFile(command.getCvFile().getContentType(), command.getCvFile().getSize());
-
-    // Validate Avatar
-    validateAvatarFile(command.getAvatarFile().getContentType(), command.getAvatarFile().getSize());
   }
 
   public void validateCvFile(String contentType, long size) {

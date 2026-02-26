@@ -11,15 +11,15 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3Configuration;
 
 @Configuration
-public class R2Config {
+public class S3Config {
 
-  @Value("${cloudflare.r2.access-key-id}")
+  @Value("${aws.s3.access-key-id}")
   private String accessKey;
 
-  @Value("${cloudflare.r2.secret-key-id}")
+  @Value("${aws.s3.secret-key-id}")
   private String secretKey;
 
-  @Value("${cloudflare.r2.end-point}")
+  @Value("${aws.s3.end-point}")
   private String endpoint;
 
   @Bean

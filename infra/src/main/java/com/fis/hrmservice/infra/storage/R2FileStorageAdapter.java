@@ -18,10 +18,10 @@ public class R2FileStorageAdapter implements FileStoragePort {
 
   private final S3Client s3Client;
 
-  @Value("${cloudflare.r2.bucket-name}")
+  @Value("${aws.s3.bucket-name}")
   private String bucketName;
 
-  @Value("${cloudflare.r2.public-base-url}")
+  @Value("${aws.s3.public-base-url}")
   private String publicBaseUrl;
 
   @Override

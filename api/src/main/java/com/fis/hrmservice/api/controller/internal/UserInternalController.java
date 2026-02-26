@@ -1,4 +1,4 @@
-package com.fis.hrmservice.api.controller.user;
+package com.fis.hrmservice.api.controller.internal;
 
 import com.fis.hrmservice.api.dto.response.UserResponse;
 import com.fis.hrmservice.api.mapper.UserApiMapper;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/hrm-service/internal/users")
+@RequestMapping("/hrm/internal/users")
 public class UserInternalController {
 
   @Autowired private UserProfileUseCaseImpl userProfileUseCase;

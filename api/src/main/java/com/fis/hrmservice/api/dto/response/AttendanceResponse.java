@@ -8,5 +8,9 @@ import lombok.Data;
 public class AttendanceResponse {
   private Long attendanceId;
   private String attendanceStatus;
+  private long checkInTime;
+  private long checkOutTime;
+  private boolean isCheckInValid;
+  private boolean isCheckOutValid;
   private String message;
 }

@@ -87,26 +87,50 @@ public interface UserMapper {
   }
 
   @Named("avatarToModel")
-  @Mapping(target = "user", ignore = true)
-  @Mapping(target = "avatarId", source = "id")
-  @Mapping(target = "fileName", source = "avatarFileName")
-  AvatarModel avatarToModel(Avatar entity);
+  default AvatarModel avatarToModel(Avatar entity) {
+    if (entity == null) return null;
+    return AvatarModel.builder()
+        .avatarId(entity.getId())
+        .avatarUrl(entity.getAvatarUrl())
+        .fileName(entity.getAvatarFileName())
+        .fileType(entity.getFileType())
+        .fileSize(entity.getFileSize() != null ? entity.getFileSize() : 0)
+        .build();
+  }
 
   @Named("cvToModel")
-  @Mapping(target = "user", ignore = true)
-  @Mapping(target = "cvId", source = "id")
-  @Mapping(target = "fileName", source = "cvFileName")
-  CvModel cvToModel(Cv entity);
+  default CvModel cvToModel(Cv entity) {
+    if (entity == null) return null;
+    return CvModel.builder()
+        .cvId(entity.getId())
+        .cvUrl(entity.getCvUrl())
+        .fileName(entity.getCvFileName())
+        .fileType(entity.getFileType())
+        .fileSize(entity.getFileSize() != null ? entity.getFileSize() : 0)
+        .build();
+  }
 
   @Named("avatarToEntity")
-  @Mapping(target = "user", ignore = true)
-  @Mapping(target = "id", source = "avatarId")
-  @Mapping(target = "avatarFileName", source = "fileName")
-  Avatar avatarToEntity(AvatarModel model);
+  default Avatar avatarToEntity(AvatarModel model) {
+    if (model == null) return null;
+    Avatar avatar = new Avatar();
+    avatar.setId(model.getAvatarId());
+    avatar.setAvatarUrl(model.getAvatarUrl());
+    avatar.setAvatarFileName(model.getFileName());
+    avatar.setFileType(model.getFileType());
+    avatar.setFileSize(model.getFileSize());
+    return avatar;
+  }
 
   @Named("cvToEntity")
-  @Mapping(target = "user", ignore = true)
-  @Mapping(target = "id", source = "cvId")
-  @Mapping(target = "cvFileName", source = "fileName")
-  Cv cvToEntity(CvModel model);
+  default Cv cvToEntity(CvModel model) {
+    if (model == null) return null;
+    Cv cv = new Cv();
+    cv.setId(model.getCvId());
+    cv.setCvUrl(model.getCvUrl());
+    cv.setCvFileName(model.getFileName());
+    cv.setFileType(model.getFileType());
+    cv.setFileSize(model.getFileSize());
+    return cv;
+  }
 }

@@ -16,19 +16,13 @@ public interface AttendanceApiMapper {
 
   AttendanceStatusResponse toStatusResponse(AttendanceStatusModel status);
 
-  CheckInCommand toCheckInCommand(AttendanceRequest request);
+  CheckInCommand toCheckInCommand(Long userId, long checkInTime, String clientIp);
 
-  @Mapping(
-      target = "message",
-      expression =
-          "java(AttendanceUseCaseImpl.generateCheckInMessage(attendance.getCheckInTime()))")
+  @Mapping(target = "message", expression = "java(AttendanceUseCaseImpl.generateCheckInMessage(attendance.getCheckInTime()))")
   AttendanceResponse toCheckInResponseFromLog(AttendanceLogModel attendance);
 
-  CheckOutCommand toCheckOutCommand(AttendanceRequest request);
+  CheckOutCommand toCheckOutCommand(Long userId, long checkOutTime);
 
-  @Mapping(
-      target = "message",
-      expression =
-          "java(AttendanceUseCaseImpl.generateCheckOutMessage(attendance.getCheckOutTime()))")
+  @Mapping(target = "message", expression = "java(AttendanceUseCaseImpl.generateCheckOutMessage(attendance.getCheckOutTime()))")
   AttendanceResponse toCheckOutResponseFromLog(AttendanceLogModel attendance);
 }
