@@ -10,11 +10,11 @@ repositories {
 }
 
 springBoot {
-    mainClass.set("com.fis.hrmservice.api.Main")
+    mainClass.set("com.fis.hrmservice.api.InternHubHRMServiceApplication")
 }
 
 application {
-    mainClass.set("com.fis.hrmservice.api.Main")
+    mainClass.set("com.fis.hrmservice.api.InternHubHRMServiceApplication")
 }
 
 dependencies {
