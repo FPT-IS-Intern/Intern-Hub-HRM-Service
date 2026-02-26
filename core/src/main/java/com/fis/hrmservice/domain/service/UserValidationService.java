@@ -58,9 +58,9 @@ public class UserValidationService {
         //            throw new ConflictDataException("Số CCCD/CMND không được để trống");
         //        }
         //
-        //        if (!ID_NUMBER_PATTERN.matcher(idNumber).matches()) {
-        //            throw new ConflictDataException("Sai định dạng CCCD/CMND");
-        //        }
+                if (!ID_NUMBER_PATTERN.matcher(idNumber).matches()) {
+                    throw new ConflictDataException("Sai định dạng CCCD/CMND");
+                }
         //
         //        // Validate province code (first 3 digits)
         //        Integer provinceCode = ProvinceCode.getProvinceCode(address);
@@ -81,7 +81,7 @@ public class UserValidationService {
         }
 
         if (idNumber.length() != 12) {
-            throw new ConflictDataException("Số CCCD/CMND không hợp lệ");
+            throw new ConflictDataException("Sai định dạng CCCD/CMND");
         }
 
         // Validate century and gender code (4th digit)

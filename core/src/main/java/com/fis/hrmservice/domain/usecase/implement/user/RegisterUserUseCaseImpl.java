@@ -15,7 +15,9 @@ import com.fis.hrmservice.domain.service.UserValidationService;
 import com.fis.hrmservice.domain.usecase.command.user.RegisterUserCommand;
 import com.intern.hub.library.common.exception.ConflictDataException;
 import com.intern.hub.library.common.utils.Snowflake;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -24,18 +26,18 @@ import java.time.LocalDate;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RegisterUserUseCaseImpl {
 
-    private final UserRepositoryPort userRepositoryPort;
-    private final PositionRepositoryPort positionRepositoryPort;
-    private final Snowflake snowflake;
-    private final UserValidationService validationService;
-    private final TicketRepositoryPort ticketRepositoryPort;
-    private final TicketTypeRepositoryPort ticketTypeRepositoryPort;
-    private final FileStoragePort fileStoragePort;
-    private final AvatarRepositoryPort avatarRepositoryPort;
-
-    private final CvRepositoryPort cvRepositoryPort;
+    UserRepositoryPort userRepositoryPort;
+    PositionRepositoryPort positionRepositoryPort;
+    Snowflake snowflake;
+    UserValidationService validationService;
+    TicketRepositoryPort ticketRepositoryPort;
+    TicketTypeRepositoryPort ticketTypeRepositoryPort;
+    FileStoragePort fileStoragePort;
+    AvatarRepositoryPort avatarRepositoryPort;
+    CvRepositoryPort cvRepositoryPort;
 
     public UserModel registerUser(RegisterUserCommand command) {
 
@@ -43,6 +45,7 @@ public class RegisterUserUseCaseImpl {
         validationService.validateRegistration(command);
         checkForDuplicates(command);
         validateFiles(command);
+        isOver18(command.getBirthDate());
 
         // 2️⃣ Get position
         PositionModel position =
@@ -153,11 +156,11 @@ public class RegisterUserUseCaseImpl {
     private void checkForDuplicates(RegisterUserCommand command) {
 
         if (userRepositoryPort.existsByEmail(command.getEmail())) {
-            throw new ConflictDataException("Email đã tồn tại");
+            throw new ConflictDataException("Tài khoản đã được đăng ký");
         }
 
         if (userRepositoryPort.existsByIdNumber(command.getIdNumber())) {
-            throw new ConflictDataException("Id user đã bị trùng");
+            throw new ConflictDataException("Số CCCD đã được dùng để đăng ký");
         }
     }
 
@@ -182,5 +185,13 @@ public class RegisterUserUseCaseImpl {
         }
 
         return builder.build();
+    }
+
+    private void isOver18(LocalDate dateOfBirth) {
+        int thisYear = LocalDate.now().getYear();
+
+        if (thisYear - dateOfBirth.getYear() <= 18) {
+            throw new ConflictDataException("Ứng viên phải trên 18 tuổi");
+        }
     }
 }
