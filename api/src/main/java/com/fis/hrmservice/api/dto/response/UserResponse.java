@@ -1,33 +1,32 @@
 package com.fis.hrmservice.api.dto.response;
 
-import java.time.LocalDate;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-/** Response DTO for user data. Mapping from UserModel is handled by MapStruct in UserApiMapper. */
+import java.time.LocalDate;
+
+/**
+ * Response DTO for user data. Mapping from UserModel is handled by MapStruct in UserApiMapper.
+ */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserResponse {
-  Long userId;
-  String avatarUrl;
-  String idNumber;
-  String fullName;
-  String email;
-  String phoneNumber;
-  String address;
-  LocalDate dateOfBirth;
-  String positionCode;
-  //  String role; sau này enable sau
-  String cvUrl;
-  String superVisorName;
-  LocalDate internshipStartDate;
-  LocalDate internshipEndDate;
-  String status;
+    Long userId;
+    String avatarUrl;
+    String idNumber;
+    String fullName;
+    String email;
+    String phoneNumber;
+    String address;
+    LocalDate dateOfBirth;
+    String positionCode;
+    //  String role; sau này enable sau
+    String cvUrl;
+    String superVisorName;
+    LocalDate internshipStartDate;
+    LocalDate internshipEndDate;
+    String status;
 }
