@@ -6,8 +6,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -26,10 +26,10 @@ public class AttendanceLog extends AuditEntity {
     private LocalDate workDate;
 
     @Column(name = "check_in_time")
-    private Instant checkInTime;
+    private LocalDateTime checkInTime;
 
     @Column(name = "check_out_time")
-    private Instant checkOutTime;
+    private LocalDateTime checkOutTime;
 
     @Size(max = 20)
     @Column(name = "attendance_status", length = 20)
