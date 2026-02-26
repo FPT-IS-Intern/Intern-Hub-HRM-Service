@@ -15,13 +15,12 @@ import com.intern.hub.library.common.annotation.EnableGlobalExceptionHandler;
 import com.intern.hub.library.common.dto.ResponseApi;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
 
 @RestController
 @RequestMapping("hrm/attendance")
@@ -32,73 +31,65 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class AttendanceController {
 
-    AttendanceUseCase attendanceUseCase;
-    AttendanceApiMapper attendanceApiMapper;
-    NetworkCheckPort networkCheckPort;
+  AttendanceUseCase attendanceUseCase;
+  AttendanceApiMapper attendanceApiMapper;
+  NetworkCheckPort networkCheckPort;
 
-    /**
-     * Get current attendance status for a user
-     */
-    @GetMapping("/status")
-    public ResponseApi<AttendanceStatusResponse> getAttendanceStatus(@RequestParam Long userId) {
-        log.info("GET /attendance/status - userId: {}", userId);
+  /** Get current attendance status for a user */
+  @GetMapping("/status")
+  public ResponseApi<AttendanceStatusResponse> getAttendanceStatus(@RequestParam Long userId) {
+    log.info("GET /attendance/status - userId: {}", userId);
 
-        LocalDate today = LocalDate.now();
-        AttendanceStatusModel status = attendanceUseCase.getAttendanceStatus(userId, today);
-        AttendanceStatusResponse response = attendanceApiMapper.toStatusResponse(status);
+    LocalDate today = LocalDate.now();
+    AttendanceStatusModel status = attendanceUseCase.getAttendanceStatus(userId, today);
+    AttendanceStatusResponse response = attendanceApiMapper.toStatusResponse(status);
 
-        return ResponseApi.ok(response);
-    }
+    return ResponseApi.ok(response);
+  }
 
-    /**
-     * Process check-in
-     */
-    @PostMapping("/check-in")
-    public ResponseApi<AttendanceResponse> checkIn(
-            @RequestParam Long userId, HttpServletRequest servletRequest) {
-        log.info("POST /attendance/check-in - userId: {}", userId);
+  /** Process check-in */
+  @PostMapping("/check-in")
+  public ResponseApi<AttendanceResponse> checkIn(
+      @RequestParam Long userId, HttpServletRequest servletRequest) {
+    log.info("POST /attendance/check-in - userId: {}", userId);
 
-        String clientIp = WebUtils.getClientIpAddress(servletRequest);
-        long now = System.currentTimeMillis();
-        CheckInCommand command = attendanceApiMapper.toCheckInCommand(userId, now, clientIp);
-        AttendanceLogModel attendance = attendanceUseCase.checkIn(command);
-        AttendanceResponse response = attendanceApiMapper.toCheckInResponseFromLog(attendance);
+    String clientIp = WebUtils.getClientIpAddress(servletRequest);
+    long now = System.currentTimeMillis();
+    CheckInCommand command = attendanceApiMapper.toCheckInCommand(userId, now, clientIp);
+    AttendanceLogModel attendance = attendanceUseCase.checkIn(command);
+    AttendanceResponse response = attendanceApiMapper.toCheckInResponseFromLog(attendance);
 
-        return ResponseApi.ok(response);
-    }
+    return ResponseApi.ok(response);
+  }
 
-    /**
-     * Process check-out
-     */
-    @PostMapping("/check-out")
-    public ResponseApi<AttendanceResponse> checkOut(@RequestParam Long userId) {
-        log.info("POST /attendance/check-out - userId: {}", userId);
+  /** Process check-out */
+  @PostMapping("/check-out")
+  public ResponseApi<AttendanceResponse> checkOut(@RequestParam Long userId) {
+    log.info("POST /attendance/check-out - userId: {}", userId);
 
-        long now = System.currentTimeMillis();
-        CheckOutCommand command = attendanceApiMapper.toCheckOutCommand(userId, now);
-        AttendanceLogModel attendance = attendanceUseCase.checkOut(command);
-        AttendanceResponse response = attendanceApiMapper.toCheckOutResponseFromLog(attendance);
+    long now = System.currentTimeMillis();
+    CheckOutCommand command = attendanceApiMapper.toCheckOutCommand(userId, now);
+    AttendanceLogModel attendance = attendanceUseCase.checkOut(command);
+    AttendanceResponse response = attendanceApiMapper.toCheckOutResponseFromLog(attendance);
 
-        return ResponseApi.ok(response);
-    }
+    return ResponseApi.ok(response);
+  }
 
-    /**
-     * Check if user is on company network based on IP address Validates against company IP ranges
-     */
-    @GetMapping("/network-check")
-    public ResponseApi<WiFiInfoResponse> checkNetwork(HttpServletRequest request) {
-        log.info("GET /attendance/network-check - checking client IP");
+  /** Check if user is on company network based on IP address Validates against company IP ranges */
+  @GetMapping("/network-check")
+  public ResponseApi<WiFiInfoResponse> checkNetwork(HttpServletRequest request) {
+    log.info("GET /attendance/network-check - checking client IP");
 
-        String clientIp = WebUtils.getClientIpAddress(request);
-        boolean isCompanyNetwork = networkCheckPort.isCompanyIpAddress(clientIp);
+    String clientIp = WebUtils.getClientIpAddress(request);
+    boolean isCompanyNetwork = networkCheckPort.isCompanyIpAddress(clientIp);
 
-        WiFiInfoResponse response =
-                WiFiInfoResponse.builder()
-                        .wifiName(isCompanyNetwork ? "FPT-Network" : "External-Network")
-                        .isCompanyWifi(isCompanyNetwork)
-                        .build();
+    WiFiInfoResponse response =
+        WiFiInfoResponse.builder()
+            .wifiName(isCompanyNetwork ? "FPT-Network" : "External-Network")
+            .isCompanyWifi(isCompanyNetwork)
+            .build();
 
-        log.info("Network check result - IP: {}, isCompanyNetwork: {}", clientIp, isCompanyNetwork);
-        return ResponseApi.ok(response);
-    }
+    log.info("Network check result - IP: {}, isCompanyNetwork: {}", clientIp, isCompanyNetwork);
+    return ResponseApi.ok(response);
+  }
 }

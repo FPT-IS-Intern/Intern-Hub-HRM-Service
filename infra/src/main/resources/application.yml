@@ -17,6 +17,8 @@ snowflake:
   machine-id: 1
 
 spring:
+  jackson:
+    time-zone: ${TIMEZONE_CONFIG:Asia/Ho_Chi_Minh}
   datasource:
     url: jdbc:postgresql://${DB_HOST}:${DB_PORT:5432}/${DB_NAME}?currentSchema=${SCHEMA_NAME}
     username: ${DB_USER}
@@ -41,6 +43,8 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          time_zone: ${TIMEZONE_CONFIG:Asia/Ho_Chi_Minh}
   application:
     name: hrm-service
 
@@ -61,3 +65,4 @@ aws:
     end-point: ${S3_END_POINT}
     bucket-name: ${S3_BUCKET_NAME}
     public-base-url: ${S3_BASE_URL}
+
