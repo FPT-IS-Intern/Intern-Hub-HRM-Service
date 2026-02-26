@@ -1,5 +1,9 @@
 package com.fis.hrmservice.infra.persistence.adapter.ticket.leave;
 
+import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
 import com.fis.hrmservice.domain.model.ticket.LeaveRequestModel;
 import com.fis.hrmservice.domain.port.output.ticket.leaveticket.LeaveRequestRepositoryPort;
 import com.fis.hrmservice.infra.mapper.LeaveRequestMapper;
@@ -9,65 +13,66 @@ import com.fis.hrmservice.infra.persistence.entity.TicketType;
 import com.fis.hrmservice.infra.persistence.repository.ticket.LeaveTicketRepository;
 import com.fis.hrmservice.infra.persistence.repository.ticket.TicketRepository;
 import jakarta.persistence.EntityManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
+@RequiredArgsConstructor
 public class LeaveRequestRepositoryAdapter implements LeaveRequestRepositoryPort {
 
-  @Autowired private LeaveTicketRepository leaveTicketRepository;
+    private final LeaveTicketRepository leaveTicketRepository;
 
-  @Autowired private TicketRepository ticketRepository;
+    private final TicketRepository ticketRepository;
 
-  @Autowired private LeaveRequestMapper leaveRequestMapper;
+    private final LeaveRequestMapper leaveRequestMapper;
 
-  @Autowired
-  private EntityManager entityManager; // ensure we can obtain managed references for associations
+    private final EntityManager entityManager; // ensure we can obtain managed references for associations
 
-  @Override
-  @Transactional
-  public LeaveRequestModel save(LeaveRequestModel model) {
+    @Override
+    @Transactional
+    public LeaveRequestModel save(LeaveRequestModel model) {
 
-    // Map domain → entity
-    LeaveRequest leave = leaveRequestMapper.toEntity(model);
+        // Map domain → entity
+        LeaveRequest leave = leaveRequestMapper.toEntity(model);
 
-    // Ensure Ticket is managed and persisted before saving LeaveRequest.
-    // Many schemas use ticket_id as the PK for leave_requests (via @MapsId),
-    // so Ticket must have a non-null identifier.
-    if (leave.getTicket() == null) {
-      throw new IllegalStateException("LeaveRequest must reference a Ticket");
+        // Ensure Ticket is managed and persisted before saving LeaveRequest.
+        // Many schemas use ticket_id as the PK for leave_requests (via @MapsId),
+        // so Ticket must have a non-null identifier.
+        if (leave.getTicket() == null) {
+            throw new IllegalStateException("LeaveRequest must reference a Ticket");
+        }
+
+        Ticket ticket = leave.getTicket();
+
+        if (ticket.getId() != null) {
+            // Attach existing ticket as managed entity
+            Ticket managed =
+                    ticketRepository
+                            .findById(ticket.getId())
+                            .orElseThrow(() -> new IllegalStateException("Ticket not found: " + ticket.getId()));
+            leave.setTicket(managed);
+            leave.setId(managed.getId()); // Synchronize ID for @MapsId
+        } else {
+            // Persist new ticket first to obtain its id (avoids null identifier on LeaveRequest)
+            // Ensure nested associations are managed to avoid transient instance errors (e.g.,
+            // ticketType)
+            if (ticket.getTicketType() != null && ticket.getTicketType().getId() != null) {
+                TicketType managedType =
+                        entityManager.getReference(TicketType.class, ticket.getTicketType().getId());
+                ticket.setTicketType(managedType);
+            }
+
+            // Using saveAndFlush to ensure the ID is generated and available in the session
+            Ticket savedTicket = ticketRepository.saveAndFlush(ticket);
+            leave.setTicket(savedTicket);
+            leave.setId(savedTicket.getId()); // Synchronize ID for @MapsId
+        }
+
+        // Save LeaveRequest. Hibernate will use the synchronized ID.
+        LeaveRequest saved = leaveTicketRepository.saveAndFlush(leave);
+
+        return leaveRequestMapper.toModel(saved);
     }
-
-    Ticket ticket = leave.getTicket();
-
-    if (ticket.getId() != null) {
-      // Attach existing ticket as managed entity
-      Ticket managed =
-          ticketRepository
-              .findById(ticket.getId())
-              .orElseThrow(() -> new IllegalStateException("Ticket not found: " + ticket.getId()));
-      leave.setTicket(managed);
-      leave.setId(managed.getId()); // Synchronize ID for @MapsId
-    } else {
-      // Persist new ticket first to obtain its id (avoids null identifier on LeaveRequest)
-      // Ensure nested associations are managed to avoid transient instance errors (e.g.,
-      // ticketType)
-      if (ticket.getTicketType() != null && ticket.getTicketType().getId() != null) {
-        TicketType managedType =
-            entityManager.getReference(TicketType.class, ticket.getTicketType().getId());
-        ticket.setTicketType(managedType);
-      }
-
-      // Using saveAndFlush to ensure the ID is generated and available in the session
-      Ticket savedTicket = ticketRepository.saveAndFlush(ticket);
-      leave.setTicket(savedTicket);
-      leave.setId(savedTicket.getId()); // Synchronize ID for @MapsId
-    }
-
-    // Save LeaveRequest. Hibernate will use the synchronized ID.
-    LeaveRequest saved = leaveTicketRepository.saveAndFlush(leave);
-
-    return leaveRequestMapper.toModel(saved);
-  }
 }
+
+

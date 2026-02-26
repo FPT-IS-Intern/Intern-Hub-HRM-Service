@@ -1,34 +1,41 @@
 package com.fis.hrmservice.infra.persistence.adapter.quicknote;
 
+import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
 import com.fis.hrmservice.domain.model.user.QuickNoteModel;
 import com.fis.hrmservice.domain.port.output.quicknote.QuickNoteRepositoryPort;
 import com.fis.hrmservice.infra.mapper.QuickNoteMapper;
 import com.fis.hrmservice.infra.persistence.entity.QuickNote;
 import com.fis.hrmservice.infra.persistence.repository.quicknote.QuickNoteRepository;
+
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Repository;
 
 @Repository
+@RequiredArgsConstructor
 public class QuickNoteRepositoryAdapter implements QuickNoteRepositoryPort {
 
-  @Autowired private QuickNoteRepository quickNoteRepository;
+    private final QuickNoteRepository quickNoteRepository;
 
-  @Autowired private QuickNoteMapper quickNoteMapper;
+    private final QuickNoteMapper quickNoteMapper;
 
-  @Override
-  public QuickNoteModel save(QuickNoteModel quickNoteModel) {
+    @Override
+    public QuickNoteModel save(QuickNoteModel quickNoteModel) {
 
-    QuickNote quickNote = quickNoteMapper.toEntity(quickNoteModel);
+        QuickNote quickNote = quickNoteMapper.toEntity(quickNoteModel);
 
-    quickNoteRepository.save(quickNote);
+        quickNoteRepository.save(quickNote);
 
-    return quickNoteMapper.toModel(quickNote);
-  }
+        return quickNoteMapper.toModel(quickNote);
+    }
 
-  @Override
-  public List<QuickNoteModel> findAllByUserId(Long userId) {
-    List<QuickNote> quickNotes = quickNoteRepository.findAllByInternId(userId);
-    return quickNoteMapper.toModelList(quickNotes);
-  }
+    @Override
+    public List<QuickNoteModel> findAllByUserId(Long userId) {
+        List<QuickNote> quickNotes = quickNoteRepository.findAllByInternId(userId);
+        return quickNoteMapper.toModelList(quickNotes);
+    }
 }
+
