@@ -3,10 +3,7 @@ package com.fis.hrmservice.api.mapper;
 import com.fis.hrmservice.api.dto.request.FilterRequest;
 import com.fis.hrmservice.api.dto.request.RegisterUserRequest;
 import com.fis.hrmservice.api.dto.request.UpdateProfileRequest;
-import com.fis.hrmservice.api.dto.response.FilterResponse;
-import com.fis.hrmservice.api.dto.response.InternalUserProfileResponse;
-import com.fis.hrmservice.api.dto.response.ProfileResponse;
-import com.fis.hrmservice.api.dto.response.UserResponse;
+import com.fis.hrmservice.api.dto.response.*;
 import com.fis.hrmservice.domain.model.user.UserModel;
 import com.fis.hrmservice.domain.usecase.command.user.FilterUserCommand;
 import com.fis.hrmservice.domain.usecase.command.user.RegisterUserCommand;
@@ -67,6 +64,11 @@ public interface UserApiMapper {
     List<FilterResponse> toFilterResponseList(List<UserModel> userModelList);
 
     UpdateUserProfileCommand toUpdateUserProfileCommand(UpdateProfileRequest request);
+
+    @Mapping(target = "email", source = "companyEmail")
+    @Mapping(target = "avatarUrl", expression = "java(getAvatarUrl(model))")
+    @Mapping(target = "role", ignore = true)
+    InternalUserResponse toInternalUserResponse(UserModel model);
 
     // ===== Filter =====
     FilterUserCommand toCommand(FilterRequest request);
