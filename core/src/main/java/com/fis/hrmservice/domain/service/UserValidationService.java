@@ -4,8 +4,8 @@ import com.fis.hrmservice.domain.model.constant.CoreConstant;
 import com.fis.hrmservice.domain.usecase.command.user.RegisterUserCommand;
 import com.fis.hrmservice.domain.usecase.command.user.UpdateUserProfileCommand;
 import com.intern.hub.library.common.exception.ConflictDataException;
+import com.fis.hrmservice.domain.model.constant.CoreConstant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.regex.Pattern;
 
 public class UserValidationService {
@@ -61,10 +61,11 @@ public class UserValidationService {
     //            throw new ConflictDataException("Sai định dạng CCCD/CMND");
     //        }
     //
-    //        // Validate province code (first 3 digits)
-    //        Integer provinceCode = ProvinceCode.getProvinceCode(address);
-    //        if (provinceCode == null) {
-    //            throw new ConflictDataException("address", "Không tìm thấy mã tỉnh/thành phố từ
+    // // Validate province code (first 3 digits)
+    // Integer provinceCode = ProvinceCode.getProvinceCode(address);
+    // if (provinceCode == null) {
+    // throw new ConflictDataException("address", "Không tìm thấy mã tỉnh/thành phố
+    // từ
     // địa chỉ");
     //        }
     //
@@ -184,7 +185,7 @@ public class UserValidationService {
       throw new ConflictDataException("Ngày kết thúc thực tập không được để trống");
     }
 
-    LocalDate today = LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+    LocalDate today = LocalDate.now(CoreConstant.VIETNAM_ZONE);
 
     if (startDate.isBefore(today)) {
       throw new ConflictDataException("Ngày bắt đầu thực tập không được trước ngày hiện tại");

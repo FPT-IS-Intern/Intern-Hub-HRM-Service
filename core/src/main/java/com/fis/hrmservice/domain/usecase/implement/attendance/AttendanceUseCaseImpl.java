@@ -1,5 +1,6 @@
 package com.fis.hrmservice.domain.usecase.implement.attendance;
 
+import com.fis.hrmservice.domain.model.constant.CoreConstant;
 import com.fis.hrmservice.domain.model.attendance.AttendanceLogModel;
 import com.fis.hrmservice.domain.model.attendance.AttendanceStatusModel;
 import com.fis.hrmservice.domain.model.user.UserModel;
@@ -15,7 +16,6 @@ import com.intern.hub.library.common.utils.Snowflake;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -194,11 +194,11 @@ public class AttendanceUseCaseImpl implements AttendanceUseCase {
   }
 
   public static LocalTime convertToLocalTime(long millis) {
-    return Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalTime();
+    return Instant.ofEpochMilli(millis).atZone(CoreConstant.VIETNAM_ZONE).toLocalTime();
   }
 
   private LocalDate convertToLocalDate(long millis) {
-    return Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate();
+    return Instant.ofEpochMilli(millis).atZone(CoreConstant.VIETNAM_ZONE).toLocalDate();
   }
 
   // --- Static Helper Methods for Message Generation (used by Mapper) ---
