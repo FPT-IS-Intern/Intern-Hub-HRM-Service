@@ -2,8 +2,8 @@ package com.fis.hrmservice.infra.service;
 
 import com.fis.hrmservice.domain.port.output.network.NetworkCheckPort;
 import com.fis.hrmservice.infra.feign.BoPortalFeignClient;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -12,9 +12,10 @@ import org.springframework.stereotype.Service;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class NetworkCheckService implements NetworkCheckPort {
 
-  @Autowired private BoPortalFeignClient boPortalFeignClient;
+  private final BoPortalFeignClient boPortalFeignClient;
 
   /**
    * Check if the given IP address belongs to the company network. Validates against allowed IP

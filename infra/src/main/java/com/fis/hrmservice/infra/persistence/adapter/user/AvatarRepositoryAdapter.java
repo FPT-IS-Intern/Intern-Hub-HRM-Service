@@ -4,15 +4,16 @@ import com.fis.hrmservice.domain.model.user.AvatarModel;
 import com.fis.hrmservice.domain.port.output.user.AvatarRepositoryPort;
 import com.fis.hrmservice.infra.mapper.AvatarMapper;
 import com.fis.hrmservice.infra.persistence.repository.user.AvatarRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@RequiredArgsConstructor
 public class AvatarRepositoryAdapter implements AvatarRepositoryPort {
 
-  @Autowired private AvatarRepository avatarRepository;
+  private final AvatarRepository avatarRepository;
 
-  @Autowired private AvatarMapper avatarMapper;
+  private final AvatarMapper avatarMapper;
 
   @Override
   public AvatarModel getAvatarByUserId(Long userId) {

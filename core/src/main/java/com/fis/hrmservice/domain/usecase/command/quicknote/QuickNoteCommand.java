@@ -1,8 +1,10 @@
 package com.fis.hrmservice.domain.usecase.command.quicknote;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class QuickNoteCommand {
   String content;
 }

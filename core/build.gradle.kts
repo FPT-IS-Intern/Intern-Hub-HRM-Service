@@ -4,8 +4,6 @@ plugins {
 
 dependencies {
     // Project dependencies
-    implementation(project(":common"))
-
     // Custom libraries
     implementation(libs.bundles.custom.libraries)
 

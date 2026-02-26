@@ -8,7 +8,6 @@ COPY gradle/ gradle/
 COPY api/build.gradle.kts api/
 COPY core/build.gradle.kts core/
 COPY infra/build.gradle.kts infra/
-COPY common/build.gradle.kts common/
 
 RUN chmod +x gradlew
 
@@ -19,7 +18,6 @@ RUN --mount=type=cache,target=/root/.gradle \
 COPY api/src api/src
 COPY core/src core/src
 COPY infra/src infra/src
-COPY common/src common/src
 
 RUN --mount=type=cache,target=/root/.gradle \
     ./gradlew --no-daemon bootJar
@@ -28,7 +26,7 @@ RUN jdeps --ignore-missing-deps -q \
     --recursive \
     --multi-release 25 \
     --print-module-deps \
-    --class-path 'common/build/libs/*:core/build/libs/*:infra/build/libs/*' \
+    --class-path 'core/build/libs/*:infra/build/libs/*' \
     api/build/libs/hrm-service.jar > deps.txt
 
 RUN jlink \

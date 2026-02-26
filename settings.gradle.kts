@@ -22,7 +22,6 @@ dependencyResolutionManagement {
 }
 
 include(
-    "common",
     "api",
     "core",
     "infra"

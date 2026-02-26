@@ -9,21 +9,22 @@ import com.fis.hrmservice.infra.persistence.entity.TicketType;
 import com.fis.hrmservice.infra.persistence.repository.ticket.LeaveTicketRepository;
 import com.fis.hrmservice.infra.persistence.repository.ticket.TicketRepository;
 import jakarta.persistence.EntityManager;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
+@RequiredArgsConstructor
 public class LeaveRequestRepositoryAdapter implements LeaveRequestRepositoryPort {
 
-  @Autowired private LeaveTicketRepository leaveTicketRepository;
+  private final LeaveTicketRepository leaveTicketRepository;
 
-  @Autowired private TicketRepository ticketRepository;
+  private final TicketRepository ticketRepository;
 
-  @Autowired private LeaveRequestMapper leaveRequestMapper;
+  private final LeaveRequestMapper leaveRequestMapper;
 
-  @Autowired
-  private EntityManager entityManager; // ensure we can obtain managed references for associations
+  private final EntityManager
+      entityManager; // ensure we can obtain managed references for associations
 
   @Override
   @Transactional

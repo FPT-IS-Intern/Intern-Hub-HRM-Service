@@ -7,18 +7,19 @@ import com.fis.hrmservice.infra.persistence.entity.RemoteRequest;
 import com.fis.hrmservice.infra.persistence.entity.Ticket;
 import com.fis.hrmservice.infra.persistence.repository.ticket.RemoteTicketRepository;
 import com.fis.hrmservice.infra.persistence.repository.ticket.TicketRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
+@RequiredArgsConstructor
 public class RemoteRequestAdapter implements RemoteRequestRepositoryPort {
 
-  @Autowired private RemoteRequestMapper remoteRequestMapper;
+  private final RemoteRequestMapper remoteRequestMapper;
 
-  @Autowired private RemoteTicketRepository remoteTicketRepository;
+  private final RemoteTicketRepository remoteTicketRepository;
 
-  @Autowired private TicketRepository ticketRepository;
+  private final TicketRepository ticketRepository;
 
   @Override
   @Transactional
