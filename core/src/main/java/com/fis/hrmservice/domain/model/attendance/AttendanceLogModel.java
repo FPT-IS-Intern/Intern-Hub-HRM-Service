@@ -5,10 +5,12 @@ import com.fis.hrmservice.domain.model.user.UserModel;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-@Data
+@Getter
+@Setter
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AttendanceLogModel extends BaseDomain {
@@ -23,3 +25,4 @@ public class AttendanceLogModel extends BaseDomain {
   boolean isCheckInValid;
   boolean isCheckOutValid;
 }
+

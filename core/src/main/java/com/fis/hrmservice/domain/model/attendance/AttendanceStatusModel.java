@@ -3,9 +3,11 @@ package com.fis.hrmservice.domain.model.attendance;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Builder
 public class AttendanceStatusModel {
   private LocalDate workDate;
@@ -16,3 +18,4 @@ public class AttendanceStatusModel {
   private String checkInMessage;
   private String checkOutMessage;
 }
+

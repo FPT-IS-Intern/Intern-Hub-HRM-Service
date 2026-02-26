@@ -5,12 +5,14 @@ import com.fis.hrmservice.domain.model.constant.UserStatus;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 
 @EqualsAndHashCode(callSuper = true)
-@Data
+@Getter
+@Setter
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserModel extends BaseDomain {
@@ -34,3 +36,4 @@ public class UserModel extends BaseDomain {
   AvatarModel avatar;
   CvModel cv;
 }
+

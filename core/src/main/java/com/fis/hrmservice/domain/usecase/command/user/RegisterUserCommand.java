@@ -3,11 +3,13 @@ package com.fis.hrmservice.domain.usecase.command.user;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.multipart.MultipartFile;
 
-@Data
+@Getter
+@Setter
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RegisterUserCommand {
@@ -30,3 +32,4 @@ public class RegisterUserCommand {
     return positionCode != null && positionCode.toUpperCase().contains("INTERN");
   }
 }
+

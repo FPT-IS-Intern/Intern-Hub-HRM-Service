@@ -1,11 +1,14 @@
 package com.fis.hrmservice.domain.usecase.command.attendance;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Builder
 public class CheckOutCommand {
   private Long userId;
   private long checkOutTime;
 }
+
