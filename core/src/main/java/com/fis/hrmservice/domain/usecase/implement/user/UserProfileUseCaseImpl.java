@@ -1,25 +1,39 @@
 package com.fis.hrmservice.domain.usecase.implement.user;
 
-import com.fis.hrmservice.domain.model.user.PositionModel;
+import com.fis.hrmservice.domain.model.user.AvatarModel;
+import com.fis.hrmservice.domain.model.user.CvModel;
 import com.fis.hrmservice.domain.model.user.UserModel;
+import com.fis.hrmservice.domain.port.output.user.AvatarRepositoryPort;
+import com.fis.hrmservice.domain.port.output.user.CvRepositoryPort;
+import com.fis.hrmservice.domain.port.output.user.FileStoragePort;
 import com.fis.hrmservice.domain.port.output.user.UserRepositoryPort;
 import com.fis.hrmservice.domain.service.UserValidationService;
 import com.fis.hrmservice.domain.usecase.command.user.UpdateUserProfileCommand;
 import com.fis.hrmservice.domain.utils.UpdateHelper;
 import com.intern.hub.library.common.exception.ConflictDataException;
 import com.intern.hub.library.common.exception.NotFoundException;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserProfileUseCaseImpl {
 
-    private final UserRepositoryPort userRepositoryPort;
+    UserRepositoryPort userRepositoryPort;
 
-    private final UserValidationService userValidationService;
+    UserValidationService userValidationService;
+
+    FileStoragePort fileStoragePort;
+
+    AvatarRepositoryPort avatarRepositoryPort;
+
+    CvRepositoryPort cvRepositoryPort;
 
     public UserModel getUserProfile(Long userId) {
 
@@ -28,16 +42,7 @@ public class UserProfileUseCaseImpl {
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
     }
 
-    public UserModel updateProfileUser(UpdateUserProfileCommand command, long userId) {
-
-        /*
-         * TODO: khi nào api gateway làm xong mới dùng được
-         */
-
-        // AuthContext context = AuthContextHolder.get()
-        // .orElseThrow(() -> new NotFoundException("Not authenticated"));
-        //
-        // long userId = context.userId();
+    public UserModel updateProfileUser(UpdateUserProfileCommand command, long userId) throws IOException {
 
         UserModel userModel =
                 userRepositoryPort
@@ -90,52 +95,58 @@ public class UserProfileUseCaseImpl {
                         userModel::setPhoneNumber,
                         (oldVal, newVal) -> Objects.equals(trim(oldVal), trim(newVal)));
 
-        /*
-         * TODO: upload file làm sau
-         */
 
-        // if (command.getCvFile() != null && !command.getCvFile().isEmpty()) {
-        //
-        // FileUploadResult result = fileStoragePort.upload(command.getCvFile());
-        //
-        // CvModel cv = CvModel.builder()
-        // .user(userModel)
-        // .cvUrl(result.url())
-        // .fileName(result.fileName())
-        // .fileSize(result.fileSize())
-        // .fileType(result.contentType())
-        // .status("ACTIVE")
-        // .build();
-        //
-        // cvRepositoryPort.save(cv);
-        // changed = true;
-        // }
-        //
-        // if (command.getAvatarFile() != null && !command.getAvatarFile().isEmpty()) {
-        //
-        // FileUploadResult result = fileStoragePort.upload(command.getAvatarFile());
-        //
-        // AvatarModel avatar = AvatarModel.builder()
-        // .user(userModel)
-        // .avatarUrl(result.url())
-        // .fileName(result.fileName())
-        // .fileSize(result.fileSize())
-        // .fileType(result.contentType())
-        // .status("ACTIVE")
-        // .build();
-        //
-        // avatarRepositoryPort.save(avatar);
-        // userModel.setAvatarUrl(result.url());
-        // changed = true;
-        // }
+        if (command.getCvFile() != null && !command.getCvFile().isEmpty()) {
+
+
+            String cvUrl = fileStoragePort.upload(
+                    command.getCvFile().getBytes(),
+                    command.getCvFile().getOriginalFilename(),
+                    command.getCvFile().getContentType(),
+                    "/cvs/" + userModel.getUserId());
+
+
+
+            CvModel cv = cvRepositoryPort.findByUserId(userModel.getUserId());
+
+            if (cv == null) {
+                throw new NotFoundException("CV not found for user with id: " + userModel.getUserId());
+            }
+
+            cv.setCvUrl(cvUrl);
+            cv.setFileName(command.getCvFile().getOriginalFilename());
+            cv.setFileSize(command.getCvFile().getSize());
+            cv.setFileType(command.getCvFile().getContentType());
+            cvRepositoryPort.save(cv);
+            changed = true;
+        }
+
+        if (command.getAvatarFile() != null && !command.getAvatarFile().isEmpty()) {
+
+            String avatarUrl = fileStoragePort.upload(
+                    command.getAvatarFile().getBytes(),
+                    command.getAvatarFile().getOriginalFilename(),
+                    command.getAvatarFile().getContentType(),
+                    "/avatars/" + userModel.getUserId());
+
+            AvatarModel avatar = avatarRepositoryPort.getAvatarByUserId(userModel.getUserId());
+
+            if (avatar == null) {
+                throw new NotFoundException("Avatar not found for user with id: " + userModel.getUserId());
+            }
+
+            avatar.setAvatarUrl(avatarUrl);
+            avatar.setFileName(command.getAvatarFile().getOriginalFilename());
+            avatar.setFileSize(command.getAvatarFile().getSize());
+            avatar.setFileType(command.getAvatarFile().getContentType());
+
+            avatarRepositoryPort.save(avatar);
+            changed = true;
+        }
 
         if (!changed) {
             throw new ConflictDataException("No changes detected in the profile update request");
         }
-
-        PositionModel oldPosition = userModel.getPosition();
-
-        userModel.setPosition(oldPosition);
 
         return userRepositoryPort.save(userModel);
     }

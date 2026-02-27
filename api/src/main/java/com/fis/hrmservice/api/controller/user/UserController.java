@@ -24,6 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -112,20 +113,26 @@ public class UserController {
     }
 
     // =====================================================================================
-    @PatchMapping(value = "/me/{userId}/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PatchMapping(value = "/me/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseApi<?> updateProfile(
             @RequestPart("userInfo") UpdateProfileRequest request,
             @RequestPart(value = "cvFile", required = false) MultipartFile cvFile,
-            @RequestPart(value = "avatarFile", required = false) MultipartFile avatarFile,
-            @PathVariable long userId) { // sau này hoàn thành api gateway se sửa sau
-        log.info("Update profile for user ID: {}", userId);
+            @RequestPart(value = "avatarFile", required = false) MultipartFile avatarFile) throws IOException {
+
+        Long userId = UserContext.userId()
+                .orElseThrow(() -> new IllegalStateException("User not authenticated"));
         if (cvFile != null && !cvFile.isEmpty()) {
             request.setCvFile(cvFile);
         }
         if (avatarFile != null && !avatarFile.isEmpty()) {
             request.setAvatarFile(avatarFile);
         }
-        userProfileUseCase.updateProfileUser(userApiMapper.toUpdateUserProfileCommand(request), userId);
+        UserModel modelUpdate = userProfileUseCase.updateProfileUser(userApiMapper.toUpdateUserProfileCommand(request), userId);
+
+        if (modelUpdate == null) {
+            return ResponseApi.ok("Update user profile thành công nhưng không có thay đổi nào được thực hiện");
+        }
+
         return ResponseApi.ok("Update user profile thành công");
     }
 

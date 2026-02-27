@@ -27,6 +27,10 @@ public class User extends AuditEntity {
     @JoinColumn(name = "mentor_id")
     private User mentor;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private Department department;
+
     @Size(max = 100)
     @Column(name = "full_name", length = 100)
     private String fullName;

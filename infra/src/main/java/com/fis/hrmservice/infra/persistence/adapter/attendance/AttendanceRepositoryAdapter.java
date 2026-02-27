@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -39,6 +40,26 @@ public class AttendanceRepositoryAdapter implements AttendanceRepositoryPort {
     @Override
     public AttendanceLogModel update(AttendanceLogModel attendanceLogModel) {
         return save(attendanceLogModel);
+    }
+
+    @Override
+    public Long getCheckInOnTimePercent() {
+        return 0L;
+    }
+
+    @Override
+    public Long getCheckInLateTimePercent() {
+        return 0L;
+    }
+
+    @Override
+    public Long getNotAttendancePercent() {
+        return 0L;
+    }
+
+    @Override
+    public List<AttendanceLogModel> filterAttendance(String keyword, String attendanceStatus) {
+        return List.of();
     }
 
     private AttendanceLog toEntity(AttendanceLogModel model) {
@@ -84,7 +105,7 @@ public class AttendanceRepositoryAdapter implements AttendanceRepositoryPort {
                 .checkInTime(entity.getCheckInTime() != null ? entity.getCheckInTime().toEpochMilli() : 0L)
                 .checkOutTime(
                         entity.getCheckOutTime() != null ? entity.getCheckOutTime().toEpochMilli() : 0L)
-                .attendanceStatus(entity.getAttendanceStatus())
+                .attendanceStatus(String.valueOf(entity.getAttendanceStatus()))
                 .source(entity.getSource())
                 .build();
     }

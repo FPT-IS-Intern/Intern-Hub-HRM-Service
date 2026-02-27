@@ -3,6 +3,7 @@ package com.fis.hrmservice.domain.port.output.attendance;
 import com.fis.hrmservice.domain.model.attendance.AttendanceLogModel;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public interface AttendanceRepositoryPort {
@@ -11,4 +12,12 @@ public interface AttendanceRepositoryPort {
     Optional<AttendanceLogModel> findByUserIdAndDate(Long userId, LocalDate workDate);
 
     AttendanceLogModel update(AttendanceLogModel attendanceLog);
+
+    Long getCheckInOnTimePercent();
+
+    Long getCheckInLateTimePercent();
+
+    Long getNotAttendancePercent();
+
+    List<AttendanceLogModel> filterAttendance(String keyword, String attendanceStatus);
 }

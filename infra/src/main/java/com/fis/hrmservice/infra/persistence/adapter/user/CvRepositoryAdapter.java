@@ -18,4 +18,9 @@ public class CvRepositoryAdapter implements CvRepositoryPort {
   public CvModel save(CvModel cv) {
     return cvMapper.toModel(cvRepository.save(cvMapper.toEntity(cv)));
   }
+
+  @Override
+  public CvModel findByUserId(Long userId) {
+    return cvMapper.toModel(cvRepository.findCvByUserId(userId));
+  }
 }
