@@ -2,6 +2,8 @@ package com.fis.hrmservice.api.util;
 
 import com.intern.hub.starter.security.context.AuthContext;
 import com.intern.hub.starter.security.context.AuthContextHolder;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 import java.util.Set;
@@ -29,6 +31,11 @@ public final class UserContext {
 
     public static Optional<Long> userId() {
         return Optional.ofNullable(current().userId());
+    }
+
+    public static Long requiredUserId() {
+        return userId()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated"));
     }
 
     public static Set<String> authorities() {
