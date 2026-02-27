@@ -5,11 +5,14 @@ import com.fis.hrmservice.domain.port.output.attendance.AttendanceRepositoryPort
 import com.fis.hrmservice.infra.persistence.entity.AttendanceLog;
 import com.fis.hrmservice.infra.persistence.repository.attendance.AttendanceLogRepository;
 import com.fis.hrmservice.infra.persistence.repository.user.UserJpaRepository;
+import com.fis.hrmservice.domain.model.constant.CoreConstant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,12 +77,14 @@ public class AttendanceRepositoryAdapter implements AttendanceRepositoryPort {
             userJpaRepository.findById(model.getUser().getUserId()).ifPresent(entity::setUser);
         }
         entity.setWorkDate(model.getWorkDate());
-        // Convert long timestamp to Instant
+        // Convert long timestamp to LocalDateTime using Vietnam timezone
         if (model.getCheckInTime() > 0) {
-            entity.setCheckInTime(java.time.Instant.ofEpochMilli(model.getCheckInTime()));
+            entity.setCheckInTime(LocalDateTime.ofInstant(
+                    Instant.ofEpochMilli(model.getCheckInTime()), CoreConstant.VIETNAM_ZONE));
         }
         if (model.getCheckOutTime() > 0) {
-            entity.setCheckOutTime(java.time.Instant.ofEpochMilli(model.getCheckOutTime()));
+            entity.setCheckOutTime(LocalDateTime.ofInstant(
+                    Instant.ofEpochMilli(model.getCheckOutTime()), CoreConstant.VIETNAM_ZONE));
         }
         entity.setAttendanceStatus(model.getAttendanceStatus());
         entity.setSource(model.getSource());
@@ -102,10 +107,11 @@ public class AttendanceRepositoryAdapter implements AttendanceRepositoryPort {
                                 .build()
                                 : null)
                 .workDate(entity.getWorkDate())
-                .checkInTime(entity.getCheckInTime() != null ? entity.getCheckInTime().toEpochMilli() : 0L)
-                .checkOutTime(
-                        entity.getCheckOutTime() != null ? entity.getCheckOutTime().toEpochMilli() : 0L)
-                .attendanceStatus(String.valueOf(entity.getAttendanceStatus()))
+                .checkInTime(entity.getCheckInTime() != null
+                        ? entity.getCheckInTime().atZone(CoreConstant.VIETNAM_ZONE).toInstant().toEpochMilli() : 0L)
+                .checkOutTime(entity.getCheckOutTime() != null
+                        ? entity.getCheckOutTime().atZone(CoreConstant.VIETNAM_ZONE).toInstant().toEpochMilli() : 0L)
+                .attendanceStatus(entity.getAttendanceStatus())
                 .source(entity.getSource())
                 .build();
     }
