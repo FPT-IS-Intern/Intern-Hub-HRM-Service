@@ -26,17 +26,12 @@ import java.util.Objects;
 public class UserProfileUseCaseImpl {
 
     UserRepositoryPort userRepositoryPort;
-
     UserValidationService userValidationService;
-
     FileStoragePort fileStoragePort;
-
     AvatarRepositoryPort avatarRepositoryPort;
-
     CvRepositoryPort cvRepositoryPort;
 
     public UserModel getUserProfile(Long userId) {
-
         return userRepositoryPort
                 .findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
@@ -44,7 +39,7 @@ public class UserProfileUseCaseImpl {
 
     public UserModel updateProfileUser(UpdateUserProfileCommand command, long userId) throws IOException {
 
-        UserModel userModel =
+        UserModel user =
                 userRepositoryPort
                         .findById(userId)
                         .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
@@ -53,64 +48,55 @@ public class UserProfileUseCaseImpl {
 
         boolean changed = false;
 
-        changed |=
-                UpdateHelper.applyIfChanged(
-                        command.getFullName(),
-                        userModel::getFullName,
-                        userModel::setFullName,
-                        (oldVal, newVal) -> Objects.equals(trim(oldVal), trim(newVal)));
+        changed |= UpdateHelper.applyIfChanged(
+                command.getFullName(),
+                user::getFullName,
+                user::setFullName,
+                (o, n) -> Objects.equals(trim(o), trim(n)));
 
-        changed |=
-                UpdateHelper.applyIfChanged(
-                        command.getCompanyEmail(),
-                        userModel::getCompanyEmail,
-                        userModel::setCompanyEmail,
-                        (oldVal, newVal) -> Objects.equals(trim(oldVal), trim(newVal)));
+        changed |= UpdateHelper.applyIfChanged(
+                command.getCompanyEmail(),
+                user::getCompanyEmail,
+                user::setCompanyEmail,
+                (o, n) -> Objects.equals(trim(o), trim(n)));
 
-        changed |=
-                UpdateHelper.applyIfChanged(
-                        command.getDateOfBirth(),
-                        userModel::getDateOfBirth,
-                        userModel::setDateOfBirth,
-                        Objects::equals);
+        changed |= UpdateHelper.applyIfChanged(
+                command.getDateOfBirth(),
+                user::getDateOfBirth,
+                user::setDateOfBirth,
+                Objects::equals);
 
-        changed |=
-                UpdateHelper.applyIfChanged(
-                        command.getIdNumber(),
-                        userModel::getIdNumber,
-                        userModel::setIdNumber,
-                        (oldVal, newVal) -> Objects.equals(trim(oldVal), trim(newVal)));
+        changed |= UpdateHelper.applyIfChanged(
+                command.getIdNumber(),
+                user::getIdNumber,
+                user::setIdNumber,
+                (o, n) -> Objects.equals(trim(o), trim(n)));
 
-        changed |=
-                UpdateHelper.applyIfChanged(
-                        command.getAddress(),
-                        userModel::getAddress,
-                        userModel::setAddress,
-                        (oldVal, newVal) -> Objects.equals(trim(oldVal), trim(newVal)));
+        changed |= UpdateHelper.applyIfChanged(
+                command.getAddress(),
+                user::getAddress,
+                user::setAddress,
+                (o, n) -> Objects.equals(trim(o), trim(n)));
 
-        changed |=
-                UpdateHelper.applyIfChanged(
-                        command.getPhoneNumber(),
-                        userModel::getPhoneNumber,
-                        userModel::setPhoneNumber,
-                        (oldVal, newVal) -> Objects.equals(trim(oldVal), trim(newVal)));
-
+        changed |= UpdateHelper.applyIfChanged(
+                command.getPhoneNumber(),
+                user::getPhoneNumber,
+                user::setPhoneNumber,
+                (o, n) -> Objects.equals(trim(o), trim(n)));
 
         if (command.getCvFile() != null && !command.getCvFile().isEmpty()) {
-
 
             String cvUrl = fileStoragePort.upload(
                     command.getCvFile().getBytes(),
                     command.getCvFile().getOriginalFilename(),
                     command.getCvFile().getContentType(),
-                    "/cvs/" + userModel.getUserId());
+                    "/cvs/" + user.getUserId());
 
-
-
-            CvModel cv = cvRepositoryPort.findByUserId(userModel.getUserId());
+            CvModel cv = cvRepositoryPort.findByUserId(user.getUserId());
 
             if (cv == null) {
-                throw new NotFoundException("CV not found for user with id: " + userModel.getUserId());
+                cv = new CvModel();
+                cv.setUser(user);
             }
 
             cv.setCvUrl(cvUrl);
@@ -127,12 +113,13 @@ public class UserProfileUseCaseImpl {
                     command.getAvatarFile().getBytes(),
                     command.getAvatarFile().getOriginalFilename(),
                     command.getAvatarFile().getContentType(),
-                    "/avatars/" + userModel.getUserId());
+                    "/avatars/" + user.getUserId());
 
-            AvatarModel avatar = avatarRepositoryPort.getAvatarByUserId(userModel.getUserId());
+            AvatarModel avatar = avatarRepositoryPort.getAvatarByUserId(user.getUserId());
 
             if (avatar == null) {
-                throw new NotFoundException("Avatar not found for user with id: " + userModel.getUserId());
+                avatar = new AvatarModel();
+                avatar.setUser(user);
             }
 
             avatar.setAvatarUrl(avatarUrl);
@@ -144,11 +131,12 @@ public class UserProfileUseCaseImpl {
             changed = true;
         }
 
+        // Nếu không có thay đổi gì thì return luôn (không throw)
         if (!changed) {
-            throw new ConflictDataException("No changes detected in the profile update request");
+            return user;
         }
 
-        return userRepositoryPort.save(userModel);
+        return userRepositoryPort.save(user);
     }
 
     public UserModel internalUserProfile(Long userId) {
