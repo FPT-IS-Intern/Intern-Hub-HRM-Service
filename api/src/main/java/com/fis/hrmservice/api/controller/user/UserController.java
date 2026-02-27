@@ -14,6 +14,7 @@ import com.fis.hrmservice.domain.usecase.command.user.FilterUserCommand;
 import com.fis.hrmservice.domain.usecase.command.user.RegisterUserCommand;
 import com.fis.hrmservice.domain.usecase.implement.user.*;
 import com.intern.hub.library.common.annotation.EnableGlobalExceptionHandler;
+import com.intern.hub.library.common.dto.PaginatedData;
 import com.intern.hub.library.common.dto.ResponseApi;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -82,10 +83,24 @@ public class UserController {
     }
 
     @PostMapping("/filter")
-    public ResponseApi<List<FilterResponse>> filterUsers(@RequestBody FilterRequest request) {
-        FilterUserCommand filterUserCommand = userApiMapper.toCommand(request);
-        List<UserModel> userModelList = filterUserUseCase.filterUsers(filterUserCommand);
-        return ResponseApi.ok(userApiMapper.toFilterResponseList(userModelList));
+    public ResponseApi<PaginatedData<FilterResponse>> filterUsers(
+            @RequestBody FilterRequest request,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+
+        FilterUserCommand command = userApiMapper.toCommand(request);
+
+        PaginatedData<UserModel> result =
+                filterUserUseCase.filterUsers(command, page, size);
+
+        return ResponseApi.ok(
+                PaginatedData.<FilterResponse>builder()
+                        .items(userApiMapper.toFilterResponseList((List<UserModel>) result.getItems()))
+                        .totalItems(result.getTotalItems())
+                        .totalPages(result.getTotalPages())
+                        .build()
+        );
     }
 
     // cái này dùng cho admin xem profile của 1 user cụ thể nào đó

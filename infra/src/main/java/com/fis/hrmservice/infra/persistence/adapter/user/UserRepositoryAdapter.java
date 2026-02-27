@@ -7,7 +7,12 @@ import com.fis.hrmservice.domain.usecase.command.user.FilterUserCommand;
 import com.fis.hrmservice.infra.mapper.UserMapper;
 import com.fis.hrmservice.infra.persistence.entity.User;
 import com.fis.hrmservice.infra.persistence.repository.user.UserJpaRepository;
+import com.intern.hub.library.common.dto.PaginatedData;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,8 +72,20 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     }
 
     @Override
-    public List<UserModel> filterUser(FilterUserCommand command) {
-        return userMapper.toResponseList(userJpaRepository.filterUser(command));
+    public PaginatedData<UserModel> filterUser(FilterUserCommand command, int page, int size) {
+
+        Page<User> userPage = userJpaRepository.filterUser(
+                command,
+                PageRequest.of(page, size)
+        );
+
+        List<UserModel> models = userMapper.toResponseList(userPage.getContent());
+
+        return PaginatedData.<UserModel>builder()
+                .items(models)
+                .totalItems(userPage.getTotalElements())
+                .totalPages(userPage.getTotalPages())
+                .build();
     }
 
     @Override

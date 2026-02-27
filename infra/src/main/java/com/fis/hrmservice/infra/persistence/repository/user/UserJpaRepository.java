@@ -3,6 +3,9 @@ package com.fis.hrmservice.infra.persistence.repository.user;
 import com.fis.hrmservice.domain.model.constant.UserStatus;
 import com.fis.hrmservice.domain.usecase.command.user.FilterUserCommand;
 import com.fis.hrmservice.infra.persistence.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -24,25 +27,23 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
 
     User findMentorById(Long id);
 
-    @Query(
-            """
-                        SELECT u FROM User u
-                        WHERE
-                            (
-                                :#{#command.keyword} IS NULL OR :#{#command.keyword} = ''
-                                OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :#{#command.keyword}, '%'))
-                                OR LOWER(u.companyEmail) LIKE LOWER(CONCAT('%', :#{#command.keyword}, '%'))
-                            )
-                        AND (
-                                :#{#command.sysStatuses == null || #command.sysStatuses.isEmpty() ? true : false} = true
-                                OR u.sysStatus IN :#{#command.sysStatuses}
-                            )
-                        AND (
-                                :#{#command.positions == null || #command.positions.isEmpty() ? true : false} = true
-                                OR u.position.name IN :#{#command.positions}
-                            )
-                    """)
-    List<User> filterUser(@Param("command") FilterUserCommand command);
+    @Query("""
+                SELECT u FROM User u
+                WHERE
+                    (:#{#command.keyword} IS NULL OR :#{#command.keyword} = ''
+                        OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :#{#command.keyword}, '%'))
+                        OR LOWER(u.companyEmail) LIKE LOWER(CONCAT('%', :#{#command.keyword}, '%'))
+                    )
+                AND (
+                    :#{#command.sysStatuses} IS NULL
+                    OR u.sysStatus IN :#{#command.sysStatuses}
+                )
+                AND (
+                    :#{#command.positions} IS NULL
+                    OR u.position.name IN :#{#command.positions}
+                )
+            """)
+    Page<User> filterUser(@Param("command") FilterUserCommand command, Pageable pageable);
 
     @Modifying
     @Transactional

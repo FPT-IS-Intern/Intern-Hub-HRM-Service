@@ -3,6 +3,9 @@ package com.fis.hrmservice.domain.port.output.user;
 import com.fis.hrmservice.domain.model.constant.UserStatus;
 import com.fis.hrmservice.domain.model.user.UserModel;
 import com.fis.hrmservice.domain.usecase.command.user.FilterUserCommand;
+import com.intern.hub.library.common.dto.PaginatedData;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +23,7 @@ public interface UserRepositoryPort {
 
     List<UserModel> findAll();
 
-    List<UserModel> filterUser(FilterUserCommand command);
+    PaginatedData<UserModel> filterUser(FilterUserCommand command, int page, int size);
 
     Long updateStatus(Long userId, UserStatus status);
 
