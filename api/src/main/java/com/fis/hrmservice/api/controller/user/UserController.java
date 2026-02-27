@@ -121,8 +121,7 @@ public class UserController {
             @RequestPart(value = "avatarFile", required = false) MultipartFile avatarFile
     ) throws IOException {
 
-        Long userId = UserContext.userId()
-                .orElseThrow(() -> new IllegalStateException("User not authenticated"));
+        Long userId = UserContext.requiredUserId();
 
         request.setCvFile(cvFile);
         request.setAvatarFile(avatarFile);
@@ -164,8 +163,7 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseApi<InternalUserResponse> getMeInternal() {
-        Long userId = UserContext.userId()
-                .orElseThrow(() -> new IllegalStateException("User not authenticated"));
+        Long userId = UserContext.requiredUserId();
         UserModel userModel = userProfileUseCase.internalUserProfile(userId);
         return ResponseApi.ok(userApiMapper.toInternalUserResponse(userModel));
     }
