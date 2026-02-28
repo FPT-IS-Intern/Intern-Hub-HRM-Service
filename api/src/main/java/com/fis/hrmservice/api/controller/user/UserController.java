@@ -104,9 +104,17 @@ public class UserController {
     }
 
     // cái này dùng cho admin xem profile của 1 user cụ thể nào đó
-    @GetMapping("/profile/{userId}")
-    public ResponseApi<?> getUserProfile(@PathVariable Long userId) {
+    @GetMapping("/admin/profile/{userId}")
+    public ResponseApi<?> adminGetUserProfile(@PathVariable Long userId) {
         log.info("Get user profile for ID: {}", userId);
+        UserModel userModel = userProfileUseCase.getUserProfile(userId);
+        return ResponseApi.ok(userApiMapper.toResponse(userModel));
+    }
+
+    //cái này dùng để cho user xem chính user profile của mình
+    @GetMapping("/profile")
+    public ResponseApi<?> userGetUserProfile() {
+        Long userId = UserContext.requiredUserId();
         UserModel userModel = userProfileUseCase.getUserProfile(userId);
         return ResponseApi.ok(userApiMapper.toResponse(userModel));
     }
