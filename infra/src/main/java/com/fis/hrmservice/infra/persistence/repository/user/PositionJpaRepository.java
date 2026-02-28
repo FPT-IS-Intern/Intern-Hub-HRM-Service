@@ -3,8 +3,10 @@ package com.fis.hrmservice.infra.persistence.repository.user;
 import com.fis.hrmservice.infra.persistence.entity.Position;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -17,4 +19,7 @@ public interface PositionJpaRepository extends JpaRepository<Position, Long> {
 
     @NullMarked
     Optional<Position> findById(Long id);
+
+    @Query("SELECT p FROM Position p")
+    List<Position> findAll();
 }
