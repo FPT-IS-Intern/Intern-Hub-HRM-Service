@@ -2,9 +2,12 @@ package com.fis.hrmservice.infra.service;
 
 import com.fis.hrmservice.domain.port.output.network.NetworkCheckPort;
 import com.fis.hrmservice.infra.feign.BoPortalFeignClient;
+import com.fis.hrmservice.infra.model.AttendanceLocationResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Service for network-related operations including company network validation.
@@ -37,7 +40,7 @@ public class NetworkCheckService implements NetworkCheckPort {
     // test thử ở local -> || ip.equals("127.0.0.1") || ip.equals("0:0:0:0:0:0:0:1")
     String wifiCongTyHardcode = "118.69.125.122";
     if (ip.equals(wifiCongTyHardcode)) {
-      log.info("IP {} khớp với địa chỉ hardcode (Wi-Fi công ty hoặc Localhost)", ip);
+      log.info("IP {} khớp với địa chỉ hardcode tạm(Wi-Fi công ty hoặc Localhost)", ip);
       return true;
     }
 
@@ -65,16 +68,22 @@ public class NetworkCheckService implements NetworkCheckPort {
       return false;
     }
 
+    // MOCK DATA TẠM THỜI (Thay thế cho boPortalFeignClient)
+    List<AttendanceLocationResponse> mockLocations = List.of(
+            new AttendanceLocationResponse("FPT IS - Tan Thuan", 10.767297, 106.746977, 300)
+    );
+
     try {
-      var response = boPortalFeignClient.getAttendanceLocations();
-      if (response != null && response.data() != null) {
-        for (var loc : response.data()) {
+//       var response = boPortalFeignClient.getAttendanceLocations();
+      var locations = mockLocations;
+//      if (response != null && locations.data() != null) {
+        for (var loc : locations) {
           double distance = calculateDistance(latitude, longitude, loc.latitude(), loc.longitude());
           if (distance <= loc.radiusMeters()) {
             log.info("User is at location: {} (distance: {}m)", loc.name(), (int) distance);
             return true;
           }
-        }
+//        }
       }
     } catch (Exception e) {
       log.error("Error fetching attendance locations from bo-portal: {}", e.getMessage());
