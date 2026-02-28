@@ -7,7 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
- * Service for network-related operations including company network validation. This service handles
+ * Service for network-related operations including company network validation.
+ * This service handles
  * infrastructure concerns related to network checking.
  */
 @Slf4j
@@ -18,7 +19,8 @@ public class NetworkCheckService implements NetworkCheckPort {
   private final BoPortalFeignClient boPortalFeignClient;
 
   /**
-   * Check if the given IP address belongs to the company network. Validates against allowed IP
+   * Check if the given IP address belongs to the company network. Validates
+   * against allowed IP
    * ranges from bo-portal service.
    *
    * @param ip the IP address to check
@@ -40,25 +42,58 @@ public class NetworkCheckService implements NetworkCheckPort {
     }
 
     try {
-      // Call bo-portal to get allowed IP ranges
-      // ResponseApi<List<BoPortalAllowedIpRangeResponse>> response =
-      // boPortalFeignClient.getAllowedIpRanges();
-      //
-      // if (response != null && response.data() != null) {
-      // for (BoPortalAllowedIpRangeResponse range : response.data()) {
-      // if (range.isActive()
-      // && (ip.startsWith(range.ipPrefix()) || ip.equals(range.ipPrefix()))) {
-      // log.info("IP {} matched allowed range: {}", ip, range.description());
-      // return true;
-      // }
-      // }
-      // }
-
-      log.debug("IP {} did not match any allowed ranges", ip);
+      var response = boPortalFeignClient.getAllowedIpRanges();
+      if (response != null && response.data() != null) {
+        for (var range : response.data()) {
+          if (range.isActive() && (ip.startsWith(range.ipPrefix()) || ip.equals(range.ipPrefix()))) {
+            log.info("IP {} matched allowed range: {}", ip, range.description());
+            return true;
+          }
+        }
+      }
       return false;
     } catch (Exception e) {
       log.error("Error checking IP {} against bo-portal: {}", ip, e.getMessage());
       return false;
     }
+  }
+
+  @Override
+  public boolean isAtCompanyLocation(Double latitude, Double longitude) {
+    if (latitude == null || longitude == null) {
+      log.warn("Coordinates are null, returning false");
+      return false;
+    }
+
+    try {
+      var response = boPortalFeignClient.getAttendanceLocations();
+      if (response != null && response.data() != null) {
+        for (var loc : response.data()) {
+          double distance = calculateDistance(latitude, longitude, loc.latitude(), loc.longitude());
+          if (distance <= loc.radiusMeters()) {
+            log.info("User is at location: {} (distance: {}m)", loc.name(), (int) distance);
+            return true;
+          }
+        }
+      }
+    } catch (Exception e) {
+      log.error("Error fetching attendance locations from bo-portal: {}", e.getMessage());
+    }
+    return false;
+  }
+
+  private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    double R = 6371e3; // Earth radius in meters
+    double phi1 = Math.toRadians(lat1);
+    double phi2 = Math.toRadians(lat2);
+    double deltaPhi = Math.toRadians(lat2 - lat1);
+    double deltaLambda = Math.toRadians(lon2 - lon1);
+
+    double a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+        Math.cos(phi1) * Math.cos(phi2) *
+            Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+    double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c;
   }
 }

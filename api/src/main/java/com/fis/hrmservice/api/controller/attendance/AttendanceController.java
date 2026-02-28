@@ -1,5 +1,6 @@
 package com.fis.hrmservice.api.controller.attendance;
 
+import com.fis.hrmservice.api.dto.request.AttendanceRequest;
 import com.fis.hrmservice.api.dto.response.AttendanceResponse;
 import com.fis.hrmservice.api.dto.response.AttendanceStatusResponse;
 import com.fis.hrmservice.api.dto.response.WiFiInfoResponse;
@@ -50,13 +51,12 @@ public class AttendanceController {
 
   /** Process check-in */
   @PostMapping("/check-in")
-  public ResponseApi<AttendanceResponse> checkIn(
-      @RequestParam Long userId, HttpServletRequest servletRequest) {
-    log.info("POST /attendance/check-in - userId: {}", userId);
+  public ResponseApi<AttendanceResponse> checkIn(@RequestBody AttendanceRequest request, HttpServletRequest servletRequest) {
+    log.info("POST /attendance/check-in - userId: {}", request.getUserId());
 
     String clientIp = WebUtils.getClientIpAddress(servletRequest);
     long now = System.currentTimeMillis();
-    CheckInCommand command = attendanceApiMapper.toCheckInCommand(userId, now, clientIp);
+    CheckInCommand command = attendanceApiMapper.toCheckInCommand(request.getUserId(), now, clientIp, request.getLatitude(), request.getLongitude());
     AttendanceLogModel attendance = attendanceUseCase.checkIn(command);
     AttendanceResponse response = attendanceApiMapper.toCheckInResponseFromLog(attendance);
 
@@ -77,22 +77,27 @@ public class AttendanceController {
   }
 
   /**
-   * Check if user is on company network based on IP address Validates against
-   * company IP ranges
+   * Unified check-point for attendance eligibility (IP or GPS)
    */
-  @GetMapping("/network-check")
-  public ResponseApi<WiFiInfoResponse> checkNetwork(HttpServletRequest request) {
-    log.info("GET /attendance/network-check - checking client IP");
+  @GetMapping("/check-point")
+  public ResponseApi<WiFiInfoResponse> checkPoint(
+      @RequestParam(required = false) Double latitude,
+      @RequestParam(required = false) Double longitude,
+      HttpServletRequest request) {
+    log.info("GET /attendance/check-point - checking eligibility");
 
     String clientIp = WebUtils.getClientIpAddress(request);
     boolean isCompanyNetwork = networkCheckPort.isCompanyIpAddress(clientIp);
+    boolean isAtLocation = networkCheckPort.isAtCompanyLocation(latitude, longitude);
+
+    boolean isValid = isCompanyNetwork || isAtLocation;
 
     WiFiInfoResponse response = WiFiInfoResponse.builder()
-        .wifiName(isCompanyNetwork ? "FPT-Network" : "External-Network")
-        .isCompanyWifi(isCompanyNetwork)
+        .wifiName(isCompanyNetwork ? "FPT-Network" : (isAtLocation ? "Office-GPS" : "External"))
+        .isCompanyWifi(isValid)
         .build();
 
-    log.info("Network check result - IP: {}, isCompanyNetwork: {}", clientIp, isCompanyNetwork);
+    log.info("Check-point result - IP: {}, GPS: {}, isValid: {}", clientIp, (latitude != null), isValid);
     return ResponseApi.ok(response);
   }
 }
