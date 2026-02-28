@@ -1,6 +1,5 @@
 package com.fis.hrmservice.api.controller.attendance;
 
-import com.fis.hrmservice.api.dto.request.AttendanceRequest;
 import com.fis.hrmservice.api.dto.response.AttendanceResponse;
 import com.fis.hrmservice.api.dto.response.AttendanceStatusResponse;
 import com.fis.hrmservice.api.dto.response.WiFiInfoResponse;
@@ -51,12 +50,13 @@ public class AttendanceController {
 
   /** Process check-in */
   @PostMapping("/check-in")
-  public ResponseApi<AttendanceResponse> checkIn(@RequestBody AttendanceRequest request, HttpServletRequest servletRequest) {
-    log.info("POST /attendance/check-in - userId: {}", request.getUserId());
+  public ResponseApi<AttendanceResponse> checkIn(@RequestParam Long userId, @RequestParam(required = false) Double latitude,
+                                                 @RequestParam(required = false) Double longitude, HttpServletRequest servletRequest) {
+    log.info("POST /attendance/check-in - userId: {}", userId);
 
     String clientIp = WebUtils.getClientIpAddress(servletRequest);
     long now = System.currentTimeMillis();
-    CheckInCommand command = attendanceApiMapper.toCheckInCommand(request.getUserId(), now, clientIp, request.getLatitude(), request.getLongitude());
+    CheckInCommand command = attendanceApiMapper.toCheckInCommand(userId, now, clientIp, latitude, longitude);
     AttendanceLogModel attendance = attendanceUseCase.checkIn(command);
     AttendanceResponse response = attendanceApiMapper.toCheckInResponseFromLog(attendance);
 
