@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("hrm/positions")
+@RequestMapping("hrm/users/positions")
 @Tag(name = "Position Management", description = "APIs for position management")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PositionController {
