@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 
-@FeignClient(name = "bo-portal", url = "${feign.client.config.bo-portal.url:http://bo-portal:8080}")
+@FeignClient(name = "bo-portal", url = "${feign.client.config.bo-portal.url}")
 public interface BoPortalFeignClient {
 
     @GetMapping("/bo-portal/internal/allowed-ip-ranges")
