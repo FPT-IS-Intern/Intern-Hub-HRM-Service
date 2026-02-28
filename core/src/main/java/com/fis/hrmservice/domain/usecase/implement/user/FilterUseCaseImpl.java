@@ -5,10 +5,14 @@ import com.fis.hrmservice.domain.model.user.UserModel;
 import com.fis.hrmservice.domain.port.output.user.AvatarRepositoryPort;
 import com.fis.hrmservice.domain.port.output.user.UserRepositoryPort;
 import com.fis.hrmservice.domain.usecase.command.user.FilterUserCommand;
+import com.intern.hub.library.common.dto.PaginatedData;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -17,15 +21,31 @@ public class FilterUseCaseImpl {
     private final UserRepositoryPort userRepositoryPort;
     private final AvatarRepositoryPort avatarRepositoryPort;
 
-    public List<UserModel> filterUsers(FilterUserCommand command) {
-        List<UserModel> users = userRepositoryPort.filterUser(command);
+    public PaginatedData<UserModel> filterUsers(
+            FilterUserCommand command,
+            int page,
+            int size
+    ) {
 
-        users.forEach(
-                user -> {
-                    AvatarModel avatarUrl = avatarRepositoryPort.getAvatarByUserId(user.getUserId());
-                    user.setAvatar(avatarUrl);
-                });
+        PaginatedData<UserModel> pagedUsers =
+                userRepositoryPort.filterUser(command, page, size);
 
-        return users;
+        if (pagedUsers.getItems().isEmpty()) {
+            return PaginatedData.empty();
+        }
+
+        List<Long> userIds = pagedUsers.getItems()
+                .stream()
+                .map(UserModel::getUserId)
+                .toList();
+
+        Map<Long, AvatarModel> avatarMap =
+                avatarRepositoryPort.getAvatarsByUserIds(userIds);
+
+        pagedUsers.getItems().forEach(user ->
+                user.setAvatar(avatarMap.get(user.getUserId()))
+        );
+
+        return pagedUsers;
     }
 }

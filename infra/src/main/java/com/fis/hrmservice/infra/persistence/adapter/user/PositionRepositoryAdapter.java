@@ -7,6 +7,7 @@ import com.fis.hrmservice.infra.persistence.repository.user.PositionJpaRepositor
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -23,6 +24,11 @@ public class PositionRepositoryAdapter implements PositionRepositoryPort {
     @Override
     public Optional<PositionModel> findById(Long positionId) {
         return positionJpaRepository.findById(positionId).map(this::toModel);
+    }
+
+    @Override
+    public List<PositionModel> findAll() {
+        return positionJpaRepository.findAll().stream().map(this::toModel).toList();
     }
 
     private PositionModel toModel(Position entity) {

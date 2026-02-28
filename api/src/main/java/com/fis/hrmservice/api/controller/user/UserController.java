@@ -14,8 +14,10 @@ import com.fis.hrmservice.domain.usecase.command.user.FilterUserCommand;
 import com.fis.hrmservice.domain.usecase.command.user.RegisterUserCommand;
 import com.fis.hrmservice.domain.usecase.implement.user.*;
 import com.intern.hub.library.common.annotation.EnableGlobalExceptionHandler;
+import com.intern.hub.library.common.dto.PaginatedData;
 import com.intern.hub.library.common.dto.ResponseApi;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -81,16 +83,38 @@ public class UserController {
     }
 
     @PostMapping("/filter")
-    public ResponseApi<List<FilterResponse>> filterUsers(@RequestBody FilterRequest request) {
-        FilterUserCommand filterUserCommand = userApiMapper.toCommand(request);
-        List<UserModel> userModelList = filterUserUseCase.filterUsers(filterUserCommand);
-        return ResponseApi.ok(userApiMapper.toFilterResponseList(userModelList));
+    public ResponseApi<PaginatedData<FilterResponse>> filterUsers(
+            @RequestBody FilterRequest request,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+
+        FilterUserCommand command = userApiMapper.toCommand(request);
+
+        PaginatedData<UserModel> result =
+                filterUserUseCase.filterUsers(command, page, size);
+
+        return ResponseApi.ok(
+                PaginatedData.<FilterResponse>builder()
+                        .items(userApiMapper.toFilterResponseList((List<UserModel>) result.getItems()))
+                        .totalItems(result.getTotalItems())
+                        .totalPages(result.getTotalPages())
+                        .build()
+        );
     }
 
     // cái này dùng cho admin xem profile của 1 user cụ thể nào đó
-    @GetMapping("/profile/{userId}")
-    public ResponseApi<?> getUserProfile(@PathVariable Long userId) {
+    @GetMapping("/admin/profile/{userId}")
+    public ResponseApi<?> adminGetUserProfile(@PathVariable Long userId) {
         log.info("Get user profile for ID: {}", userId);
+        UserModel userModel = userProfileUseCase.getUserProfile(userId);
+        return ResponseApi.ok(userApiMapper.toResponse(userModel));
+    }
+
+    //cái này dùng để cho user xem chính user profile của mình
+    @GetMapping("/profile")
+    public ResponseApi<?> userGetUserProfile() {
+        Long userId = UserContext.requiredUserId();
         UserModel userModel = userProfileUseCase.getUserProfile(userId);
         return ResponseApi.ok(userApiMapper.toResponse(userModel));
     }
@@ -115,23 +139,20 @@ public class UserController {
     // =====================================================================================
     @PatchMapping(value = "/me/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseApi<?> updateProfile(
-            @RequestPart("userInfo") UpdateProfileRequest request,
+            @Valid @RequestPart("userInfo") UpdateProfileRequest request,
             @RequestPart(value = "cvFile", required = false) MultipartFile cvFile,
-            @RequestPart(value = "avatarFile", required = false) MultipartFile avatarFile) throws IOException {
+            @RequestPart(value = "avatarFile", required = false) MultipartFile avatarFile
+    ) throws IOException {
 
-        Long userId = UserContext.userId()
-                .orElseThrow(() -> new IllegalStateException("User not authenticated"));
-        if (cvFile != null && !cvFile.isEmpty()) {
-            request.setCvFile(cvFile);
-        }
-        if (avatarFile != null && !avatarFile.isEmpty()) {
-            request.setAvatarFile(avatarFile);
-        }
-        UserModel modelUpdate = userProfileUseCase.updateProfileUser(userApiMapper.toUpdateUserProfileCommand(request), userId);
+        Long userId = UserContext.requiredUserId();
 
-        if (modelUpdate == null) {
-            return ResponseApi.ok("Update user profile thành công nhưng không có thay đổi nào được thực hiện");
-        }
+        request.setCvFile(cvFile);
+        request.setAvatarFile(avatarFile);
+
+        userProfileUseCase.updateProfileUser(
+                userApiMapper.toUpdateUserProfileCommand(request),
+                userId
+        );
 
         return ResponseApi.ok("Update user profile thành công");
     }
@@ -165,8 +186,7 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseApi<InternalUserResponse> getMeInternal() {
-        Long userId = UserContext.userId()
-                .orElseThrow(() -> new IllegalStateException("User not authenticated"));
+        Long userId = UserContext.requiredUserId();
         UserModel userModel = userProfileUseCase.internalUserProfile(userId);
         return ResponseApi.ok(userApiMapper.toInternalUserResponse(userModel));
     }

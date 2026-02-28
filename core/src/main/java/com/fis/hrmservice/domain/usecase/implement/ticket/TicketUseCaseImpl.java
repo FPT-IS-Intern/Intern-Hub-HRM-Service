@@ -117,11 +117,11 @@ public class TicketUseCaseImpl {
 
         // Level 2: Management/Admin (if > 5 days)
         if (totalDays > 5) {
-            java.util.List<UserModel> admins =
-                    userRepositoryPort.filterUser(
-                            com.fis.hrmservice.domain.usecase.command.user.FilterUserCommand.builder()
-                                    .positions(java.util.List.of("ADMIN", "MANAGER")) // Assuming these position names
-                                    .build());
+            List<UserModel> admins = null;
+//                    userRepositoryPort.filterUser(
+//                            com.fis.hrmservice.domain.usecase.command.user.FilterUserCommand.builder()
+//                                    .positions(java.util.List.of("ADMIN", "MANAGER")) // Assuming these position names
+//                                    .build());
 
             if (!admins.isEmpty()) {
                 // For simplicity, pick the first one or assign to a generic one

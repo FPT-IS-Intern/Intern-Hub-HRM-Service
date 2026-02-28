@@ -1,0 +1,21 @@
+package com.fis.hrmservice.domain.usecase.implement.user;
+
+import com.fis.hrmservice.domain.model.user.PositionModel;
+import com.fis.hrmservice.domain.port.output.user.PositionRepositoryPort;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class PositionUseCaseImpl {
+    PositionRepositoryPort positionRepositoryPort;
+
+    public List<PositionModel> listAllPosition() {
+        return positionRepositoryPort.findAll();
+    }
+}

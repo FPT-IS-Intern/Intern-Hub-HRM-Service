@@ -34,8 +34,7 @@ public class UserInternalController {
 
   @GetMapping("/me")
   public ResponseApi<InternalUserResponse> getMeInternal() {
-    Long userId = UserContext.userId()
-            .orElseThrow(() -> new IllegalStateException("User not authenticated"));
+    Long userId = UserContext.requiredUserId();
     UserModel userModel = userProfileUseCase.internalUserProfile(userId);
     return ResponseApi.ok(userApiMapper.toInternalUserResponse(userModel));
   }
