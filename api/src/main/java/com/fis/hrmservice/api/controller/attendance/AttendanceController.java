@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("hrm/attendance")
+@CrossOrigin(origins = "*")
 @EnableGlobalExceptionHandler
 @Slf4j
 @Tag(name = "Attendance Management", description = "APIs for attendance check-in and check-out")
@@ -50,8 +51,9 @@ public class AttendanceController {
 
   /** Process check-in */
   @PostMapping("/check-in")
-  public ResponseApi<AttendanceResponse> checkIn(@RequestParam Long userId, @RequestParam(required = false) Double latitude,
-                                                 @RequestParam(required = false) Double longitude, HttpServletRequest servletRequest) {
+  public ResponseApi<AttendanceResponse> checkIn(@RequestParam Long userId,
+      @RequestParam(required = false) Double latitude,
+      @RequestParam(required = false) Double longitude, HttpServletRequest servletRequest) {
     log.info("POST /attendance/check-in - userId: {}", userId);
 
     String clientIp = WebUtils.getClientIpAddress(servletRequest);

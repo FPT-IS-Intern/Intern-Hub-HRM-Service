@@ -35,15 +35,6 @@ public class NetworkCheckService implements NetworkCheckPort {
       return false;
     }
 
-    // --- hardcode tạm cái danh sách ip public này lấy bên bo portal qua ---
-    // Thay "113.161.x.x" bằng IP Public thật của Wi-Fi sau
-    // test thử ở local -> || ip.equals("127.0.0.1") || ip.equals("0:0:0:0:0:0:0:1")
-    String wifiCongTyHardcode = "118.69.125.122";
-    if (ip.equals(wifiCongTyHardcode)) {
-      log.info("IP {} khớp với địa chỉ hardcode tạm(Wi-Fi công ty hoặc Localhost)", ip);
-      return true;
-    }
-
     try {
       var response = boPortalFeignClient.getAllowedIpRanges();
       if (response != null && response.data() != null) {
@@ -68,22 +59,16 @@ public class NetworkCheckService implements NetworkCheckPort {
       return false;
     }
 
-    // MOCK DATA TẠM THỜI (Thay thế cho boPortalFeignClient)
-    List<AttendanceLocationResponse> mockLocations = List.of(
-            new AttendanceLocationResponse("FPT IS - Tan Thuan", 10.767297, 106.746977, 300)
-    );
-
     try {
-//       var response = boPortalFeignClient.getAttendanceLocations();
-      var locations = mockLocations;
-//      if (response != null && locations.data() != null) {
-        for (var loc : locations) {
+       var response = boPortalFeignClient.getAttendanceLocations();
+      if (response != null && response.data() != null) {
+        for (var loc : response.data()) {
           double distance = calculateDistance(latitude, longitude, loc.latitude(), loc.longitude());
           if (distance <= loc.radiusMeters()) {
             log.info("User is at location: {} (distance: {}m)", loc.name(), (int) distance);
             return true;
           }
-//        }
+        }
       }
     } catch (Exception e) {
       log.error("Error fetching attendance locations from bo-portal: {}", e.getMessage());
