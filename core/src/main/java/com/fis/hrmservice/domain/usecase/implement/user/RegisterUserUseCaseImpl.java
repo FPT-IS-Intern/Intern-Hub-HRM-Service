@@ -133,12 +133,14 @@ public class RegisterUserUseCaseImpl {
 
   private void validateFiles(RegisterUserCommand command) {
 
+    // ===== AVATAR =====
     if (command.getAvatar() == null || command.getAvatar().isEmpty()) {
       throw new ConflictDataException("Avatar is required");
     }
 
-    if (command.getCv() == null || command.getCv().isEmpty()) {
-      throw new ConflictDataException("CV is required");
+    // Check size > 2MB
+    if (command.getAvatar().getSize() > 2 * 1024 * 1024) {
+      throw new ConflictDataException("Avatar must not exceed 2MB");
     }
 
     String avatarType = command.getAvatar().getContentType();
@@ -146,9 +148,21 @@ public class RegisterUserUseCaseImpl {
       throw new ConflictDataException("Unsupported avatar type");
     }
 
+    // ===== CV =====
+    if (command.getCv() == null || command.getCv().isEmpty()) {
+      throw new ConflictDataException("CV is required");
+    }
+
+    // Check size > 2MB
+    if (command.getCv().getSize() > 2 * 1024 * 1024) {
+      throw new ConflictDataException("CV must not exceed 2MB");
+    }
+
     String cvType = command.getCv().getContentType();
-    if (cvType == null || !cvType.equals("application/pdf")) {
-      throw new ConflictDataException("CV must be PDF");
+    if (cvType == null ||
+            !(cvType.equals("application/pdf") ||
+                    cvType.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document"))) {
+      throw new ConflictDataException("CV must be PDF or DOCX");
     }
   }
 
@@ -189,8 +203,8 @@ public class RegisterUserUseCaseImpl {
   private void isOver18(LocalDate dateOfBirth) {
     int thisYear = LocalDate.now().getYear();
 
-    if (thisYear - dateOfBirth.getYear() <= 18) {
-      throw new ConflictDataException("Ứng viên phải trên 18 tuổi");
+    if (thisYear - dateOfBirth.getYear() <= 16) {
+      throw new ConflictDataException("Ứng viên phải trên 16 tuổi");
     }
   }
 }

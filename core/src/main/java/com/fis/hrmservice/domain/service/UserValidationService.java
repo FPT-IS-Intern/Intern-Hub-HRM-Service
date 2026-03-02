@@ -80,7 +80,7 @@ public class UserValidationService {
       throw new ConflictDataException("Số CCCD/CMND không được để trống");
     }
 
-    if (idNumber.length() != 12) {
+    if (idNumber.length() != 12 && idNumber.length() != 9) {
       throw new ConflictDataException("Số CCCD/CMND không hợp lệ");
     }
 
