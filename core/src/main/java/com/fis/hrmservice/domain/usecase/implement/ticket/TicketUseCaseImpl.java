@@ -12,9 +12,11 @@ import com.fis.hrmservice.domain.port.output.ticket.remoteticket.RemoteRequestRe
 import com.fis.hrmservice.domain.port.output.ticket.remoteticket.WorkLocationRepositoryPort;
 import com.fis.hrmservice.domain.port.output.user.UserRepositoryPort;
 import com.fis.hrmservice.domain.usecase.command.ticket.CreateTicketCommand;
+import com.fis.hrmservice.domain.usecase.command.ticket.FilterRegistrationTicketCommand;
 import com.fis.hrmservice.domain.usecase.command.ticket.LeaveRequestCommand;
 import com.fis.hrmservice.domain.usecase.command.ticket.RemoteRequestCommand;
 import com.fis.hrmservice.domain.utils.DateValidationHelper;
+import com.intern.hub.library.common.dto.PaginatedData;
 import com.intern.hub.library.common.exception.ConflictDataException;
 import com.intern.hub.library.common.exception.NotFoundException;
 import com.intern.hub.library.common.utils.Snowflake;
@@ -198,6 +200,11 @@ public class TicketUseCaseImpl {
       return ticketRepositoryPort.findAll();
     }
     return ticketRepositoryPort.filterRegistrationTicket(keyword, ticketStatus);
+  }
+
+  public PaginatedData<TicketModel> listRegistrationTicketPaged(
+      FilterRegistrationTicketCommand command, int page, int size) {
+    return ticketRepositoryPort.filterRegistrationTicketPaged(command, page, size);
   }
 
   public List<TicketModel> firstThreeRegistrationTicket() {

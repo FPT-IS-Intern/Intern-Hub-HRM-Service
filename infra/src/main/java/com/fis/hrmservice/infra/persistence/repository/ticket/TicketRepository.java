@@ -1,7 +1,10 @@
 package com.fis.hrmservice.infra.persistence.repository.ticket;
 
+import com.fis.hrmservice.domain.usecase.command.ticket.FilterRegistrationTicketCommand;
 import com.fis.hrmservice.infra.persistence.entity.Ticket;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -76,6 +79,24 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
                           AND tt.typeName = 'REGISTRATION'
                     """)
   List<Ticket> filterTickets(@Param("keyword") String keyword, @Param("status") String status);
+
+  @Query(
+      """
+                        SELECT t
+                        FROM Ticket t
+                        JOIN t.user u
+                        JOIN t.ticketType tt
+                        WHERE (
+                                :#{#command.keyword} IS NULL OR :#{#command.keyword} = ''
+                                OR LOWER(TRIM(u.companyEmail)) LIKE LOWER(CONCAT('%', TRIM(:#{#command.keyword}), '%'))
+                                OR LOWER(TRIM(u.fullName)) LIKE LOWER(CONCAT('%', TRIM(:#{#command.keyword}), '%'))
+                              )
+                          AND (:#{#command.ticketStatus} IS NULL OR :#{#command.ticketStatus} = '' OR t.status = :#{#command.ticketStatus})
+                          AND tt.typeName = 'REGISTRATION'
+                        ORDER BY t.startAt DESC
+                    """)
+  Page<Ticket> filterRegistrationTicketPaged(
+      @Param("command") FilterRegistrationTicketCommand command, Pageable pageable);
 
   @Query("SELECT t from Ticket t ORDER BY t.startAt DESC limit 3")
   List<Ticket> firstThreeRegistrationTicket();

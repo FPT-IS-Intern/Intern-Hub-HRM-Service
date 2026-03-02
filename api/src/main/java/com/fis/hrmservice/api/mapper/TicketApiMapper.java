@@ -1,6 +1,7 @@
 package com.fis.hrmservice.api.mapper;
 
 import com.fis.hrmservice.api.dto.request.CreateTicketRequest;
+import com.fis.hrmservice.api.dto.request.FilterRegistrationRequest;
 import com.fis.hrmservice.api.dto.request.RemoteTicketRequest;
 import com.fis.hrmservice.api.dto.response.FirstThreeRegistrationResponse;
 import com.fis.hrmservice.api.dto.response.ListRegistrationResponse;
@@ -12,7 +13,9 @@ import com.fis.hrmservice.domain.model.ticket.LeaveRequestModel;
 import com.fis.hrmservice.domain.model.ticket.RemoteRequestModel;
 import com.fis.hrmservice.domain.model.ticket.TicketModel;
 import com.fis.hrmservice.domain.usecase.command.ticket.CreateTicketCommand;
+import com.fis.hrmservice.domain.usecase.command.ticket.FilterRegistrationTicketCommand;
 import com.fis.hrmservice.domain.usecase.command.ticket.RemoteRequestCommand;
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -95,4 +98,9 @@ public interface TicketApiMapper {
     @Mapping(target = "sysStatus", source = "sysStatus")
   })
   RegistrationDetailResponse toRegistrationDetailResponse(TicketModel ticketModel);
+
+  // ===== Filter Registration Ticket =====
+  FilterRegistrationTicketCommand toCommand(FilterRegistrationRequest request);
+
+  List<ListRegistrationResponse> toRegistrationResponseList(List<TicketModel> ticketModels);
 }

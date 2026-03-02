@@ -9,10 +9,13 @@ import com.fis.hrmservice.api.dto.response.RegistrationDetailResponse;
 import com.fis.hrmservice.api.dto.response.TicketResponse;
 import com.fis.hrmservice.api.mapper.TicketApiMapper;
 import com.fis.hrmservice.domain.model.ticket.LeaveRequestModel;
+import com.fis.hrmservice.domain.model.ticket.TicketModel;
 import com.fis.hrmservice.domain.usecase.command.ticket.CreateTicketCommand;
+import com.fis.hrmservice.domain.usecase.command.ticket.FilterRegistrationTicketCommand;
 import com.fis.hrmservice.domain.usecase.command.ticket.LeaveRequestCommand;
 import com.fis.hrmservice.domain.usecase.command.ticket.RemoteRequestCommand;
 import com.fis.hrmservice.domain.usecase.implement.ticket.TicketUseCaseImpl;
+import com.intern.hub.library.common.dto.PaginatedData;
 import com.intern.hub.library.common.dto.ResponseApi;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -87,14 +90,24 @@ public class TicketController {
   }
 
   @PostMapping("/registration-ticket")
-  public ResponseApi<List<ListRegistrationResponse>> listRegistrationTicket(
-      @RequestBody FilterRegistrationRequest request) {
+  public ResponseApi<PaginatedData<ListRegistrationResponse>> listRegistrationTicket(
+      @RequestBody FilterRegistrationRequest request,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+
+    FilterRegistrationTicketCommand command = ticketApiMapper.toCommand(request);
+
+    PaginatedData<TicketModel> result =
+        ticketUseCaseImpl.listRegistrationTicketPaged(command, page, size);
+
     return ResponseApi.ok(
-        ticketUseCaseImpl
-            .listAllRegistrationTicket(request.getKeyword(), request.getTicketStatus())
-            .stream()
-            .map(ticketApiMapper::toRegistrationResponse)
-            .toList());
+        PaginatedData.<ListRegistrationResponse>builder()
+            .items(
+                ticketApiMapper.toRegistrationResponseList(
+                    (List<TicketModel>) result.getItems()))
+            .totalItems(result.getTotalItems())
+            .totalPages(result.getTotalPages())
+            .build());
   }
 
   @GetMapping(
