@@ -14,7 +14,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableSecurity
 public class InternHubHRMServiceApplication {
 
-    static void main(String[] args) {
-        SpringApplication.run(InternHubHRMServiceApplication.class, args);
-    }
+  static void main(String[] args) {
+    SpringApplication.run(InternHubHRMServiceApplication.class, args);
+  }
 }

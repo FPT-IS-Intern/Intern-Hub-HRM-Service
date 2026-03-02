@@ -1,13 +1,10 @@
 package com.fis.hrmservice.api.dto.response;
 
+import java.time.LocalDate;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
-
-/**
- * Response DTO for user data. Mapping from UserModel is handled by MapStruct in UserApiMapper.
- */
+/** Response DTO for user data. Mapping from UserModel is handled by MapStruct in UserApiMapper. */
 @Data
 @Builder
 @NoArgsConstructor
@@ -15,32 +12,27 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserResponse {
 
-    Long userId;
+  Long userId;
 
-    /**
-     * Thông tin chung
-     */
-    String email;
-    String fullName;
-    String idNumber;
-    String phoneNumber;
-    String address;
-    LocalDate dateOfBirth;
-    String avatarUrl;
+  /** Thông tin chung */
+  String email;
 
-    /**
-     * Công việc
-     */
-    String positionCode;
-    String role;
-    String cvUrl;
-    String superVisorName;
-    LocalDate internshipStartDate;
-    LocalDate internshipEndDate;
+  String fullName;
+  String idNumber;
+  String phoneNumber;
+  String address;
+  LocalDate dateOfBirth;
+  String avatarUrl;
 
-    /**
-     *
-     * Trạng thái người dùng
-     */
-    String status;
+  /** Công việc */
+  String positionCode;
+
+  String role;
+  String cvUrl;
+  String superVisorName;
+  LocalDate internshipStartDate;
+  LocalDate internshipEndDate;
+
+  /** Trạng thái người dùng */
+  String status;
 }

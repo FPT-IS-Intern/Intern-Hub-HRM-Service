@@ -7,6 +7,11 @@ dependencies {
     // Project dependencies
     api(project(":core"))
 
+    // OpenTelemetry
+    implementation(platform(libs.opentelemetry.bom))
+    implementation(libs.opentelemetry.sdk)
+    implementation(libs.opentelemetry.sdk.trace)
+
     // Custom libraries
     implementation(libs.bundles.custom.libraries)
 

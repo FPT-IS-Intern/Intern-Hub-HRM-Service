@@ -22,6 +22,11 @@ dependencies {
     implementation(project(":infra"))
     implementation(project(":core"))
 
+    // OpenTelemetry BOM
+    implementation(platform(libs.opentelemetry.bom))
+    implementation(libs.opentelemetry.sdk)
+    implementation(libs.opentelemetry.sdk.trace)
+
     // Custom libraries
     implementation(libs.bundles.custom.libraries)
 

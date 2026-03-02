@@ -1,5 +1,6 @@
 package com.fis.hrmservice.infra.mapper;
 
+import com.fis.hrmservice.domain.model.constant.CoreConstant;
 import com.fis.hrmservice.domain.model.user.AvatarModel;
 import com.fis.hrmservice.domain.model.user.CvModel;
 import com.fis.hrmservice.domain.model.user.PositionModel;
@@ -8,14 +9,12 @@ import com.fis.hrmservice.infra.persistence.entity.Avatar;
 import com.fis.hrmservice.infra.persistence.entity.Cv;
 import com.fis.hrmservice.infra.persistence.entity.Position;
 import com.fis.hrmservice.infra.persistence.entity.User;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
-
-import com.fis.hrmservice.domain.model.constant.CoreConstant;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
@@ -47,20 +46,20 @@ public interface UserMapper {
 
   @Named("localDateToEpoch")
   default long localDateToEpoch(LocalDate date) {
-    return date == null ? 0L : date.atStartOfDay(CoreConstant.VIETNAM_ZONE).toInstant().toEpochMilli();
+    return date == null
+        ? 0L
+        : date.atStartOfDay(CoreConstant.VIETNAM_ZONE).toInstant().toEpochMilli();
   }
 
   @Named("mentorToModel")
   default UserModel mentorToModel(User mentor) {
-    if (mentor == null)
-      return null;
+    if (mentor == null) return null;
     return UserModel.builder().userId(mentor.getId()).fullName(mentor.getFullName()).build();
   }
 
   @Named("mentorToEntity")
   default User mentorToEntity(UserModel mentor) {
-    if (mentor == null || mentor.getUserId() == null)
-      return null;
+    if (mentor == null || mentor.getUserId() == null) return null;
     User user = new User();
     user.setId(mentor.getUserId());
     return user;
@@ -68,8 +67,7 @@ public interface UserMapper {
 
   @Named("positionToEntity")
   default Position positionToEntity(PositionModel model) {
-    if (model == null || model.getPositionId() == null)
-      return null;
+    if (model == null || model.getPositionId() == null) return null;
     Position p = new Position();
     p.setId(model.getPositionId());
     return p;
@@ -77,8 +75,7 @@ public interface UserMapper {
 
   @Named("positionToModel")
   default PositionModel positionToModel(Position entity) {
-    if (entity == null)
-      return null;
+    if (entity == null) return null;
     return PositionModel.builder()
         .positionId(entity.getId())
         .name(entity.getName())
@@ -88,15 +85,13 @@ public interface UserMapper {
 
   @Named("epochMillisToLocalDate")
   default LocalDate epochMillisToLocalDate(Long value) {
-    if (value == null)
-      return null;
+    if (value == null) return null;
     return Instant.ofEpochMilli(value).atZone(CoreConstant.VIETNAM_ZONE).toLocalDate();
   }
 
   @Named("avatarToModel")
   default AvatarModel avatarToModel(Avatar entity) {
-    if (entity == null)
-      return null;
+    if (entity == null) return null;
     return AvatarModel.builder()
         .avatarId(entity.getId())
         .avatarUrl(entity.getAvatarUrl())
@@ -108,8 +103,7 @@ public interface UserMapper {
 
   @Named("cvToModel")
   default CvModel cvToModel(Cv entity) {
-    if (entity == null)
-      return null;
+    if (entity == null) return null;
     return CvModel.builder()
         .cvId(entity.getId())
         .cvUrl(entity.getCvUrl())
@@ -121,8 +115,7 @@ public interface UserMapper {
 
   @Named("avatarToEntity")
   default Avatar avatarToEntity(AvatarModel model) {
-    if (model == null)
-      return null;
+    if (model == null) return null;
     Avatar avatar = new Avatar();
     avatar.setId(model.getAvatarId());
     avatar.setAvatarUrl(model.getAvatarUrl());
@@ -134,8 +127,7 @@ public interface UserMapper {
 
   @Named("cvToEntity")
   default Cv cvToEntity(CvModel model) {
-    if (model == null)
-      return null;
+    if (model == null) return null;
     Cv cv = new Cv();
     cv.setId(model.getCvId());
     cv.setCvUrl(model.getCvUrl());

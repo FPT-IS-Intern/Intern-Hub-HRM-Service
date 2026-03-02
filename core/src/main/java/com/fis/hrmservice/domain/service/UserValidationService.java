@@ -98,12 +98,13 @@ public class UserValidationService {
     int century = (birthYear - 1) / 100 + 1;
 
     // Century code validation based on Vietnamese ID card rules
-    boolean validCentury = switch (century) {
-      case 20 -> sexCode == 0 || sexCode == 1; // 1900-1999: 0 (male), 1 (female)
-      case 21 -> sexCode == 2 || sexCode == 3; // 2000-2099: 2 (male), 3 (female)
-      case 22 -> sexCode == 4 || sexCode == 5; // 2100-2199: 4 (male), 5 (female)
-      default -> false;
-    };
+    boolean validCentury =
+        switch (century) {
+          case 20 -> sexCode == 0 || sexCode == 1; // 1900-1999: 0 (male), 1 (female)
+          case 21 -> sexCode == 2 || sexCode == 3; // 2000-2099: 2 (male), 3 (female)
+          case 22 -> sexCode == 4 || sexCode == 5; // 2100-2199: 4 (male), 5 (female)
+          default -> false;
+        };
 
     if (!validCentury) {
       throw new ConflictDataException("Mã thế kỷ trên CCCD không khớp với năm sinh");
@@ -142,8 +143,9 @@ public class UserValidationService {
       throw new ConflictDataException("File CV không được để trống");
     }
 
-    boolean validType = CoreConstant.MIME_TYPE_PDF.equals(contentType)
-        || CoreConstant.MIME_TYPE_DOCX.equals(contentType);
+    boolean validType =
+        CoreConstant.MIME_TYPE_PDF.equals(contentType)
+            || CoreConstant.MIME_TYPE_DOCX.equals(contentType);
 
     if (!validType) {
       throw new ConflictDataException("File CV phải có định dạng PDF hoặc DOCX");
@@ -160,8 +162,9 @@ public class UserValidationService {
       throw new ConflictDataException("File ảnh đại diện không được để trống");
     }
 
-    boolean validType = CoreConstant.MIME_TYPE_PNG.equals(contentType)
-        || CoreConstant.MIME_TYPE_JPG.equals(contentType);
+    boolean validType =
+        CoreConstant.MIME_TYPE_PNG.equals(contentType)
+            || CoreConstant.MIME_TYPE_JPG.equals(contentType);
 
     if (!validType) {
       throw new ConflictDataException("Ảnh đại diện phải có định dạng PNG hoặc JPG");

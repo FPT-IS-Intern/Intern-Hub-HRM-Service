@@ -9,8 +9,8 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 public class InternalUserResponse {
-    String fullName;
-    String avatarUrl;
-    String email;
-    String role;
+  String fullName;
+  String avatarUrl;
+  String email;
+  String role;
 }

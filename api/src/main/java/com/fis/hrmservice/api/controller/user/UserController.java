@@ -18,6 +18,8 @@ import com.intern.hub.library.common.dto.PaginatedData;
 import com.intern.hub.library.common.dto.ResponseApi;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.io.IOException;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -25,9 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequestMapping("hrm/users")
@@ -38,156 +37,150 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
 
-    RegisterUserUseCaseImpl registerUserUseCase;
+  RegisterUserUseCaseImpl registerUserUseCase;
 
-    FilterUseCaseImpl filterUserUseCase;
+  FilterUseCaseImpl filterUserUseCase;
 
-    UserApiMapper userApiMapper;
+  UserApiMapper userApiMapper;
 
-    UserProfileUseCaseImpl userProfileUseCase;
+  UserProfileUseCaseImpl userProfileUseCase;
 
-    UserApproval approvalUser;
+  UserApproval approvalUser;
 
-    UserRejection rejectionUser;
+  UserRejection rejectionUser;
 
-    UserSuspension userSuspension;
+  UserSuspension userSuspension;
 
-    CreateAuthIdentityPort createAuthIdentityPort;
+  CreateAuthIdentityPort createAuthIdentityPort;
 
-    @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseApi<?> registerUser(
-            @RequestPart("userInfo") RegisterUserRequest request,
-            @RequestPart(value = "avatarFile", required = false) MultipartFile avatarFile,
-            @RequestPart(value = "cvFile", required = false) MultipartFile cvFile) {
+  @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseApi<?> registerUser(
+      @RequestPart("userInfo") RegisterUserRequest request,
+      @RequestPart(value = "avatarFile", required = false) MultipartFile avatarFile,
+      @RequestPart(value = "cvFile", required = false) MultipartFile cvFile) {
 
-        if (avatarFile != null && !avatarFile.isEmpty()) {
-            request.setAvatar(avatarFile);
-        }
-        if (cvFile != null && !cvFile.isEmpty()) {
-            request.setCv(cvFile);
-        }
-
-        RegisterUserCommand command = userApiMapper.toCommand(request);
-        UserModel user = registerUserUseCase.registerUser(command);
-
-        // Gọi Feign Client để tạo auth identity
-        try {
-            createAuthIdentityPort.createAuthIdentity(user.getUserId(), user.getCompanyEmail());
-            log.info("Auth identity created successfully for userId: {}", user.getUserId());
-        } catch (Exception e) {
-            log.error("Call Auth Service failed: {}", e.getMessage(), e);
-            throw new RuntimeException("Create auth identity failed: " + e.getMessage());
-        }
-
-        return ResponseApi.ok(userApiMapper.toResponse(user));
+    if (avatarFile != null && !avatarFile.isEmpty()) {
+      request.setAvatar(avatarFile);
+    }
+    if (cvFile != null && !cvFile.isEmpty()) {
+      request.setCv(cvFile);
     }
 
-    @PostMapping("/filter")
-    public ResponseApi<PaginatedData<FilterResponse>> filterUsers(
-            @RequestBody FilterRequest request,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    RegisterUserCommand command = userApiMapper.toCommand(request);
+    UserModel user = registerUserUseCase.registerUser(command);
 
-
-        FilterUserCommand command = userApiMapper.toCommand(request);
-
-        PaginatedData<UserModel> result =
-                filterUserUseCase.filterUsers(command, page, size);
-
-        return ResponseApi.ok(
-                PaginatedData.<FilterResponse>builder()
-                        .items(userApiMapper.toFilterResponseList((List<UserModel>) result.getItems()))
-                        .totalItems(result.getTotalItems())
-                        .totalPages(result.getTotalPages())
-                        .build()
-        );
+    // Gọi Feign Client để tạo auth identity
+    try {
+      createAuthIdentityPort.createAuthIdentity(user.getUserId(), user.getCompanyEmail());
+      log.info("Auth identity created successfully for userId: {}", user.getUserId());
+    } catch (Exception e) {
+      log.error("Call Auth Service failed: {}", e.getMessage(), e);
+      throw new RuntimeException("Create auth identity failed: " + e.getMessage());
     }
 
-    // cái này dùng cho admin xem profile của 1 user cụ thể nào đó
-    @GetMapping("/admin/profile/{userId}")
-    public ResponseApi<?> adminGetUserProfile(@PathVariable Long userId) {
-        log.info("Get user profile for ID: {}", userId);
-        UserModel userModel = userProfileUseCase.getUserProfile(userId);
-        return ResponseApi.ok(userApiMapper.toResponse(userModel));
+    return ResponseApi.ok(userApiMapper.toResponse(user));
+  }
+
+  @PostMapping("/filter")
+  public ResponseApi<PaginatedData<FilterResponse>> filterUsers(
+      @RequestBody FilterRequest request,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+
+    FilterUserCommand command = userApiMapper.toCommand(request);
+
+    PaginatedData<UserModel> result = filterUserUseCase.filterUsers(command, page, size);
+
+    return ResponseApi.ok(
+        PaginatedData.<FilterResponse>builder()
+            .items(userApiMapper.toFilterResponseList((List<UserModel>) result.getItems()))
+            .totalItems(result.getTotalItems())
+            .totalPages(result.getTotalPages())
+            .build());
+  }
+
+  // cái này dùng cho admin xem profile của 1 user cụ thể nào đó
+  @GetMapping("/admin/profile/{userId}")
+  public ResponseApi<?> adminGetUserProfile(@PathVariable Long userId) {
+    log.info("Get user profile for ID: {}", userId);
+    UserModel userModel = userProfileUseCase.getUserProfile(userId);
+    return ResponseApi.ok(userApiMapper.toResponse(userModel));
+  }
+
+  // cái này dùng để cho user xem chính user profile của mình
+  @GetMapping("/profile")
+  public ResponseApi<?> userGetUserProfile() {
+    Long userId = UserContext.requiredUserId();
+    UserModel userModel = userProfileUseCase.getUserProfile(userId);
+    return ResponseApi.ok(userApiMapper.toResponse(userModel));
+  }
+
+  // -------------------- Approval and Rejection Endpoints -------------------//
+  @PutMapping("/approval/{userId}")
+  public ResponseApi<?> approveUser(@PathVariable Long userId) {
+    log.info("Approve user request for ID: {}", userId);
+    UserModel userModel = approvalUser.approveUser(userId);
+    return ResponseApi.ok(
+        "Đã approve user " + userModel.getFullName() + " với status: " + userModel.getSysStatus());
+  }
+
+  @PutMapping("/rejection/{userId}")
+  public ResponseApi<?> rejectUser(@PathVariable Long userId) {
+    log.info("Reject user request for ID: {}", userId);
+    UserModel userReject = rejectionUser.rejectUser(userId);
+    return ResponseApi.ok(
+        "Đã reject user " + userReject.getFullName() + " với status: " + userReject.getSysStatus());
+  }
+
+  // =====================================================================================
+  @PatchMapping(value = "/me/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseApi<?> updateProfile(
+      @Valid @RequestPart("userInfo") UpdateProfileRequest request,
+      @RequestPart(value = "cvFile", required = false) MultipartFile cvFile,
+      @RequestPart(value = "avatarFile", required = false) MultipartFile avatarFile)
+      throws IOException {
+
+    Long userId = UserContext.requiredUserId();
+
+    request.setCvFile(cvFile);
+    request.setAvatarFile(avatarFile);
+
+    userProfileUseCase.updateProfileUser(userApiMapper.toUpdateUserProfileCommand(request), userId);
+
+    return ResponseApi.ok("Update user profile thành công");
+  }
+
+  @PutMapping("/suspension/{userId}")
+  public ResponseApi<UserResponse> suspendUser(@PathVariable Long userId) {
+    UserModel userModel = userSuspension.suspendUser(userId);
+    return ResponseApi.ok(userApiMapper.toResponse(userModel));
+  }
+
+  @GetMapping("/total-intern")
+  public ResponseApi<Integer> totalInternship() {
+    Integer totalIntern = approvalUser.totalIntern();
+    return ResponseApi.ok(totalIntern);
+  }
+
+  @GetMapping("/internship-changing")
+  public ResponseApi<String> internshipChanging() {
+    Integer internshipChanging = approvalUser.internshipChanging();
+
+    String message;
+
+    if (internshipChanging > 0) {
+      message = "↗ " + internshipChanging + " So với tháng trước";
+    } else {
+      message = "↘ " + internshipChanging + " So vơi tháng trước";
     }
 
-    //cái này dùng để cho user xem chính user profile của mình
-    @GetMapping("/profile")
-    public ResponseApi<?> userGetUserProfile() {
-        Long userId = UserContext.requiredUserId();
-        UserModel userModel = userProfileUseCase.getUserProfile(userId);
-        return ResponseApi.ok(userApiMapper.toResponse(userModel));
-    }
+    return ResponseApi.ok(message);
+  }
 
-    // -------------------- Approval and Rejection Endpoints -------------------//
-    @PutMapping("/approval/{userId}")
-    public ResponseApi<?> approveUser(@PathVariable Long userId) {
-        log.info("Approve user request for ID: {}", userId);
-        UserModel userModel = approvalUser.approveUser(userId);
-        return ResponseApi.ok(
-                "Đã approve user " + userModel.getFullName() + " với status: " + userModel.getSysStatus());
-    }
-
-    @PutMapping("/rejection/{userId}")
-    public ResponseApi<?> rejectUser(@PathVariable Long userId) {
-        log.info("Reject user request for ID: {}", userId);
-        UserModel userReject = rejectionUser.rejectUser(userId);
-        return ResponseApi.ok(
-                "Đã reject user " + userReject.getFullName() + " với status: " + userReject.getSysStatus());
-    }
-
-    // =====================================================================================
-    @PatchMapping(value = "/me/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseApi<?> updateProfile(
-            @Valid @RequestPart("userInfo") UpdateProfileRequest request,
-            @RequestPart(value = "cvFile", required = false) MultipartFile cvFile,
-            @RequestPart(value = "avatarFile", required = false) MultipartFile avatarFile
-    ) throws IOException {
-
-        Long userId = UserContext.requiredUserId();
-
-        request.setCvFile(cvFile);
-        request.setAvatarFile(avatarFile);
-
-        userProfileUseCase.updateProfileUser(
-                userApiMapper.toUpdateUserProfileCommand(request),
-                userId
-        );
-
-        return ResponseApi.ok("Update user profile thành công");
-    }
-
-    @PutMapping("/suspension/{userId}")
-    public ResponseApi<UserResponse> suspendUser(@PathVariable Long userId) {
-        UserModel userModel = userSuspension.suspendUser(userId);
-        return ResponseApi.ok(userApiMapper.toResponse(userModel));
-    }
-
-    @GetMapping("/total-intern")
-    public ResponseApi<Integer> totalInternship() {
-        Integer totalIntern = approvalUser.totalIntern();
-        return ResponseApi.ok(totalIntern);
-    }
-
-    @GetMapping("/internship-changing")
-    public ResponseApi<String> internshipChanging() {
-        Integer internshipChanging = approvalUser.internshipChanging();
-
-        String message;
-
-        if (internshipChanging > 0) {
-            message = "↗ " + internshipChanging + " So với tháng trước";
-        } else {
-            message = "↘ " + internshipChanging + " So vơi tháng trước";
-        }
-
-        return ResponseApi.ok(message);
-    }
-
-    @GetMapping("/me")
-    public ResponseApi<InternalUserResponse> getMeInternal() {
-        Long userId = UserContext.requiredUserId();
-        UserModel userModel = userProfileUseCase.internalUserProfile(userId);
-        return ResponseApi.ok(userApiMapper.toInternalUserResponse(userModel));
-    }
+  @GetMapping("/me")
+  public ResponseApi<InternalUserResponse> getMeInternal() {
+    Long userId = UserContext.requiredUserId();
+    UserModel userModel = userProfileUseCase.internalUserProfile(userId);
+    return ResponseApi.ok(userApiMapper.toInternalUserResponse(userModel));
+  }
 }

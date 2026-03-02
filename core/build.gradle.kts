@@ -3,6 +3,11 @@ plugins {
 }
 
 dependencies {
+    // OpenTelemetry
+    implementation(platform(libs.opentelemetry.bom))
+    implementation(libs.opentelemetry.sdk)
+    implementation(libs.opentelemetry.sdk.trace)
+
     // Project dependencies
     // Custom libraries
     implementation(libs.bundles.custom.libraries)

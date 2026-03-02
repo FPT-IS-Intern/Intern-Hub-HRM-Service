@@ -7,6 +7,7 @@ import com.fis.hrmservice.api.mapper.AttendanceApiMapper;
 import com.fis.hrmservice.api.util.WebUtils;
 import com.fis.hrmservice.domain.model.attendance.AttendanceLogModel;
 import com.fis.hrmservice.domain.model.attendance.AttendanceStatusModel;
+import com.fis.hrmservice.domain.model.constant.CoreConstant;
 import com.fis.hrmservice.domain.port.output.network.NetworkCheckPort;
 import com.fis.hrmservice.domain.usecase.attendance.AttendanceUseCase;
 import com.fis.hrmservice.domain.usecase.command.attendance.CheckInCommand;
@@ -15,7 +16,6 @@ import com.intern.hub.library.common.annotation.EnableGlobalExceptionHandler;
 import com.intern.hub.library.common.dto.ResponseApi;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import com.fis.hrmservice.domain.model.constant.CoreConstant;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -76,10 +76,7 @@ public class AttendanceController {
     return ResponseApi.ok(response);
   }
 
-  /**
-   * Check if user is on company network based on IP address Validates against
-   * company IP ranges
-   */
+  /** Check if user is on company network based on IP address Validates against company IP ranges */
   @GetMapping("/network-check")
   public ResponseApi<WiFiInfoResponse> checkNetwork(HttpServletRequest request) {
     log.info("GET /attendance/network-check - checking client IP");
@@ -87,10 +84,11 @@ public class AttendanceController {
     String clientIp = WebUtils.getClientIpAddress(request);
     boolean isCompanyNetwork = networkCheckPort.isCompanyIpAddress(clientIp);
 
-    WiFiInfoResponse response = WiFiInfoResponse.builder()
-        .wifiName(isCompanyNetwork ? "FPT-Network" : "External-Network")
-        .isCompanyWifi(isCompanyNetwork)
-        .build();
+    WiFiInfoResponse response =
+        WiFiInfoResponse.builder()
+            .wifiName(isCompanyNetwork ? "FPT-Network" : "External-Network")
+            .isCompanyWifi(isCompanyNetwork)
+            .build();
 
     log.info("Network check result - IP: {}, isCompanyNetwork: {}", clientIp, isCompanyNetwork);
     return ResponseApi.ok(response);

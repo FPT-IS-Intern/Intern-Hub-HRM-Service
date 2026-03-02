@@ -6,6 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PositionListResponse {
-    Long positionId;
-    String name;
+  Long positionId;
+  String name;
 }

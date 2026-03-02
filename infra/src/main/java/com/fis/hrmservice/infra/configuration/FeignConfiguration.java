@@ -10,13 +10,13 @@ import org.springframework.context.annotation.Configuration;
 @EnableFeignClients(basePackages = "com.fis.hrmservice.infra.feign")
 public class FeignConfiguration {
 
-    // Hi
+  // Hi
 
-    @Value("security.internal-secret")
-    private String secretKey;
+  @Value("security.internal-secret")
+  private String secretKey;
 
-    @Bean
-    public RequestInterceptor requestInterceptor() {
-        return requestTemplate -> requestTemplate.header("X-Internal-Secret", secretKey);
-    }
+  @Bean
+  public RequestInterceptor requestInterceptor() {
+    return requestTemplate -> requestTemplate.header("X-Internal-Secret", secretKey);
+  }
 }

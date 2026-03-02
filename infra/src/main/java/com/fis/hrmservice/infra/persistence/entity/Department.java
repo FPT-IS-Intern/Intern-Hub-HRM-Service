@@ -13,39 +13,37 @@ import lombok.Setter;
 @Entity
 @Table(name = "departments")
 public class Department {
-    @Id
-    @Column(name = "department_id", nullable = false)
-    private Long id;
+  @Id
+  @Column(name = "department_id", nullable = false)
+  private Long id;
 
-    @Size(max = 100)
-    @Column(name = "name", length = 100)
-    private String name;
+  @Size(max = 100)
+  @Column(name = "name", length = 100)
+  private String name;
 
-    @Size(max = 50)
-    @Column(name = "code", length = 50)
-    private String code;
+  @Size(max = 50)
+  @Column(name = "code", length = 50)
+  private String code;
 
-    @Column(name = "description", length = Integer.MAX_VALUE)
-    private String description;
+  @Column(name = "description", length = Integer.MAX_VALUE)
+  private String description;
 
-    @Size(max = 50)
-    @Column(name = "status", length = 50)
-    private String status;
+  @Size(max = 50)
+  @Column(name = "status", length = 50)
+  private String status;
 
-    @Column(name = "created_at")
-    private Long createdAt;
+  @Column(name = "created_at")
+  private Long createdAt;
 
-    @Column(name = "updated_at")
-    private Long updatedAt;
+  @Column(name = "updated_at")
+  private Long updatedAt;
 
-    @Column(name = "version")
-    private Integer version;
+  @Column(name = "version")
+  private Integer version;
 
-    @Column(name = "created_by")
-    private Long createdBy;
+  @Column(name = "created_by")
+  private Long createdBy;
 
-    @Column(name = "updated_by")
-    private Long updatedBy;
-
-
+  @Column(name = "updated_by")
+  private Long updatedBy;
 }

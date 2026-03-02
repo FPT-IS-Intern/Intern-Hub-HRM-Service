@@ -5,13 +5,12 @@ import com.fis.hrmservice.domain.port.output.user.AvatarRepositoryPort;
 import com.fis.hrmservice.infra.mapper.AvatarMapper;
 import com.fis.hrmservice.infra.persistence.entity.Avatar;
 import com.fis.hrmservice.infra.persistence.repository.user.AvatarRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
@@ -41,9 +40,6 @@ public class AvatarRepositoryAdapter implements AvatarRepositoryPort {
     List<Avatar> avatars = avatarRepository.findByUserUserIdIn(userIds);
 
     return avatars.stream()
-            .collect(Collectors.toMap(
-                    avatar -> avatar.getUser().getId(),
-                    avatarMapper::toModel
-            ));
+        .collect(Collectors.toMap(avatar -> avatar.getUser().getId(), avatarMapper::toModel));
   }
 }

@@ -7,5 +7,5 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface PositionApiMapper {
 
-    PositionListResponse toPositionListResponse(PositionModel model);
+  PositionListResponse toPositionListResponse(PositionModel model);
 }

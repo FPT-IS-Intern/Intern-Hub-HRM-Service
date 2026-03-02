@@ -1,8 +1,7 @@
 package com.fis.hrmservice.domain.usecase.command.ticket;
 
-import lombok.*;
-
 import java.time.LocalTime;
+import lombok.*;
 
 @Getter
 @Setter
@@ -10,7 +9,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RemoteRequestCommand {
-    LocalTime startTime;
-    LocalTime endTime;
-    String location;
+  LocalTime startTime;
+  LocalTime endTime;
+  String location;
 }

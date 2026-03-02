@@ -48,6 +48,7 @@ subprojects {
     configure<DependencyManagementExtension> {
         imports {
             mavenBom(rootProject.libs.spring.cloud.dependencies.get().toString())
+            mavenBom(rootProject.libs.opentelemetry.bom.get().toString())
         }
     }
 

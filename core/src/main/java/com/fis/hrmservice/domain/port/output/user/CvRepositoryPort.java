@@ -4,5 +4,6 @@ import com.fis.hrmservice.domain.model.user.CvModel;
 
 public interface CvRepositoryPort {
   CvModel save(CvModel cv);
+
   CvModel findByUserId(Long userId);
 }

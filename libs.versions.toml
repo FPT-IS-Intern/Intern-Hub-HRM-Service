@@ -21,11 +21,14 @@ lombok-mapstruct-binding = "0.2.0"
 jakarta-validation = "3.0.2"
 
 # Custom Libraries
-common-library = "2.0.3"
-security-starter = "1.0.4"
+common-library = "2.0.4"
+security-starter = "1.0.7"
 
 # AWS
 aws-sdk = "2.41.34"
+
+# OpenTelemetry
+opentelemetry-bom = "1.45.0"
 
 [libraries]
 # Spring Boot Starters
@@ -71,6 +74,11 @@ reactor-test = { group = "io.projectreactor", name = "reactor-test" }
 
 # AWS
 aws-s3 = { group = "software.amazon.awssdk", name = "s3", version.ref = "aws-sdk" }
+
+# OpenTelemetry
+opentelemetry-bom = { group = "io.opentelemetry", name = "opentelemetry-bom", version.ref = "opentelemetry-bom" }
+opentelemetry-sdk = { group = "io.opentelemetry", name = "opentelemetry-sdk" }
+opentelemetry-sdk-trace = { group = "io.opentelemetry", name = "opentelemetry-sdk-trace" }
 
 [bundles]
 # Spring Boot All: Web + Validation

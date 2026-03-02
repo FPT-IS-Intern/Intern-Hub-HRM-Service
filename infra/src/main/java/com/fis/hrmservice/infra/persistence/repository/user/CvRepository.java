@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CvRepository extends JpaRepository<Cv, Long> {
 
-
-    @Query("SELECT c FROM Cv c WHERE c.user.id = :userId")
-    Cv findCvByUserId(@Param("userId") Long userId);
+  @Query("SELECT c FROM Cv c WHERE c.user.id = :userId")
+  Cv findCvByUserId(@Param("userId") Long userId);
 }
