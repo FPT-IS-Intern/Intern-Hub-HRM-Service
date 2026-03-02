@@ -140,7 +140,7 @@ public class RegisterUserUseCaseImpl {
 
     // Check size > 2MB
     if (command.getAvatar().getSize() > 2 * 1024 * 1024) {
-      throw new ConflictDataException("Avatar must not exceed 2MB");
+      throw new ConflictDataException("Avatar vượt quá 2MB");
     }
 
     String avatarType = command.getAvatar().getContentType();
@@ -155,7 +155,7 @@ public class RegisterUserUseCaseImpl {
 
     // Check size > 2MB
     if (command.getCv().getSize() > 2 * 1024 * 1024) {
-      throw new ConflictDataException("CV must not exceed 2MB");
+      throw new ConflictDataException("CV vượt quá 2MB");
     }
 
     String cvType = command.getCv().getContentType();

@@ -185,12 +185,6 @@ public class UserValidationService {
       throw new ConflictDataException("Ngày kết thúc thực tập không được để trống");
     }
 
-    LocalDate today = LocalDate.now(CoreConstant.VIETNAM_ZONE);
-
-    if (startDate.isBefore(today)) {
-      throw new ConflictDataException("Ngày bắt đầu thực tập không được trước ngày hiện tại");
-    }
-
     if (!endDate.isAfter(startDate)) {
       throw new ConflictDataException("Ngày kết thúc phải sau ngày bắt đầu thực tập");
     }
