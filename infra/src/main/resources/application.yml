@@ -62,6 +62,8 @@ feign:
         url: ${AUTH_SERVICE_URL:http://localhost:8888}
       bo-portal:
         url: ${BO_PORTAL_SERVICE_URL:http://localhost:8386}
+      dns:
+        url: ${DNS_SERVICE_URL:http://localhost:8084}
 
 aws:
   s3:

@@ -1,9 +1,9 @@
 package com.fis.hrmservice.api.dto.response;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
+import tools.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.ser.std.ToStringSerializer;
 
 @Data
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
