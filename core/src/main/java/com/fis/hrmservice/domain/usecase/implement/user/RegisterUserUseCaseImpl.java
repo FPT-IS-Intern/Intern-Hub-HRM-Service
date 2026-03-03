@@ -99,7 +99,6 @@ public class RegisterUserUseCaseImpl {
                   .cvId(snowflake.next())
                   .user(savedUser)
                   .cvUrl(cvUrl)
-                  .fileName(command.getCv().getOriginalFilename())
                   .fileSize(command.getCv().getSize())
                   .fileType(command.getCv().getContentType())
                   .build());

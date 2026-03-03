@@ -104,7 +104,6 @@ public class UserProfileUseCaseImpl {
       }
 
       cv.setCvUrl(cvUrl);
-      cv.setFileName(command.getCvFile().getOriginalFilename());
       cv.setFileSize(command.getCvFile().getSize());
       cv.setFileType(command.getCvFile().getContentType());
       cvRepositoryPort.save(cv);

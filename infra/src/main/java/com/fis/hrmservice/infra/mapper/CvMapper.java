@@ -13,13 +13,11 @@ public interface CvMapper {
 
   // ===== Entity -> Model =====
   @Mapping(target = "cvId", source = "id")
-  @Mapping(target = "fileName", source = "cvFileName")
   @Mapping(target = "user", source = "user", qualifiedByName = "userToSimpleModel")
   CvModel toModel(Cv cv);
 
   // ===== Model -> Entity =====
   @Mapping(target = "id", source = "cvId")
-  @Mapping(target = "cvFileName", source = "fileName")
   @Mapping(target = "user", source = "user", qualifiedByName = "userModelToEntity")
   @Mapping(target = "createdAt", source = "createdAt")
   @Mapping(target = "updatedAt", source = "updatedAt")

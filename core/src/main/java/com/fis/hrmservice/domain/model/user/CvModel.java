@@ -14,5 +14,4 @@ public class CvModel extends BaseDomain {
   String cvUrl;
   String fileType;
   long fileSize;
-  String fileName;
 }

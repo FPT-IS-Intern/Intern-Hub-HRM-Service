@@ -43,8 +43,4 @@ public class Cv extends AuditEntity {
 
   @Column(name = "file_size")
   private Long fileSize;
-
-  @Size(max = 255)
-  @Column(name = "cv_file_name")
-  private String cvFileName;
 }

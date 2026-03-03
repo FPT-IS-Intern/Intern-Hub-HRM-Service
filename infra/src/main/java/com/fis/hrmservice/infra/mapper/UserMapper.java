@@ -106,7 +106,6 @@ public interface UserMapper {
     return CvModel.builder()
         .cvId(entity.getId())
         .cvUrl(entity.getCvUrl())
-        .fileName(entity.getCvFileName())
         .fileType(entity.getFileType())
         .fileSize(entity.getFileSize() != null ? entity.getFileSize() : 0)
         .build();
@@ -129,7 +128,6 @@ public interface UserMapper {
     Cv cv = new Cv();
     cv.setId(model.getCvId());
     cv.setCvUrl(model.getCvUrl());
-    cv.setCvFileName(model.getFileName());
     cv.setFileType(model.getFileType());
     cv.setFileSize(model.getFileSize());
     return cv;
