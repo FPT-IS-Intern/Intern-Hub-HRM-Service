@@ -151,14 +151,7 @@ public class UserProfileUseCaseImpl {
     if (user == null) {
       throw new NotFoundException("User with id: " + userId + " not found");
     }
-
-    return switch (user.getSysStatus()) {
-      case PENDING -> throw new ConflictDataException("User with id: " + userId + " is pending");
-      case REJECTED -> throw new ConflictDataException("User with id: " + userId + " is rejected");
-      case SUSPENDED ->
-          throw new ConflictDataException("User with id: " + userId + " is suspended");
-      default -> user;
-    };
+    return user;
   }
 
   private static String trim(CharSequence cs) {
