@@ -33,7 +33,6 @@ public class UserInternalController {
   }
 
   @GetMapping("/me")
-  @Internal
   public ResponseApi<InternalUserResponse> getMeInternal() {
     Long userId = UserContext.requiredUserId();
     UserModel userModel = userProfileUseCase.internalUserProfile(userId);

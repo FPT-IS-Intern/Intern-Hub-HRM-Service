@@ -106,7 +106,9 @@ public class UserProfileUseCaseImpl {
       cv.setCvUrl(cvUrl);
       cv.setFileSize(command.getCvFile().getSize());
       cv.setFileType(command.getCvFile().getContentType());
-      cvRepositoryPort.save(cv);
+      CvModel savedCv = cvRepositoryPort.save(cv);
+      // Update user's cv reference so CascadeType.ALL won't overwrite with old values
+      user.setCv(savedCv);
       changed = true;
     }
 
@@ -130,7 +132,9 @@ public class UserProfileUseCaseImpl {
       avatar.setFileSize(command.getAvatarFile().getSize());
       avatar.setFileType(command.getAvatarFile().getContentType());
 
-      avatarRepositoryPort.save(avatar);
+      AvatarModel savedAvatar = avatarRepositoryPort.save(avatar);
+      // Update user's avatar reference so CascadeType.ALL won't overwrite with old values
+      user.setAvatar(savedAvatar);
       changed = true;
     }
 
