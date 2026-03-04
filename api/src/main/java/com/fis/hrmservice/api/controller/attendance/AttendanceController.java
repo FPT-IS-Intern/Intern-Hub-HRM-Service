@@ -17,6 +17,7 @@ import com.intern.hub.library.common.dto.ResponseApi;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -60,8 +61,7 @@ public class AttendanceController {
 
     String clientIp = WebUtils.getClientIpAddress(servletRequest);
     long now = System.currentTimeMillis();
-    CheckInCommand command =
-        attendanceApiMapper.toCheckInCommand(userId, now, clientIp, latitude, longitude);
+    CheckInCommand command = attendanceApiMapper.toCheckInCommand(userId, now, clientIp, latitude, longitude);
     AttendanceLogModel attendance = attendanceUseCase.checkIn(command);
     AttendanceResponse response = attendanceApiMapper.toCheckInResponseFromLog(attendance);
 
@@ -79,8 +79,7 @@ public class AttendanceController {
 
     String clientIp = WebUtils.getClientIpAddress(servletRequest);
     long now = System.currentTimeMillis();
-    CheckOutCommand command =
-        attendanceApiMapper.toCheckOutCommand(userId, now, clientIp, latitude, longitude);
+    CheckOutCommand command = attendanceApiMapper.toCheckOutCommand(userId, now, clientIp, latitude, longitude);
     AttendanceLogModel attendance = attendanceUseCase.checkOut(command);
     AttendanceResponse response = attendanceApiMapper.toCheckOutResponseFromLog(attendance);
 
@@ -96,8 +95,11 @@ public class AttendanceController {
     log.info("GET /attendance/check-point - checking eligibility");
 
     String clientIp = WebUtils.getClientIpAddress(request);
-    boolean isCompanyNetwork = networkCheckPort.isCompanyIpAddress(clientIp);
-    boolean isAtLocation = networkCheckPort.isAtCompanyLocation(latitude, longitude);
+    UUID branchIdFromIp = networkCheckPort.resolveCompanyIpBranchId(clientIp).orElse(null);
+    UUID branchIdFromLocation = networkCheckPort.resolveCompanyLocationBranchId(latitude, longitude).orElse(null);
+    boolean isCompanyNetwork = branchIdFromIp != null;
+    boolean isAtLocation = branchIdFromLocation != null;
+    UUID resolvedBranchId = branchIdFromIp != null ? branchIdFromIp : branchIdFromLocation;
 
     boolean isValid = isCompanyNetwork || isAtLocation;
 
@@ -105,6 +107,7 @@ public class AttendanceController {
         WiFiInfoResponse.builder()
             .wifiName(isCompanyNetwork ? "FPT-Network" : (isAtLocation ? "Office-GPS" : "External"))
             .isCompanyWifi(isValid)
+            .branchId(resolvedBranchId)
             .build();
 
     log.info(

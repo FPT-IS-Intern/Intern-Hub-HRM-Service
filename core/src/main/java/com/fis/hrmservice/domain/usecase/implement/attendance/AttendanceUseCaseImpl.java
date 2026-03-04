@@ -18,7 +18,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -97,8 +99,12 @@ public class AttendanceUseCaseImpl implements AttendanceUseCase {
             .orElseThrow(() -> new NotFoundException("User không tồn tại"));
 
     // Validate location: WiFi (IP) first, then GPS fallback
-    validateCompanyAccess(
-        command.getClientIp(), command.getLatitude(), command.getLongitude(), "check-in");
+    UUID checkInBranchId =
+        validateCompanyAccess(
+            command.getClientIp(),
+            command.getLatitude(),
+            command.getLongitude(),
+            "check-in");
 
     long checkInTimestamp = command.getCheckInTime();
     if (checkInTimestamp <= 0) {
@@ -106,13 +112,28 @@ public class AttendanceUseCaseImpl implements AttendanceUseCase {
     }
 
     LocalDate workDate = convertToLocalDate(checkInTimestamp);
+    List<AttendanceLogModel> attendanceLogs =
+        attendanceRepository.findAllByUserIdAndDate(command.getUserId(), workDate);
 
-    // Check if already checked in today
-    Optional<AttendanceLogModel> existingAttendance =
-        attendanceRepository.findByUserIdAndDate(command.getUserId(), workDate);
-
-    if (existingAttendance.isPresent() && existingAttendance.get().getCheckInTime() > 0) {
+    boolean alreadyCheckedInThisBranch =
+        attendanceLogs.stream()
+            .anyMatch(log -> checkInBranchId.equals(log.getCheckInBranchId()) && log.getCheckInTime() > 0);
+    if (alreadyCheckedInThisBranch) {
       throw new BadRequestException("Bạn đã check-in hôm nay rồi");
+    }
+
+    Optional<AttendanceLogModel> openAttendanceOpt =
+        attendanceLogs.stream().filter(log -> log.getCheckOutTime() <= 0).findFirst();
+    if (openAttendanceOpt.isPresent()) {
+      AttendanceLogModel openAttendance = openAttendanceOpt.get();
+      openAttendance.setCheckOutTime(checkInTimestamp);
+      openAttendance.setCheckOutValid(validateCheckOutTime(checkInTimestamp));
+      openAttendance.setCheckOutBranchId(openAttendance.getCheckInBranchId());
+      openAttendance.setAttendanceStatus(
+          openAttendance.isCheckOutValid()
+              ? AttendanceStatus.CHECK_OUT_ON_TIME
+              : AttendanceStatus.CHECK_OUT_EARLY);
+      attendanceRepository.update(openAttendance);
     }
 
     // Validate check-in time (Standard 8:30)
@@ -128,6 +149,7 @@ public class AttendanceUseCaseImpl implements AttendanceUseCase {
             .isCheckInValid(isValid)
             .isCheckOutValid(false)
             .source("WEB")
+            .checkInBranchId(checkInBranchId)
             .build();
 
     if (isValid) {
@@ -146,8 +168,12 @@ public class AttendanceUseCaseImpl implements AttendanceUseCase {
     log.info("Processing check-out for userId: {}", command.getUserId());
 
     // Validate location: WiFi (IP) first, then GPS fallback
-    validateCompanyAccess(
-        command.getClientIp(), command.getLatitude(), command.getLongitude(), "check-out");
+    UUID checkOutBranchId =
+        validateCompanyAccess(
+            command.getClientIp(),
+            command.getLatitude(),
+            command.getLongitude(),
+            "check-out");
 
     long checkOutTime = command.getCheckOutTime();
     if (checkOutTime <= 0) {
@@ -155,26 +181,20 @@ public class AttendanceUseCaseImpl implements AttendanceUseCase {
     }
 
     LocalDate workDate = convertToLocalDate(checkOutTime);
-
-    // Find today's attendance record
+    List<AttendanceLogModel> attendanceLogs =
+        attendanceRepository.findAllByUserIdAndDate(command.getUserId(), workDate);
     AttendanceLogModel attendance =
-        attendanceRepository
-            .findByUserIdAndDate(command.getUserId(), workDate)
-            .orElseThrow(() -> new BadRequestException("Bạn chưa check-in hôm nay"));
-
-    if (attendance.getCheckInTime() == 0) {
-      throw new BadRequestException("Bạn cần check-in trước khi check-out");
-    }
-
-    if (attendance.getCheckOutTime() > 0) {
-      throw new BadRequestException("Bạn đã check-out hôm nay rồi");
-    }
+        attendanceLogs.stream()
+            .filter(log -> log.getCheckOutTime() <= 0)
+            .findFirst()
+            .orElseThrow(() -> new BadRequestException("Ban khong co phien check-in mo trong hom nay"));
 
     // Validate check-out time
     boolean isValid = validateCheckOutTime(checkOutTime);
 
     attendance.setCheckOutTime(checkOutTime);
     attendance.setCheckOutValid(isValid);
+    attendance.setCheckOutBranchId(checkOutBranchId);
 
     if (isValid) {
       attendance.setAttendanceStatus(AttendanceStatus.CHECK_OUT_ON_TIME);
@@ -190,10 +210,12 @@ public class AttendanceUseCaseImpl implements AttendanceUseCase {
 
   // ==================== Helper Methods ====================
 
-  private void validateCompanyAccess(
+  private UUID validateCompanyAccess(
       String clientIp, Double latitude, Double longitude, String action) {
-    boolean isCorrectIp = networkCheckPort.isCompanyIpAddress(clientIp);
-    boolean isCorrectLocation = networkCheckPort.isAtCompanyLocation(latitude, longitude);
+    UUID branchIdFromIp = networkCheckPort.resolveCompanyIpBranchId(clientIp).orElse(null);
+    UUID branchIdFromLocation = networkCheckPort.resolveCompanyLocationBranchId(latitude, longitude).orElse(null);
+    boolean isCorrectIp = branchIdFromIp != null;
+    boolean isCorrectLocation = branchIdFromLocation != null;
 
     if (!isCorrectIp && !isCorrectLocation) {
       log.warn(
@@ -202,8 +224,11 @@ public class AttendanceUseCaseImpl implements AttendanceUseCase {
           clientIp,
           latitude,
           longitude);
-      throw new BadRequestException("Bạn cần kết nối Wi-Fi công ty HOẶC ở văn phòng để " + action);
+      throw new BadRequestException(
+          "Ban can ket noi Wi-Fi cong ty HOAC o van phong de " + action);
     }
+
+    return branchIdFromIp != null ? branchIdFromIp : branchIdFromLocation;
   }
 
   private boolean validateCheckInTime(long checkInTimeMillis) {
@@ -260,3 +285,6 @@ public class AttendanceUseCaseImpl implements AttendanceUseCase {
     }
   }
 }
+
+
+
