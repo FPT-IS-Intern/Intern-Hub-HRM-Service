@@ -48,6 +48,13 @@ public class AttendanceRepositoryAdapter implements AttendanceRepositoryPort {
   }
 
   @Override
+  public List<AttendanceLogModel> findAllOpenByDate(LocalDate workDate) {
+    return attendanceLogRepository.findAllByWorkDateAndCheckOutTimeIsNullOrderByCheckInTimeAsc(workDate).stream()
+        .map(this::toModel)
+        .toList();
+  }
+
+  @Override
   public AttendanceLogModel update(AttendanceLogModel attendanceLogModel) {
     return save(attendanceLogModel);
   }

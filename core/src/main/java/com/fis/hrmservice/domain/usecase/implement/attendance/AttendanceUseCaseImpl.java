@@ -208,6 +208,40 @@ public class AttendanceUseCaseImpl implements AttendanceUseCase {
     return attendance;
   }
 
+  @Override
+  public int autoCheckoutOpenAttendances(long checkOutTimeMillis) {
+    long effectiveCheckOutTime =
+        checkOutTimeMillis > 0 ? checkOutTimeMillis : System.currentTimeMillis();
+    LocalDate workDate = convertToLocalDate(effectiveCheckOutTime);
+    List<AttendanceLogModel> openAttendances = attendanceRepository.findAllOpenByDate(workDate);
+
+    int processed = 0;
+    for (AttendanceLogModel attendance : openAttendances) {
+      if (attendance.getCheckInTime() <= 0 || attendance.getCheckOutTime() > 0) {
+        continue;
+      }
+
+      boolean isValid = validateCheckOutTime(effectiveCheckOutTime);
+      attendance.setCheckOutTime(effectiveCheckOutTime);
+      attendance.setCheckOutValid(isValid);
+      attendance.setCheckOutBranchId(
+          attendance.getCheckOutBranchId() != null
+              ? attendance.getCheckOutBranchId()
+              : attendance.getCheckInBranchId());
+      attendance.setAttendanceStatus(
+          isValid ? AttendanceStatus.CHECK_OUT_ON_TIME : AttendanceStatus.CHECK_OUT_EARLY);
+      attendanceRepository.update(attendance);
+      processed++;
+    }
+
+    log.info(
+        "Auto check-out completed for date {} at {} - processed {} open attendances",
+        workDate,
+        effectiveCheckOutTime,
+        processed);
+    return processed;
+  }
+
   // ==================== Helper Methods ====================
 
   private UUID validateCompanyAccess(

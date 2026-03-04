@@ -12,4 +12,6 @@ public interface AttendanceUseCase {
   AttendanceLogModel checkIn(CheckInCommand command);
 
   AttendanceLogModel checkOut(CheckOutCommand command);
+
+  int autoCheckoutOpenAttendances(long checkOutTimeMillis);
 }

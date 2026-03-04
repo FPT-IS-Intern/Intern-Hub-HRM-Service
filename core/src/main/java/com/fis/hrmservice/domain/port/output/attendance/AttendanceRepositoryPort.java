@@ -12,6 +12,8 @@ public interface AttendanceRepositoryPort {
 
   List<AttendanceLogModel> findAllByUserIdAndDate(Long userId, LocalDate workDate);
 
+  List<AttendanceLogModel> findAllOpenByDate(LocalDate workDate);
+
   AttendanceLogModel update(AttendanceLogModel attendanceLog);
 
   Long getCheckInOnTimePercent();

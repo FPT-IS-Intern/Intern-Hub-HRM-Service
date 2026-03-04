@@ -12,4 +12,6 @@ public interface AttendanceLogRepository extends JpaRepository<AttendanceLog, Lo
   Optional<AttendanceLog> findByUser_IdAndWorkDate(Long userId, LocalDate workDate);
 
   List<AttendanceLog> findAllByUser_IdAndWorkDateOrderByCheckInTimeDesc(Long userId, LocalDate workDate);
+
+  List<AttendanceLog> findAllByWorkDateAndCheckOutTimeIsNullOrderByCheckInTimeAsc(LocalDate workDate);
 }
