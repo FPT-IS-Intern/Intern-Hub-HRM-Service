@@ -9,7 +9,6 @@ import com.intern.hub.library.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -20,7 +19,6 @@ public class UserApproval {
 
   private final CreateAuthIdentityPort createAuthIdentityPort;
 
-  @Transactional
   public UserModel approveUser(Long userId) {
 
     Long updated = userRepositoryPort.updateStatus(userId, UserStatus.APPROVED);

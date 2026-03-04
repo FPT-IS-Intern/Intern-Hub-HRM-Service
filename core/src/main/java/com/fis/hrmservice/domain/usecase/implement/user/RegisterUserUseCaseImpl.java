@@ -62,51 +62,51 @@ public class RegisterUserUseCaseImpl {
     if (savedUser == null) {
       throw new ConflictDataException("Cannot save user");
     }
-
-    try {
-
-      // 5️⃣ Upload Avatar via DMS
-      InternalUploadDirectResponse avatarResult =
-          fileUploadPort.upload(
-              command.getAvatar(), "avatars/" + savedUser.getUserId(), savedUser.getUserId());
-
-      AvatarModel avatar =
-          avatarRepositoryPort.save(
-              AvatarModel.builder()
-                  .avatarId(snowflake.next())
-                  .user(savedUser)
-                  .avatarUrl(avatarResult.getObjectKey())
-                  .fileSize(command.getAvatar().getSize())
-                  .fileType(command.getAvatar().getContentType())
-                  .build());
-
-      if (avatar == null) {
-        throw new ConflictDataException("Cannot save avatar");
-      }
-
-      // 6️⃣ Upload CV via DMS
-      InternalUploadDirectResponse cvResult =
-          fileUploadPort.upload(
-              command.getCv(), "cvs/" + savedUser.getUserId(), savedUser.getUserId());
-
-      CvModel cv =
-          cvRepositoryPort.save(
-              CvModel.builder()
-                  .cvId(snowflake.next())
-                  .user(savedUser)
-                  .cvUrl(cvResult.getObjectKey())
-                  .fileSize(command.getCv().getSize())
-                  .fileType(command.getCv().getContentType())
-                  .build());
-
-      if (cv == null) {
-        throw new ConflictDataException("Cannot save CV");
-      }
-
-    } catch (Exception e) {
-      log.error("Register process failed. Transaction rollback triggered.", e);
-      throw new ConflictDataException("Register failed");
-    }
+//
+//    try {
+//
+//      // 5️⃣ Upload Avatar via DMS
+//      InternalUploadDirectResponse avatarResult =
+//          fileUploadPort.upload(
+//              command.getAvatar(), "avatars/" + savedUser.getUserId(), savedUser.getUserId());
+//
+//      AvatarModel avatar =
+//          avatarRepositoryPort.save(
+//              AvatarModel.builder()
+//                  .avatarId(snowflake.next())
+//                  .user(savedUser)
+//                  .avatarUrl(avatarResult.getObjectKey())
+//                  .fileSize(command.getAvatar().getSize())
+//                  .fileType(command.getAvatar().getContentType())
+//                  .build());
+//
+//      if (avatar == null) {
+//        throw new ConflictDataException("Cannot save avatar");
+//      }
+//
+//      // 6️⃣ Upload CV via DMS
+//      InternalUploadDirectResponse cvResult =
+//          fileUploadPort.upload(
+//              command.getCv(), "cvs/" + savedUser.getUserId(), savedUser.getUserId());
+//
+//      CvModel cv =
+//          cvRepositoryPort.save(
+//              CvModel.builder()
+//                  .cvId(snowflake.next())
+//                  .user(savedUser)
+//                  .cvUrl(cvResult.getObjectKey())
+//                  .fileSize(command.getCv().getSize())
+//                  .fileType(command.getCv().getContentType())
+//                  .build());
+//
+//      if (cv == null) {
+//        throw new ConflictDataException("Cannot save CV");
+//      }
+//
+//    } catch (Exception e) {
+//      log.error("Register process failed. Transaction rollback triggered.", e);
+//      throw new ConflictDataException("Register failed");
+//    }
 
     // 7️⃣ Create registration ticket
     ticketRepositoryPort.save(
