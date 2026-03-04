@@ -15,7 +15,7 @@ public class AttendanceAutoCheckoutScheduler {
 
   @Scheduled(cron = "0 30 17 * * *", zone = "Asia/Ho_Chi_Minh")
   public void autoCheckoutAt1730() {
-    int processed = attendanceUseCase.autoCheckoutOpenAttendances(System.currentTimeMillis());
+    int processed = attendanceUseCase.autoCheckoutOpenAttendances(0L);
     log.info("Scheduled auto checkout at 17:30 completed - processed {}", processed);
   }
 }

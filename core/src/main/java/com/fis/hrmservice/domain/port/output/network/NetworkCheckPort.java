@@ -38,4 +38,6 @@ public interface NetworkCheckPort {
    * @return branchId if matched, empty otherwise
    */
   Optional<UUID> resolveCompanyLocationBranchId(Double latitude, Double longitude);
+
+  Optional<String> resolveBranchName(UUID branchId);
 }

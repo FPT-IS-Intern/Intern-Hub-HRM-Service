@@ -83,6 +83,37 @@ public class NetworkCheckService implements NetworkCheckPort {
     return Optional.empty();
   }
 
+  @Override
+  public Optional<String> resolveBranchName(UUID branchId) {
+    if (branchId == null) {
+      return Optional.empty();
+    }
+
+    try {
+      var locationResponse = boPortalFeignClient.getAttendanceLocations();
+      if (locationResponse != null && locationResponse.data() != null) {
+        for (var loc : locationResponse.data()) {
+          if (branchId.equals(loc.branchId())) {
+            return Optional.ofNullable(loc.name());
+          }
+        }
+      }
+
+      var ipRangeResponse = boPortalFeignClient.getAllowedIpRanges();
+      if (ipRangeResponse != null && ipRangeResponse.data() != null) {
+        for (var range : ipRangeResponse.data()) {
+          if (branchId.equals(range.branchId())) {
+            return Optional.ofNullable(range.name());
+          }
+        }
+      }
+    } catch (Exception e) {
+      log.error("Error resolving branch name for branchId {}: {}", branchId, e.getMessage());
+    }
+
+    return Optional.empty();
+  }
+
   private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
     double R = 6371e3; // Earth radius in meters
     double phi1 = Math.toRadians(lat1);

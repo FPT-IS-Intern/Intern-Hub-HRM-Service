@@ -60,8 +60,7 @@ public class AttendanceController {
     log.info("POST /attendance/check-in - userId: {}", userId);
 
     String clientIp = WebUtils.getClientIpAddress(servletRequest);
-    long now = System.currentTimeMillis();
-    CheckInCommand command = attendanceApiMapper.toCheckInCommand(userId, now, clientIp, latitude, longitude);
+    CheckInCommand command = attendanceApiMapper.toCheckInCommand(userId, 0L, clientIp, latitude, longitude);
     AttendanceLogModel attendance = attendanceUseCase.checkIn(command);
     AttendanceResponse response = attendanceApiMapper.toCheckInResponseFromLog(attendance);
 
@@ -78,8 +77,7 @@ public class AttendanceController {
     log.info("POST /attendance/check-out - userId: {}", userId);
 
     String clientIp = WebUtils.getClientIpAddress(servletRequest);
-    long now = System.currentTimeMillis();
-    CheckOutCommand command = attendanceApiMapper.toCheckOutCommand(userId, now, clientIp, latitude, longitude);
+    CheckOutCommand command = attendanceApiMapper.toCheckOutCommand(userId, 0L, clientIp, latitude, longitude);
     AttendanceLogModel attendance = attendanceUseCase.checkOut(command);
     AttendanceResponse response = attendanceApiMapper.toCheckOutResponseFromLog(attendance);
 
