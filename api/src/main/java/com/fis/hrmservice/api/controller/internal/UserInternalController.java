@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,5 +38,12 @@ public class UserInternalController {
     Long userId = UserContext.requiredUserId();
     UserModel userModel = userProfileUseCase.internalUserProfile(userId);
     return ResponseApi.ok(userApiMapper.toInternalUserResponse(userModel));
+  }
+
+  @GetMapping("/by-email")
+  @Internal
+  public ResponseApi<UserResponse> getUserByEmailInternal(@RequestParam("email") String email) {
+    UserModel userModel = userProfileUseCase.internalUserProfileByEmail(email);
+    return ResponseApi.ok(userApiMapper.toResponse(userModel));
   }
 }

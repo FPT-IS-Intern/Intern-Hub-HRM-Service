@@ -145,6 +145,13 @@ public class UserProfileUseCaseImpl {
     return user;
   }
 
+  public UserModel internalUserProfileByEmail(String email) {
+    String normalizedEmail = email == null ? null : email.strip().toLowerCase();
+    return userRepositoryPort
+        .findByEmail(normalizedEmail)
+        .orElseThrow(() -> new NotFoundException("User with email: " + email + " not found"));
+  }
+
   private static String trim(CharSequence cs) {
     return cs == null ? null : cs.toString().strip();
   }
