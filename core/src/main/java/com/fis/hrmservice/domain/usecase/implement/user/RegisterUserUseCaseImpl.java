@@ -178,7 +178,7 @@ public class RegisterUserUseCaseImpl {
             .fullName(command.getFullName())
             .idNumber(command.getIdNumber())
             .dateOfBirth(command.getBirthDate())
-            .companyEmail(command.getEmail())
+            .companyEmail(command.getEmail().toLowerCase())
             .phoneNumber(command.getPhoneNumber())
             .address(command.getAddress())
             .sysStatus(UserStatus.PENDING);
