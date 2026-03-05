@@ -94,8 +94,8 @@ public class AttendanceUseCaseImpl implements AttendanceUseCase {
       String branchName =
           networkCheckPort
               .resolveBranchName(openSessionBranchId)
-              .orElse(openSessionBranchId != null ? openSessionBranchId.toString() : "khac");
-      statusMessage = String.format("Bạn đã checkin ở %s", branchName);
+              .orElse(openSessionBranchId != null ? openSessionBranchId.toString() : "khác");
+      statusMessage = String.format("Bạn đã checkin Onsite ở %s", branchName);
     }
 
     return AttendanceStatusModel.builder()
@@ -140,6 +140,15 @@ public class AttendanceUseCaseImpl implements AttendanceUseCase {
     LocalDate workDate = convertToLocalDate(checkInTimestamp);
     List<AttendanceLogModel> attendanceLogs =
         attendanceRepository.findAllByUserIdAndDate(command.getUserId(), workDate);
+
+    boolean alreadyCheckedInThisBranch =
+        attendanceLogs.stream()
+            .anyMatch(
+                log ->
+                    checkInBranchId.equals(log.getCheckInBranchId()) && log.getCheckInTime() > 0);
+    if (alreadyCheckedInThisBranch) {
+      throw new BadRequestException("Ban da check-in chi nhanh nay trong hom nay");
+    }
 
     Optional<AttendanceLogModel> openAttendanceOpt =
         attendanceLogs.stream().filter(log -> log.getCheckOutTime() <= 0).findFirst();
@@ -194,6 +203,16 @@ public class AttendanceUseCaseImpl implements AttendanceUseCase {
     LocalDate workDate = convertToLocalDate(checkOutTime);
     List<AttendanceLogModel> attendanceLogs =
         attendanceRepository.findAllByUserIdAndDate(command.getUserId(), workDate);
+
+    boolean alreadyCheckedOutThisBranch =
+        attendanceLogs.stream()
+            .anyMatch(
+                log ->
+                    checkOutBranchId.equals(log.getCheckOutBranchId()) && log.getCheckOutTime() > 0);
+    if (alreadyCheckedOutThisBranch) {
+      throw new BadRequestException("Ban da check-out chi nhanh nay trong hom nay");
+    }
+
     AttendanceLogModel attendance =
         attendanceLogs.stream()
             .filter(log -> log.getCheckOutTime() <= 0)
