@@ -1,11 +1,9 @@
 package com.fis.hrmservice.api.controller.attendance;
 
-import com.fis.hrmservice.api.dto.response.AttendanceResponse;
 import com.fis.hrmservice.api.dto.response.AttendanceStatusResponse;
 import com.fis.hrmservice.api.dto.response.WiFiInfoResponse;
 import com.fis.hrmservice.api.mapper.AttendanceApiMapper;
 import com.fis.hrmservice.api.util.WebUtils;
-import com.fis.hrmservice.domain.model.attendance.AttendanceLogModel;
 import com.fis.hrmservice.domain.model.attendance.AttendanceStatusModel;
 import com.fis.hrmservice.domain.model.constant.CoreConstant;
 import com.fis.hrmservice.domain.port.output.network.NetworkCheckPort;
@@ -52,7 +50,7 @@ public class AttendanceController {
 
   /** Process check-in */
   @PostMapping("/check-in")
-  public ResponseApi<AttendanceResponse> checkIn(
+  public ResponseApi<String> checkIn(
       @RequestParam Long userId,
       @RequestParam(required = false) Double latitude,
       @RequestParam(required = false) Double longitude,
@@ -61,15 +59,14 @@ public class AttendanceController {
 
     String clientIp = WebUtils.getClientIpAddress(servletRequest);
     CheckInCommand command = attendanceApiMapper.toCheckInCommand(userId, 0L, clientIp, latitude, longitude);
-    AttendanceLogModel attendance = attendanceUseCase.checkIn(command);
-    AttendanceResponse response = attendanceApiMapper.toCheckInResponseFromLog(attendance);
+    attendanceUseCase.checkIn(command);
 
-    return ResponseApi.ok(response);
+    return ResponseApi.ok("Check-in thành công");
   }
 
   /** Process check-out */
   @PostMapping("/check-out")
-  public ResponseApi<AttendanceResponse> checkOut(
+  public ResponseApi<String> checkOut(
       @RequestParam Long userId,
       @RequestParam(required = false) Double latitude,
       @RequestParam(required = false) Double longitude,
@@ -78,10 +75,9 @@ public class AttendanceController {
 
     String clientIp = WebUtils.getClientIpAddress(servletRequest);
     CheckOutCommand command = attendanceApiMapper.toCheckOutCommand(userId, 0L, clientIp, latitude, longitude);
-    AttendanceLogModel attendance = attendanceUseCase.checkOut(command);
-    AttendanceResponse response = attendanceApiMapper.toCheckOutResponseFromLog(attendance);
+    attendanceUseCase.checkOut(command);
 
-    return ResponseApi.ok(response);
+    return ResponseApi.ok("Check-out thành công");
   }
 
   /** Unified check-point for attendance eligibility (IP or GPS) */

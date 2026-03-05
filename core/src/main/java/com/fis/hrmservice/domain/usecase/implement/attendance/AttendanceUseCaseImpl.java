@@ -203,16 +203,6 @@ public class AttendanceUseCaseImpl implements AttendanceUseCase {
     LocalDate workDate = convertToLocalDate(checkOutTime);
     List<AttendanceLogModel> attendanceLogs =
         attendanceRepository.findAllByUserIdAndDate(command.getUserId(), workDate);
-
-    boolean alreadyCheckedOutThisBranch =
-        attendanceLogs.stream()
-            .anyMatch(
-                log ->
-                    checkOutBranchId.equals(log.getCheckOutBranchId()) && log.getCheckOutTime() > 0);
-    if (alreadyCheckedOutThisBranch) {
-      throw new BadRequestException("Ban da check-out chi nhanh nay trong hom nay");
-    }
-
     AttendanceLogModel attendance =
         attendanceLogs.stream()
             .filter(log -> log.getCheckOutTime() <= 0)
