@@ -8,6 +8,7 @@ import com.fis.hrmservice.domain.usecase.command.quicknote.QuickNoteCommand;
 import com.fis.hrmservice.domain.usecase.implement.quicknote.QuickNoteUseCaseImpl;
 import com.intern.hub.library.common.annotation.EnableGlobalExceptionHandler;
 import com.intern.hub.library.common.dto.ResponseApi;
+import com.intern.hub.starter.security.annotation.Authenticated;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.AccessLevel;
@@ -29,6 +30,7 @@ public class QuickNoteController {
   QuickNoteApiMapper quickNoteApiMapper;
 
   @PostMapping("/{userId}")
+  @Authenticated
   public ResponseApi<?> createTicket(
       @RequestBody CreateQuickNoteRequest request, @PathVariable Long userId) {
 
@@ -46,6 +48,7 @@ public class QuickNoteController {
 
   // cái này cho user xem của chonhs bản thân mình
   @GetMapping
+  @Authenticated
   public ResponseApi<List<QuickNoteResponse>> myQuickNote() {
     Long userId = UserContext.requiredUserId();
     return ResponseApi.ok(
