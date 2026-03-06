@@ -1,5 +1,6 @@
 package com.fis.hrmservice.api.controller.attendance;
 
+import com.fis.hrmservice.api.dto.response.AttendanceFilterResponse;
 import com.fis.hrmservice.api.dto.response.AttendanceResponse;
 import com.fis.hrmservice.api.dto.response.AttendanceStatusResponse;
 import com.fis.hrmservice.api.dto.response.WiFiInfoResponse;
@@ -14,10 +15,13 @@ import com.fis.hrmservice.domain.usecase.attendance.AttendanceUseCase;
 import com.fis.hrmservice.domain.usecase.command.attendance.CheckInCommand;
 import com.fis.hrmservice.domain.usecase.command.attendance.CheckOutCommand;
 import com.intern.hub.library.common.annotation.EnableGlobalExceptionHandler;
+import com.intern.hub.library.common.dto.PaginatedData;
 import com.intern.hub.library.common.dto.ResponseApi;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.util.List;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -110,5 +114,24 @@ public class AttendanceController {
     log.info(
         "Check-point result - IP: {}, GPS: {}, isValid: {}", clientIp, (latitude != null), isValid);
     return ResponseApi.ok(response);
+  }
+
+  @GetMapping("/filter")
+  public ResponseApi<PaginatedData<AttendanceFilterResponse>> filterAttendanceLogs(
+      @RequestParam(required = false) String nameOrEmail,
+      @RequestParam(required = false) String attendanceStatus,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+
+    PaginatedData<AttendanceLogModel> logs =
+        attendanceUseCase.filterAttendance(nameOrEmail, attendanceStatus, page, size);
+
+    return ResponseApi.ok(
+            PaginatedData.<AttendanceFilterResponse>builder()
+                    .items(attendanceApiMapper.toFilterResponseItem((List<AttendanceLogModel>) logs.getItems()))
+                    .totalItems(logs.getTotalItems())
+                    .totalPages(logs.getTotalPages())
+                    .build()
+    );
   }
 }

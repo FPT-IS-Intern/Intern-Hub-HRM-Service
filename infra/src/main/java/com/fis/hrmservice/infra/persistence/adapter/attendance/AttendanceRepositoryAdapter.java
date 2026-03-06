@@ -3,6 +3,7 @@ package com.fis.hrmservice.infra.persistence.adapter.attendance;
 import com.fis.hrmservice.domain.model.attendance.AttendanceLogModel;
 import com.fis.hrmservice.domain.model.constant.CoreConstant;
 import com.fis.hrmservice.domain.port.output.attendance.AttendanceRepositoryPort;
+import com.fis.hrmservice.domain.usecase.command.attendance.FilterAttendanceCommand;
 import com.fis.hrmservice.infra.persistence.entity.AttendanceLog;
 import com.fis.hrmservice.infra.persistence.repository.attendance.AttendanceLogRepository;
 import com.fis.hrmservice.infra.persistence.repository.user.UserJpaRepository;
@@ -11,8 +12,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import com.intern.hub.library.common.dto.PaginatedData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -42,6 +47,25 @@ public class AttendanceRepositoryAdapter implements AttendanceRepositoryPort {
   @Override
   public AttendanceLogModel update(AttendanceLogModel attendanceLogModel) {
     return save(attendanceLogModel);
+  }
+
+  @Override
+  public PaginatedData<AttendanceLogModel> filterAttendanceLogs(FilterAttendanceCommand filterAttendanceCommand, int page, int size) {
+
+    Page<AttendanceLog> attendanceLogPage = attendanceLogRepository.filterAttendanceLogs(
+        filterAttendanceCommand.getNameOrEmail(),
+        filterAttendanceCommand.getAttendanceStatus(),
+        PageRequest.of(page, size));
+
+    List<AttendanceLogModel> attendanceLogModels = attendanceLogPage.getContent().stream()
+        .map(this::toModel)
+        .toList();
+
+    return PaginatedData.<AttendanceLogModel>builder()
+        .items(attendanceLogModels)
+        .totalItems(attendanceLogPage.getTotalElements())
+        .totalPages(attendanceLogPage.getTotalPages())
+        .build();
   }
 
   @Override
@@ -105,6 +129,9 @@ public class AttendanceRepositoryAdapter implements AttendanceRepositoryPort {
                     .userId(entity.getUser().getId())
                     .fullName(entity.getUser().getFullName())
                     .companyEmail(entity.getUser().getCompanyEmail())
+                    .department(entity.getUser().getDepartment() != null
+                        ? entity.getUser().getDepartment().getName()
+                        : null)
                     .build()
                 : null)
         .workDate(entity.getWorkDate())

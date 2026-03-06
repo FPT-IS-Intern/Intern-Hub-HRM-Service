@@ -9,7 +9,6 @@ common-library = "2.1.1"
 security-starter = "1.0.9"
 feign-version = "5.0.1"
 springDoc = "3.0.1"
-jackson = "2.19.0"
 
 [plugins]
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }

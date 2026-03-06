@@ -4,6 +4,8 @@ import com.fis.hrmservice.domain.model.attendance.AttendanceLogModel;
 import com.fis.hrmservice.domain.model.attendance.AttendanceStatusModel;
 import com.fis.hrmservice.domain.usecase.command.attendance.CheckInCommand;
 import com.fis.hrmservice.domain.usecase.command.attendance.CheckOutCommand;
+import com.intern.hub.library.common.dto.PaginatedData;
+
 import java.time.LocalDate;
 
 public interface AttendanceUseCase {
@@ -12,4 +14,6 @@ public interface AttendanceUseCase {
   AttendanceLogModel checkIn(CheckInCommand command);
 
   AttendanceLogModel checkOut(CheckOutCommand command);
+
+  PaginatedData<AttendanceLogModel> filterAttendance(String nameOrEmail, String attendanceStatus, int page, int size);
 }

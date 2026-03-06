@@ -71,10 +71,6 @@ public class User extends AuditEntity {
   private Cv cv;
 
   @ColumnDefault("false")
-  @Column(name = "is_learner")
-  private Boolean isLearner;
-
-  @ColumnDefault("false")
   @Column(name = "is_face_registry")
   private Boolean isFaceRegistry;
 
