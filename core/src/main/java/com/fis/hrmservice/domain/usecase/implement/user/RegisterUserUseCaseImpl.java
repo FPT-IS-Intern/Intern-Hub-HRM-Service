@@ -94,7 +94,7 @@ public class RegisterUserUseCaseImpl {
               "cvs/" + command.getCv().getOriginalFilename(),
               savedUser.getUserId(),
               20971520L,
-              "(docx|pdf)"
+              "(?i).*\\.(docx|pdf)$"
       );
 
       CvModel cv =
