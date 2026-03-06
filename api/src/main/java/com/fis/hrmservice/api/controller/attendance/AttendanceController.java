@@ -1,6 +1,5 @@
 package com.fis.hrmservice.api.controller.attendance;
 
-import com.fis.hrmservice.api.dto.request.AttendanceFilterRequest;
 import com.fis.hrmservice.api.dto.response.*;
 import com.fis.hrmservice.api.mapper.AttendanceApiMapper;
 import com.fis.hrmservice.api.util.UserContext;
@@ -10,18 +9,19 @@ import com.fis.hrmservice.domain.model.attendance.AttendanceStatusModel;
 import com.fis.hrmservice.domain.model.constant.CoreConstant;
 import com.fis.hrmservice.domain.port.output.network.NetworkCheckPort;
 import com.fis.hrmservice.domain.usecase.attendance.AttendanceUseCase;
+import com.fis.hrmservice.domain.usecase.command.attendance.AttendanceInWeekCommand;
 import com.fis.hrmservice.domain.usecase.command.attendance.CheckInCommand;
 import com.fis.hrmservice.domain.usecase.command.attendance.CheckOutCommand;
-import com.fis.hrmservice.domain.usecase.command.attendance.FilterAttendanceCommand;
 import com.intern.hub.library.common.annotation.EnableGlobalExceptionHandler;
 import com.intern.hub.library.common.dto.PaginatedData;
 import com.intern.hub.library.common.dto.ResponseApi;
+import com.intern.hub.starter.security.annotation.Authenticated;
+import com.intern.hub.starter.security.annotation.Authenticated;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("hrm/attendance")
 @EnableGlobalExceptionHandler
 @Slf4j
+@CrossOrigin("*")
 @Tag(name = "Attendance Management", description = "APIs for attendance check-in and check-out")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
@@ -43,7 +44,9 @@ public class AttendanceController {
 
   /** Get current attendance status for a user */
   @GetMapping("/status")
-  public ResponseApi<AttendanceStatusResponse> getAttendanceStatus(@RequestParam Long userId) {
+  @Authenticated
+  public ResponseApi<AttendanceStatusResponse> getAttendanceStatus() {
+    Long userId = UserContext.requiredUserId();
     log.info("GET /attendance/status - userId: {}", userId);
 
     LocalDate today = LocalDate.now(CoreConstant.VIETNAM_ZONE);
@@ -55,11 +58,12 @@ public class AttendanceController {
 
   /** Process check-in */
   @PostMapping("/check-in")
+  @Authenticated
   public ResponseApi<AttendanceResponse> checkIn(
       @RequestParam(required = false) Double latitude,
       @RequestParam(required = false) Double longitude,
       HttpServletRequest servletRequest) {
-    Long userId = UserContext.requiredUserId(); // dùng cái này đi cha
+    Long userId = UserContext.requiredUserId();
     log.info("POST /attendance/check-in - userId: {}", userId);
 
     String clientIp = WebUtils.getClientIpAddress(servletRequest);
@@ -72,31 +76,32 @@ public class AttendanceController {
 
   /** Process check-out */
   @PostMapping("/check-out")
+  @Authenticated
   public ResponseApi<AttendanceResponse> checkOut(
-      @RequestParam Long userId,
       @RequestParam(required = false) Double latitude,
       @RequestParam(required = false) Double longitude,
       HttpServletRequest servletRequest) {
+    Long userId = UserContext.requiredUserId();
     log.info("POST /attendance/check-out - userId: {}", userId);
-
     String clientIp = WebUtils.getClientIpAddress(servletRequest);
     CheckOutCommand command = attendanceApiMapper.toCheckOutCommand(userId, 0L, clientIp, latitude, longitude);
     AttendanceLogModel attendance = attendanceUseCase.checkOut(command);
     AttendanceResponse response = attendanceApiMapper.toCheckOutResponseFromLog(attendance);
-
     return ResponseApi.ok(response);
   }
 
   /** Unified check-point for attendance eligibility (IP or GPS) */
   @GetMapping("/check-point")
+  @Authenticated
   public ResponseApi<WiFiInfoResponse> checkPoint(
       @RequestParam(required = false) Double latitude,
       @RequestParam(required = false) Double longitude,
-      HttpServletRequest request) {
+      @RequestHeader(value = "X-Real-Ip", required = false) String ipAddress) {
     log.info("GET /attendance/check-point - checking eligibility");
-
-    String clientIp = WebUtils.getClientIpAddress(request);
-    UUID branchIdFromIp = networkCheckPort.resolveCompanyIpBranchId(clientIp).orElse(null);
+    UUID branchIdFromIp = null;
+    if (ipAddress != null && !ipAddress.isBlank()) {
+      branchIdFromIp = networkCheckPort.resolveCompanyIpBranchId(ipAddress).orElse(null);
+    }
     UUID branchIdFromLocation = networkCheckPort.resolveCompanyLocationBranchId(latitude, longitude).orElse(null);
     boolean isCompanyNetwork = branchIdFromIp != null;
     boolean isAtLocation = branchIdFromLocation != null;
@@ -112,37 +117,32 @@ public class AttendanceController {
             .build();
 
     log.info(
-        "Check-point result - IP: {}, GPS: {}, isValid: {}", clientIp, (latitude != null), isValid);
+        "Check-point result - IP: {}, GPS: {}, isValid: {}", ipAddress, (latitude != null), isValid);
     return ResponseApi.ok(response);
   }
 
-  @PostMapping("/filter")
+  @GetMapping("/filter")
+  @Authenticated
   public ResponseApi<PaginatedData<AttendanceFilterResponse>> filterAttendanceLogs(
-      @RequestBody AttendanceFilterRequest request,
+      @RequestParam(required = false) String nameOrEmail,
+      @RequestParam(required = false) String attendanceStatus,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
 
-    FilterAttendanceCommand command = attendanceApiMapper.toCommand(request);
-
     PaginatedData<AttendanceLogModel> logs =
-        attendanceUseCase.filterAttendance(command.getNameOrEmail(), command.getAttendanceStatus(), page, size);
-
-    AtomicInteger counter = new AtomicInteger(page * size + 1);
-    List<AttendanceFilterResponse> items = attendanceApiMapper
-        .toFilterResponseList((List<AttendanceLogModel>) logs.getItems())
-        .stream()
-        .peek(item -> item.setNo(counter.getAndIncrement()))
-        .toList();
+        attendanceUseCase.filterAttendance(nameOrEmail, attendanceStatus, page, size);
 
     return ResponseApi.ok(
-        PaginatedData.<AttendanceFilterResponse>builder()
-            .items(items)
-            .totalItems(logs.getTotalItems())
-            .totalPages(logs.getTotalPages())
-            .build());
+            PaginatedData.<AttendanceFilterResponse>builder()
+                    .items(attendanceApiMapper.toFilterResponseItem((List<AttendanceLogModel>) logs.getItems()))
+                    .totalItems(logs.getTotalItems())
+                    .totalPages(logs.getTotalPages())
+                    .build()
+    );
   }
 
   @GetMapping("/attendance-in-week")
+  @Authenticated
   public ResponseApi<List<AttendanceInWeekApiResponse>> getAttendanceInWeekByUserId() {
     Long userId = UserContext.requiredUserId();
     return ResponseApi.ok(attendanceUseCase.getAttendanceInWeekByUserId(userId).stream().map(attendanceApiMapper::toApiResponse).toList());
