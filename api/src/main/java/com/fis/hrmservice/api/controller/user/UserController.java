@@ -17,6 +17,7 @@ import com.fis.hrmservice.domain.usecase.implement.user.*;
 import com.intern.hub.library.common.annotation.EnableGlobalExceptionHandler;
 import com.intern.hub.library.common.dto.PaginatedData;
 import com.intern.hub.library.common.dto.ResponseApi;
+import com.intern.hub.starter.security.annotation.Authenticated;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -103,6 +104,7 @@ public class UserController {
 
   // cái này dùng để cho user xem chính user profile của mình
   @GetMapping("/profile")
+  @Authenticated
   public ResponseApi<?> userGetUserProfile() {
     Long userId = UserContext.requiredUserId();
     UserModel userModel = userProfileUseCase.getUserProfile(userId);
@@ -128,6 +130,7 @@ public class UserController {
 
   // =====================================================================================
   @PatchMapping(value = "/me/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @Authenticated
   public ResponseApi<?> updateProfile(
       @Valid @RequestPart("userInfo") UpdateProfileRequest request,
       @RequestPart(value = "cvFile", required = false) MultipartFile cvFile,
@@ -173,6 +176,7 @@ public class UserController {
   }
 
   @GetMapping("/me")
+  @Authenticated
   public ResponseApi<InternalUserResponse> getMeInternal() {
     Long userId = UserContext.requiredUserId();
     UserModel userModel = userProfileUseCase.internalUserProfile(userId);

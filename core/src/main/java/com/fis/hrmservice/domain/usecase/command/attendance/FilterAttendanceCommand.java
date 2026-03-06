@@ -1,5 +1,6 @@
 package com.fis.hrmservice.domain.usecase.command.attendance;
 
+import com.fis.hrmservice.domain.model.constant.AttendanceStatus;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,5 +13,5 @@ import lombok.experimental.FieldDefaults;
 @Setter
 public class FilterAttendanceCommand {
     String nameOrEmail;
-    String attendanceStatus;
+    AttendanceStatus attendanceStatus;
 }

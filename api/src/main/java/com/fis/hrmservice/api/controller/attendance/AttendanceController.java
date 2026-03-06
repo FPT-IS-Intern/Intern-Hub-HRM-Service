@@ -9,18 +9,15 @@ import com.fis.hrmservice.domain.model.attendance.AttendanceStatusModel;
 import com.fis.hrmservice.domain.model.constant.CoreConstant;
 import com.fis.hrmservice.domain.port.output.network.NetworkCheckPort;
 import com.fis.hrmservice.domain.usecase.attendance.AttendanceUseCase;
-import com.fis.hrmservice.domain.usecase.command.attendance.AttendanceInWeekCommand;
 import com.fis.hrmservice.domain.usecase.command.attendance.CheckInCommand;
 import com.fis.hrmservice.domain.usecase.command.attendance.CheckOutCommand;
 import com.intern.hub.library.common.annotation.EnableGlobalExceptionHandler;
 import com.intern.hub.library.common.dto.PaginatedData;
 import com.intern.hub.library.common.dto.ResponseApi;
 import com.intern.hub.starter.security.annotation.Authenticated;
-import com.intern.hub.starter.security.annotation.Authenticated;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -125,17 +122,22 @@ public class AttendanceController {
   @GetMapping("/filter")
   @Authenticated
   public ResponseApi<PaginatedData<AttendanceFilterResponse>> filterAttendanceLogs(
-      @RequestParam(required = false) String nameOrEmail,
-      @RequestParam(required = false) String attendanceStatus,
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size) {
+          @RequestParam(required = false) String nameOrEmail,
+          @RequestParam(required = false) String attendanceStatus,
+          @RequestParam(defaultValue = "0") int page,
+          @RequestParam(defaultValue = "10") int size) {
 
     PaginatedData<AttendanceLogModel> logs =
-        attendanceUseCase.filterAttendance(nameOrEmail, attendanceStatus, page, size);
+            attendanceUseCase.filterAttendance(nameOrEmail, attendanceStatus, page, size);
+
+    List<AttendanceFilterResponse> responses =
+            logs.getItems().stream()
+                    .map(attendanceApiMapper::toFilterResponseItem)
+                    .toList();
 
     return ResponseApi.ok(
             PaginatedData.<AttendanceFilterResponse>builder()
-                    .items(Collections.singleton(attendanceApiMapper.toFilterResponseItem((AttendanceLogModel) logs.getItems())))
+                    .items(responses)
                     .totalItems(logs.getTotalItems())
                     .totalPages(logs.getTotalPages())
                     .build()

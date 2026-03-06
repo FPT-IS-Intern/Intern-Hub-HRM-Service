@@ -1,5 +1,6 @@
 package com.fis.hrmservice.infra.persistence.repository.attendance;
 
+import com.fis.hrmservice.domain.model.constant.AttendanceStatus;
 import com.fis.hrmservice.infra.model.AttendanceInWeekResponse;
 import com.fis.hrmservice.infra.persistence.entity.AttendanceLog;
 import java.time.LocalDate;
@@ -28,10 +29,13 @@ public interface AttendanceLogRepository extends JpaRepository<AttendanceLog, Lo
         (:nameOrKeyword IS NULL OR :nameOrKeyword = ''
          OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :nameOrKeyword, '%'))
          OR LOWER(u.companyEmail) LIKE LOWER(CONCAT('%', :nameOrKeyword, '%')))
-        AND (:status IS NULL OR :status = '' OR al.attendanceStatus = :status)
+        AND (:status IS NULL OR al.attendanceStatus = :status)
     ORDER BY al.workDate DESC, al.checkInTime DESC
 """)
-  Page<AttendanceLog> filterAttendanceLogs(@Param("nameOrKeyword") String nameOrKeyword, @Param("status") String attendanceStatus, Pageable pageable);
+  Page<AttendanceLog> filterAttendanceLogs(
+          @Param("nameOrKeyword") String nameOrKeyword,
+          @Param("status") AttendanceStatus status,
+          Pageable pageable);
 
   @Query(value = """
           SELECT  

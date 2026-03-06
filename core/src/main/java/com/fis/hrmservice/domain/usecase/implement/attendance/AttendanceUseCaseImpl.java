@@ -352,20 +352,28 @@ public class AttendanceUseCaseImpl implements AttendanceUseCase {
       return String.format("Check out thành công (%s) sớm hơn 17:15", timeStr);
     }
   }
+  @Override
+  public PaginatedData<AttendanceLogModel> filterAttendance(
+          String nameOrEmail,
+          String attendanceStatus,
+          int page,
+          int size) {
 
-  public PaginatedData<AttendanceLogModel> filterAttendance(String nameOrEmail, String attendanceStatus, int page, int size) {
+    AttendanceStatus statusEnum = null;
+
+    if (attendanceStatus != null && !attendanceStatus.isBlank()) {
+      statusEnum = AttendanceStatus.valueOf(attendanceStatus);
+    }
 
     FilterAttendanceCommand command = FilterAttendanceCommand.builder()
             .nameOrEmail(nameOrEmail)
-            .attendanceStatus(attendanceStatus)
+            .attendanceStatus(statusEnum)
             .build();
 
-    PaginatedData<AttendanceLogModel> pagedResult = attendanceRepository.filterAttendanceLogs(command, page, size);
-
-    if (pagedResult.getItems().isEmpty()) {
-      return PaginatedData.empty();
-    }
-
-    return pagedResult;
+    return attendanceRepository.filterAttendanceLogs(
+            command,
+            page,
+            size
+    );
   }
 }

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("hrm/users/positions")
 @Tag(name = "Position Management", description = "APIs for position management")
-@CrossOrigin(origins = "http://localhost:4205")
+//@CrossOrigin(origins = "http://localhost:4205")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PositionController {
 
