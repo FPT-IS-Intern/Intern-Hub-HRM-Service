@@ -28,6 +28,7 @@ public class UserModel extends BaseDomain {
 
   PositionModel position;
   UserModel mentor;
+  String department;
 
   AvatarModel avatar;
   CvModel cv;

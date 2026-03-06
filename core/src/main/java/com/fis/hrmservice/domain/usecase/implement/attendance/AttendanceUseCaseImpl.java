@@ -10,8 +10,11 @@ import com.fis.hrmservice.domain.port.output.attendance.AttendanceRepositoryPort
 import com.fis.hrmservice.domain.port.output.network.NetworkCheckPort;
 import com.fis.hrmservice.domain.port.output.user.UserRepositoryPort;
 import com.fis.hrmservice.domain.usecase.attendance.AttendanceUseCase;
+import com.fis.hrmservice.domain.usecase.command.attendance.AttendanceInWeekCommand;
 import com.fis.hrmservice.domain.usecase.command.attendance.CheckInCommand;
 import com.fis.hrmservice.domain.usecase.command.attendance.CheckOutCommand;
+import com.fis.hrmservice.domain.usecase.command.attendance.FilterAttendanceCommand;
+import com.intern.hub.library.common.dto.PaginatedData;
 import com.intern.hub.library.common.exception.BadRequestException;
 import com.intern.hub.library.common.exception.NotFoundException;
 import com.intern.hub.library.common.utils.Snowflake;
@@ -262,6 +265,11 @@ public class AttendanceUseCaseImpl implements AttendanceUseCase {
     return processed;
   }
 
+  @Override
+  public List<AttendanceInWeekCommand> getAttendanceInWeekByUserId(Long userId) {
+    return attendanceRepository.getAttendanceInWeekByUserId(userId);
+  }
+
   // ==================== Helper Methods ====================
 
   private UUID validateCompanyAccess(
@@ -343,5 +351,21 @@ public class AttendanceUseCaseImpl implements AttendanceUseCase {
     } else {
       return String.format("Check out thành công (%s) sớm hơn 17:15", timeStr);
     }
+  }
+
+  public PaginatedData<AttendanceLogModel> filterAttendance(String nameOrEmail, String attendanceStatus, int page, int size) {
+
+    FilterAttendanceCommand command = FilterAttendanceCommand.builder()
+            .nameOrEmail(nameOrEmail)
+            .attendanceStatus(attendanceStatus)
+            .build();
+
+    PaginatedData<AttendanceLogModel> pagedResult = attendanceRepository.filterAttendanceLogs(command, page, size);
+
+    if (pagedResult.getItems().isEmpty()) {
+      return PaginatedData.empty();
+    }
+
+    return pagedResult;
   }
 }

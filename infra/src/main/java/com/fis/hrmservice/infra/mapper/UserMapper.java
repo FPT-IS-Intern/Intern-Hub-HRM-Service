@@ -7,6 +7,7 @@ import com.fis.hrmservice.domain.model.user.PositionModel;
 import com.fis.hrmservice.domain.model.user.UserModel;
 import com.fis.hrmservice.infra.persistence.entity.Avatar;
 import com.fis.hrmservice.infra.persistence.entity.Cv;
+import com.fis.hrmservice.infra.persistence.entity.Department;
 import com.fis.hrmservice.infra.persistence.entity.Position;
 import com.fis.hrmservice.infra.persistence.entity.User;
 import java.time.Instant;
@@ -26,6 +27,7 @@ public interface UserMapper {
   @Mapping(target = "position", qualifiedByName = "positionToModel")
   @Mapping(target = "avatar", qualifiedByName = "avatarToModel")
   @Mapping(target = "cv", qualifiedByName = "cvToModel")
+  @Mapping(target = "department", source = "department", qualifiedByName = "departmentToString")
   UserModel toModel(User entity);
 
   List<UserModel> toModelList(List<User> entities);
@@ -38,6 +40,8 @@ public interface UserMapper {
   @Mapping(target = "dateOfBirth", source = "dateOfBirth")
   @Mapping(target = "avatar", qualifiedByName = "avatarToEntity")
   @Mapping(target = "cv", qualifiedByName = "cvToEntity")
+  @Mapping(target = "department", source = "department", qualifiedByName = "stringToDepartment")
+  @Mapping(target = "isFaceRegistry", ignore = true)
   User toEntity(UserModel model);
 
   List<UserModel> toResponseList(List<User> users);
@@ -131,5 +135,17 @@ public interface UserMapper {
     cv.setFileType(model.getFileType());
     cv.setFileSize(model.getFileSize());
     return cv;
+  }
+
+  @Named("departmentToString")
+  default String departmentToString(Department department) {
+    if (department == null) return null;
+    return department.getName();
+  }
+
+  @Named("stringToDepartment")
+  default Department stringToDepartment(String name) {
+    // Cannot reverse-map department name to full entity — leave null (id unknown)
+    return null;
   }
 }

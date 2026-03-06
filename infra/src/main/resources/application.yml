@@ -92,6 +92,11 @@ aws:
     bucket-name: ${S3_BUCKET_NAME}
     public-base-url: ${S3_BASE_URL}
 
+
+face-recognition:
+  api-key: ${FACE_REGISTRY_API_KEY:defaultFaceRegistryApiKey}
+  api-url: ${FACE_REGISTRY_API_URL:http://localhost:8085}
+
 common:
   context:
     enabled: true
