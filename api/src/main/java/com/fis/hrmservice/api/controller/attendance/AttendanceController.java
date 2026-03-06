@@ -20,6 +20,7 @@ import com.intern.hub.starter.security.annotation.Authenticated;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -134,7 +135,7 @@ public class AttendanceController {
 
     return ResponseApi.ok(
             PaginatedData.<AttendanceFilterResponse>builder()
-                    .items(attendanceApiMapper.toFilterResponseItem((List<AttendanceLogModel>) logs.getItems()))
+                    .items(Collections.singleton(attendanceApiMapper.toFilterResponseItem((AttendanceLogModel) logs.getItems())))
                     .totalItems(logs.getTotalItems())
                     .totalPages(logs.getTotalPages())
                     .build()
