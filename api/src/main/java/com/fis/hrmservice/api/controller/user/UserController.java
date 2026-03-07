@@ -141,8 +141,11 @@ public class UserController {
     request.setCvFile(cvFile);
     request.setAvatarFile(avatarFile);
 
-    userProfileUseCase.updateProfileUser(userApiMapper.toUpdateUserProfileCommand(request), userId);
+    UserModel model = userProfileUseCase.updateProfileUser(userApiMapper.toUpdateUserProfileCommand(request), userId);
 
+    if (model == null) {
+      return ResponseApi.ok("Update user profile không thành công");
+    }
     return ResponseApi.ok("Update user profile thành công");
   }
 

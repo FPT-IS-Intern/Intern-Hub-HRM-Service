@@ -18,6 +18,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,111 +37,109 @@ public class UserProfileUseCaseImpl {
         .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
   }
 
-  public UserModel updateProfileUser(UpdateUserProfileCommand command, long userId) {
+  @Transactional
+  public UserModel updateProfileUser(UpdateUserProfileCommand command, Long userId) {
 
-    UserModel user =
-        userRepositoryPort
-            .findById(userId)
+    UserModel user = userRepositoryPort.findById(userId)
             .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
 
     userValidationService.validateUpdate(command);
 
-    boolean changed = false;
+    boolean userFieldChanged = false;
 
-    changed |=
-        UpdateHelper.applyIfChanged(
+    userFieldChanged |= UpdateHelper.applyIfChanged(
             command.getFullName(),
             user::getFullName,
             user::setFullName,
             (o, n) -> Objects.equals(trim(o), trim(n)));
 
-    changed |=
-        UpdateHelper.applyIfChanged(
+    userFieldChanged |= UpdateHelper.applyIfChanged(
             command.getCompanyEmail(),
             user::getCompanyEmail,
             user::setCompanyEmail,
             (o, n) -> Objects.equals(trim(o), trim(n)));
 
-    changed |=
-        UpdateHelper.applyIfChanged(
-            command.getDateOfBirth(), user::getDateOfBirth, user::setDateOfBirth, Objects::equals);
+    userFieldChanged |= UpdateHelper.applyIfChanged(
+            command.getDateOfBirth(),
+            user::getDateOfBirth,
+            user::setDateOfBirth,
+            Objects::equals);
 
-    changed |=
-        UpdateHelper.applyIfChanged(
+    userFieldChanged |= UpdateHelper.applyIfChanged(
             command.getIdNumber(),
             user::getIdNumber,
             user::setIdNumber,
             (o, n) -> Objects.equals(trim(o), trim(n)));
 
-    changed |=
-        UpdateHelper.applyIfChanged(
+    userFieldChanged |= UpdateHelper.applyIfChanged(
             command.getAddress(),
             user::getAddress,
             user::setAddress,
             (o, n) -> Objects.equals(trim(o), trim(n)));
 
-    changed |=
-        UpdateHelper.applyIfChanged(
+    userFieldChanged |= UpdateHelper.applyIfChanged(
             command.getPhoneNumber(),
             user::getPhoneNumber,
             user::setPhoneNumber,
             (o, n) -> Objects.equals(trim(o), trim(n)));
 
+    // ===== Upload CV =====
     if (command.getCvFile() != null && !command.getCvFile().isEmpty()) {
-      String cvObjectKey =
-              fileStoragePort.uploadFile(
-                      command.getCvFile(),
-                      "cvs/" + command.getCvFile().getOriginalFilename(),
-                      user.getUserId(),
-                      20971520L,
-                      "(?i).*\\.(docx|pdf)$");
+      String cvObjectKey = fileStoragePort.uploadFile(
+              command.getCvFile(),
+              "cvs/",
+              user.getUserId(),
+              20971520L,
+              "(?i).*\\.(docx|pdf)$"
+      );
 
-      CvModel cv = cvRepositoryPort.findByUserId(user.getUserId());
-
-      if (cv == null) {
-        cv = new CvModel();
-        cv.setUser(user);
-      }
+      CvModel cv = Optional.ofNullable(
+              cvRepositoryPort.findByUserId(user.getUserId())
+      ).orElseGet(() -> {
+        CvModel newCv = new CvModel();
+        newCv.setUser(user);
+        return newCv;
+      });
 
       cv.setCvUrl(cvObjectKey);
       cv.setFileSize(command.getCvFile().getSize());
       cv.setFileType(command.getCvFile().getContentType());
-      CvModel savedCv = cvRepositoryPort.save(cv);
-      user.setCv(savedCv);
-      changed = true;
+
+      cvRepositoryPort.save(cv); // Chỉ save cv, không set lại vào user
     }
 
+    // ===== Upload Avatar =====
     if (command.getAvatarFile() != null && !command.getAvatarFile().isEmpty()) {
-      String avatarObjectKey =
-              fileStoragePort.uploadFile(
-                      command.getAvatarFile(),
-                      "avatars/" + command.getAvatarFile().getOriginalFilename(),
-                      user.getUserId(),
-                      20971520L,
-                      "image/(png|jpeg|jpg|webp)");
+      String avatarObjectKey = fileStoragePort.uploadFile(
+              command.getAvatarFile(),
+              "avatars/",
+              user.getUserId(),
+              20971520L,
+              "image/(png|jpeg|jpg|webp)"
+      );
 
-      AvatarModel avatar = avatarRepositoryPort.getAvatarByUserId(user.getUserId());
-
-      if (avatar == null) {
-        avatar = new AvatarModel();
-        avatar.setUser(user);
-      }
+      AvatarModel avatar = Optional.ofNullable(
+              avatarRepositoryPort.getAvatarByUserId(user.getUserId())
+      ).orElseGet(() -> {
+        AvatarModel newAvatar = new AvatarModel();
+        newAvatar.setUser(user);
+        return newAvatar;
+      });
 
       avatar.setAvatarUrl(avatarObjectKey);
       avatar.setFileSize(command.getAvatarFile().getSize());
       avatar.setFileType(command.getAvatarFile().getContentType());
 
-      AvatarModel savedAvatar = avatarRepositoryPort.save(avatar);
-      user.setAvatar(savedAvatar);
-      changed = true;
+      avatarRepositoryPort.save(avatar); // Chỉ save avatar, không set lại vào user
     }
 
-    // Nếu không có thay đổi gì thì return luôn (không throw)
-    if (!changed) {
-      return user;
+    if (userFieldChanged) {
+      return userRepositoryPort.save(user);
     }
 
-    return userRepositoryPort.save(user);
+    // Reload lại user để trả về data mới nhất (bao gồm cv/avatar đã update)
+    return userRepositoryPort.findById(userId)
+            .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
   }
 
   public UserModel internalUserProfile(Long userId) {
